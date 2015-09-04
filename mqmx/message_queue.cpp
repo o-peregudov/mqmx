@@ -50,7 +50,7 @@ namespace mqmx
 	return *this;
     }
 
-    int message_queue::push (message_ptr_type && msg)
+    mqmx_status_code message_queue::push (message_ptr_type && msg)
     {
 	if (msg.get () == nullptr)
 	{

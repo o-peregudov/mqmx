@@ -17,6 +17,8 @@ namespace mqmx
 	NotSupported,
 	NotFound,
     };
+
+    typedef int mqmx_status_code;
     
     class message
     {
@@ -59,7 +61,7 @@ namespace mqmx
 
         message_queue & operator = (message_queue && o) noexcept;
 
-        int push (message_ptr_type && msg);
+        mqmx_status_code push (message_ptr_type && msg);
         message_ptr_type pop ();
 
     private:
