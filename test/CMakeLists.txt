@@ -22,7 +22,7 @@ TARGET_LINK_LIBRARIES (message_queue
   mqmx
 )
 
-ADD_TEST (NAME message_queue
+ADD_TEST (NAME message_queue/Sanity-checks
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue
 )
@@ -38,7 +38,7 @@ TARGET_LINK_LIBRARIES (message_queue_pool
   mqmx
 )
 
-ADD_TEST (NAME message_queue_pool
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND message_queue_pool
-)
+# ADD_TEST (NAME message_queue_pool
+#   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+#   COMMAND message_queue_pool
+# )

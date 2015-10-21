@@ -18,27 +18,31 @@ namespace mqmx
 	NotFound,
     };
 
-    typedef int mqmx_status_code;
+    typedef int    mqmx_status_code;
+    typedef size_t mqmx_queue_id_type;
+    typedef size_t mqmx_message_id_type;
 
     class message
     {
-        const size_t _qid;
-        const size_t _mid;
+        const mqmx_queue_id_type _qid;
+        const mqmx_message_id_type _mid;
 
     public:
-        static const size_t undefined_qid = static_cast<size_t> (-1);
+        static const mqmx_queue_id_type undefined_qid =
+	    static_cast<mqmx_queue_id_type> (-1);
 
-        message (const size_t queue_id, const size_t message_id);
+        message (const mqmx_queue_id_type queue_id,
+		 const mqmx_message_id_type message_id);
         virtual ~message ()
 	{
 	}
 
-        size_t get_qid () const
+        mqmx_queue_id_type get_qid () const
         {
             return _qid;
         }
 
-        size_t get_mid () const
+        mqmx_message_id_type get_mid () const
         {
             return _mid;
         }
@@ -56,7 +60,7 @@ namespace mqmx
         typedef std::deque<message_ptr_type> container_type;
 
     public:
-        message_queue (const size_t ID = message::undefined_qid) noexcept;
+        message_queue (const mqmx_queue_id_type = message::undefined_qid) noexcept;
         message_queue (message_queue && o) noexcept;
 
         message_queue & operator = (message_queue && o) noexcept;
@@ -65,9 +69,9 @@ namespace mqmx
         message_ptr_type pop ();
 
     private:
-        size_t         _id;
-        mutex_type     _mutex;
-        container_type _queue;
+        mqmx_queue_id_type _id;
+        mutex_type         _mutex;
+        container_type     _queue;
     };
 } /* namespace mqmx */
 #endif /* MQMX_MESSAGE_QUEUE_H_INCLUDED */

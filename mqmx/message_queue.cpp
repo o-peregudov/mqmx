@@ -3,13 +3,14 @@
 
 namespace mqmx
 {
-    message::message (const size_t queue_id, const size_t message_id)
+    message::message (const mqmx_queue_id_type queue_id,
+		      const mqmx_message_id_type message_id)
 	: _qid (queue_id)
 	, _mid (message_id)
     {
     }
 
-    message_queue::message_queue (const size_t ID) noexcept
+    message_queue::message_queue (const mqmx_queue_id_type ID) noexcept
 	: _id (ID)
 	, _mutex ()
 	, _queue ()
@@ -21,15 +22,9 @@ namespace mqmx
 	, _mutex ()
 	, _queue ()
     {
-	try
-	{
-	    lock_type guard (o._mutex);
-	    std::swap (_queue, o._queue);
-	    std::swap (_id, o._id);
-	}
-	catch (...)
-	{
-	}
+	lock_type guard (o._mutex);
+	std::swap (_queue, o._queue);
+	std::swap (_id, o._id);
     }
 
     message_queue & message_queue::operator = (message_queue && o) noexcept
@@ -72,8 +67,7 @@ namespace mqmx
     {
 	message_ptr_type msg;
 	lock_type guard (_mutex);
-	if ((_id != message::undefined_qid) &&
-	    (_queue.empty () == false))
+	if ((_id != message::undefined_qid) && !_queue.empty ())
 	{
 	    msg = std::move (_queue.front ());
 	    _queue.pop_front ();
