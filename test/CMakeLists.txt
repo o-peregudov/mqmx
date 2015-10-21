@@ -13,18 +13,18 @@ LINK_DIRECTORIES (
 
 ############################################################
 
-ADD_EXECUTABLE (message_queue
-  message_queue.cpp
+ADD_EXECUTABLE (message_queue_sanity
+  message_queue_sanity.cpp
 )
 
-TARGET_LINK_LIBRARIES (message_queue
+TARGET_LINK_LIBRARIES (message_queue_sanity
   ${CMAKE_THREAD_LIBS_INIT}
   mqmx
 )
 
-ADD_TEST (NAME message_queue/Sanity-checks
+ADD_TEST (NAME message_queue_sanity
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND message_queue
+  COMMAND message_queue_sanity
 )
 
 ############################################################
