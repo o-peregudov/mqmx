@@ -19,7 +19,7 @@ namespace mqmx
     };
 
     typedef int mqmx_status_code;
-    
+
     class message
     {
         const size_t _qid;
