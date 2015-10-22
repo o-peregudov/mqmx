@@ -6,41 +6,75 @@ int main (int argc, const char ** argv)
     using namespace mqmx;
     const mqmx_queue_id_type defQID = 10;
     const mqmx_message_id_type defMID = 10;
-    message_queue queue (defQID);
 
+    /*
+     * default constructor
+     */
+    message_queue queue (defQID);
     message_queue::message_ptr_type msg (queue.pop ());
     assert ((msg.get () == nullptr) &&
-	    ("Initially queue is empty!"));
+            ("Initially queue is empty!"));
 
-    int retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
+    /*
+     * push operation
+     */
+    int retCode = queue.push (
+        message_queue::message_ptr_type (new message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
-	    ("Push should succeed!"));
+            ("Push should succeed!"));
 
+    /*
+     * move constructor
+     */
     message_queue queue2 (std::move (queue));
 
     msg = queue.pop ();
     assert ((msg.get () == nullptr) &&
-	    ("Should be empty after move!"));
+            ("Should be empty after move!"));
 
-    retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
+    retCode = queue.push (
+        message_queue::message_ptr_type (new message (defQID, defMID)));
     assert ((retCode == ExitStatus::NotSupported) &&
-	    ("Push should fail, because moved out!"));
+            ("Push should fail, because moved out!"));
 
+    /*
+     * queue should be moved after move constructor
+     */
     msg = queue2.pop ();
     assert ((msg.get () != nullptr) &&
-	    ("Should not be empty, because moved from existing!"));
+            ("Should not be empty, because moved from existing!"));
     assert ((msg->get_qid () == defQID) &&
-	    ("QID should match!"));
+            ("QID should match!"));
     assert ((msg->get_mid () == defMID) &&
-	    ("MID should match!"));
+            ("MID should match!"));
 
-    queue = std::move (queue2);
-    retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
-    assert ((retCode == ExitStatus::Success) &&
-	    ("Push should succeed, because moved in!"));
-    retCode = queue2.push (message_queue::message_ptr_type (new message (defQID, defMID)));
-    assert ((retCode == ExitStatus::NotSupported) &&
-	    ("Push should fail, because moved out!"));
+    /*
+     * move assignment
+     */
+    queue = message_queue (defQID);
+    msg = queue.pop ();
+    assert ((msg.get () == nullptr) &&
+            ("Initially queue is empty!"));
 
+    /*
+     * FIFO message ordering
+     */
+    for (size_t ix = 0; ix < 10; ++ix)
+    {
+        retCode = queue.push (
+            message_queue::message_ptr_type (new message (defQID, defMID + ix)));
+        assert ((retCode == ExitStatus::Success) &&
+                ("Push should succeed!"));
+    }
+    for (size_t ix = 0; ix < 10; ++ix)
+    {
+        msg = queue.pop ();
+        assert ((msg.get () != nullptr) &&
+                ("Should not be empty, because moved from existing!"));
+        assert ((msg->get_qid () == defQID) &&
+                ("QID should match!"));
+        assert ((msg->get_mid () == (defMID + ix)) &&
+                ("MID should match!"));
+    }
     return 0;
 }
