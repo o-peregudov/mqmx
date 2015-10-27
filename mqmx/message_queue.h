@@ -12,7 +12,8 @@ namespace mqmx
 {
     enum MQNotification
     {
-        NewMessage
+        NewMessage,
+	Detached
     };
 
     class message_queue

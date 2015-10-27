@@ -20,6 +20,10 @@ namespace mqmx
         lock_type guard (o._mutex);
         std::swap (_queue, o._queue);
         std::swap (_id, o._id);
+	if (o._listener)
+	{
+	    o._listener (_id, MQNotification::Detached);
+	}
     }
 
     message_queue & message_queue::operator = (message_queue && o) noexcept
@@ -31,6 +35,10 @@ namespace mqmx
             lock_type oguard (o._mutex, std::adopt_lock_t ());
             _id = message::undefined_qid;
             _listener = listener_function_type ();
+	    if (o._listener)
+	    {
+		o._listener (_id, MQNotification::Detached);
+	    }
             _queue.clear ();
             std::swap (_queue, o._queue);
             std::swap (_id, o._id);
