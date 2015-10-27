@@ -4,48 +4,15 @@
 #include <memory>
 #include <mutex>
 #include <deque>
+#include <functional>
+
+#include <mqmx/message.h>
 
 namespace mqmx
 {
-    enum ExitStatus
+    enum MQNotification
     {
-	Success = 0,
-	Finished,
-	Timeout,
-	AlreadyExist,
-	InvalidArgument,
-	NotSupported,
-	NotFound,
-    };
-
-    typedef int    mqmx_status_code;
-    typedef size_t mqmx_queue_id_type;
-    typedef size_t mqmx_message_id_type;
-
-    class message
-    {
-        const mqmx_queue_id_type _qid;
-        const mqmx_message_id_type _mid;
-
-    public:
-        static const mqmx_queue_id_type undefined_qid =
-	    static_cast<mqmx_queue_id_type> (-1);
-
-        message (const mqmx_queue_id_type queue_id,
-		 const mqmx_message_id_type message_id);
-        virtual ~message ()
-	{
-	}
-
-        mqmx_queue_id_type get_qid () const
-        {
-            return _qid;
-        }
-
-        mqmx_message_id_type get_mid () const
-        {
-            return _mid;
-        }
+        NewMessage
     };
 
     class message_queue
@@ -58,20 +25,23 @@ namespace mqmx
         typedef std::mutex                   mutex_type;
         typedef std::unique_lock<mutex_type> lock_type;
         typedef std::deque<message_ptr_type> container_type;
+        typedef std::function<void (const queue_id_type &, const MQNotification)>
+                                             listener_function_type;
 
     public:
-        message_queue (const mqmx_queue_id_type = message::undefined_qid) noexcept;
+        message_queue (const queue_id_type = message::undefined_qid) noexcept;
         message_queue (message_queue && o) noexcept;
 
         message_queue & operator = (message_queue && o) noexcept;
 
-        mqmx_status_code push (message_ptr_type && msg);
+        status_code push (message_ptr_type && msg);
         message_ptr_type pop ();
 
     private:
-        mqmx_queue_id_type _id;
-        mutex_type         _mutex;
-        container_type     _queue;
+        queue_id_type          _id;
+        mutex_type             _mutex;
+        container_type         _queue;
+        listener_function_type _listener;
     };
 } /* namespace mqmx */
 #endif /* MQMX_MESSAGE_QUEUE_H_INCLUDED */

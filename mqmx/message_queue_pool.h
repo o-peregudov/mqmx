@@ -16,12 +16,14 @@ namespace mqmx
         class message_handler
         {
         public:
-            int operator () (message_queue::message_ptr_type && msg) noexcept
+            status_code operator () (
+                message_queue::message_ptr_type && msg) noexcept
             {
                 return handle (std::move (msg));
             }
 
-            virtual int handle (message_queue::message_ptr_type &&) noexcept = 0;
+            virtual status_code handle (
+                message_queue::message_ptr_type &&) noexcept = 0;
 
             virtual ~message_handler ()
             {
@@ -40,12 +42,14 @@ namespace mqmx
         message_queue_pool ();
         ~message_queue_pool ();
 
-        int push (message_queue::message_ptr_type &&);
-        int add_queue (const size_t qid, handler_ptr_type &&);
+        status_code push (message_queue::message_ptr_type &&);
+        status_code add_queue (const queue_id_type qid, handler_ptr_type &&);
 
-        int wait ();
-        int wait_for (const std::chrono::high_resolution_clock::duration &);
-        int wait_until (const std::chrono::high_resolution_clock::time_point &);
+        status_code wait ();
+        status_code wait_for (
+            const std::chrono::high_resolution_clock::duration &);
+        status_code wait_until (
+            const std::chrono::high_resolution_clock::time_point &);
 
         void terminate ();
         void dispatch ();
@@ -64,9 +68,9 @@ namespace mqmx
         size_t                 _nwriters;
         condvar_type           _rwcondition;
 
-        int _add (const size_t qid, handler_ptr_type &&);
-        int _push (message_queue::message_ptr_type &&);
-        void _dispatch_unlocked ();
+        status_code _add (const queue_id_type qid, handler_ptr_type &&);
+        status_code _push (message_queue::message_ptr_type &&);
+        void        _dispatch ();
     };
 } /* namespace mqmx */
 #endif /* MQMX_MESSAGE_QUEUE_POOL_H_INCLUDED */

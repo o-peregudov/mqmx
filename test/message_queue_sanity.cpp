@@ -4,8 +4,8 @@
 int main (int argc, const char ** argv)
 {
     using namespace mqmx;
-    const mqmx_queue_id_type defQID = 10;
-    const mqmx_message_id_type defMID = 10;
+    const queue_id_type defQID = 10;
+    const message_id_type defMID = 10;
 
     /*
      * default constructor
@@ -18,7 +18,7 @@ int main (int argc, const char ** argv)
     /*
      * push operation
      */
-    int retCode = queue.push (
+    status_code retCode = queue.push (
         message_queue::message_ptr_type (new message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed!"));

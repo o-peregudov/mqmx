@@ -10,42 +10,48 @@ namespace mqmx
         _condition.notify_one ();
     }
 
-    int message_queue_pool::wait ()
+    status_code message_queue_pool::wait ()
     {
         lock_type guard (_mutex);
         _condition.wait (guard, [&]{ return (_has_messages || _terminated); });
-        const bool sterminated = _terminated;
+        const status_code retCode (_terminated
+                                   ? ExitStatus::Finished
+                                   : ExitStatus::Success);
         _has_messages = false;
         _terminated = false;
-        return (sterminated ? ExitStatus::Finished : ExitStatus::Success);
+        return retCode;
     }
 
-    int message_queue_pool::wait_for (
+    status_code message_queue_pool::wait_for (
         const std::chrono::high_resolution_clock::duration & rel_time)
     {
         lock_type guard (_mutex);
         if (_condition.wait_for (guard, rel_time,
-				 [&]{ return (_has_messages || _terminated); }))
+                                 [&]{ return (_has_messages || _terminated); }))
         {
-            const bool sterminated = _terminated;
+            const status_code retCode (_terminated
+                                       ? ExitStatus::Finished
+                                       : ExitStatus::Success);
             _has_messages = false;
             _terminated = false;
-	    return (sterminated ? ExitStatus::Finished : ExitStatus::Success);
+            return retCode;
         }
-        return -ExitStatus::Timeout;
+        return ExitStatus::Timeout;
     }
 
-    int message_queue_pool::wait_until (
+    status_code message_queue_pool::wait_until (
         const std::chrono::high_resolution_clock::time_point & abs_time)
     {
         lock_type guard (_mutex);
         if (_condition.wait_until (guard, abs_time,
-				   [&]{ return (_has_messages || _terminated); }))
+                                   [&]{ return (_has_messages || _terminated); }))
         {
-            const bool sterminated = _terminated;
+            const status_code retCode (_terminated
+                                       ? ExitStatus::Finished
+                                       : ExitStatus::Success);
             _has_messages = false;
             _terminated = false;
-	    return (sterminated ? ExitStatus::Finished : ExitStatus::Success);
+            return retCode;
         }
         return ExitStatus::Timeout;
     }
@@ -53,12 +59,11 @@ namespace mqmx
     void message_queue_pool::dispatch ()
     {
         lock_type rwguard (_rwmutex);
-        _rwcondition.wait (
-            rwguard, [&]{ return (_nwriters == 0); });
+        _rwcondition.wait (rwguard, [&]{ return (_nwriters == 0); });
         ++_nreaders;
         rwguard.unlock ();
 
-        _dispatch_unlocked ();
+        _dispatch ();
 
         rwguard.lock ();
         if (--_nreaders == 0)
@@ -67,7 +72,7 @@ namespace mqmx
         }
     }
 
-    void message_queue_pool::_dispatch_unlocked ()
+    void message_queue_pool::_dispatch ()
     {
         counter_container_type snapshot_counter (_queue.size (), 0);
         std::swap (_counter, snapshot_counter);
@@ -85,7 +90,7 @@ namespace mqmx
         }
     }
 
-    int message_queue_pool::_add (const size_t qid, handler_ptr_type && h)
+    status_code message_queue_pool::_add (const size_t qid, handler_ptr_type && h)
     {
         lock_type guard (_mutex);
         if (_queue.size () <= qid)
@@ -103,12 +108,12 @@ namespace mqmx
         return ExitStatus::AlreadyExist;
     }
 
-    int message_queue_pool::_push (message_queue::message_ptr_type && msg)
+    status_code message_queue_pool::_push (message_queue::message_ptr_type && msg)
     {
         const size_t qid = msg->get_qid ();
-        int retCode = ((qid < _queue.size ())
-                       ? _queue[qid].push (std::move (msg))
-                       : ExitStatus::NotFound);
+        status_code retCode = ((qid < _queue.size ())
+                               ? _queue[qid].push (std::move (msg))
+                               : ExitStatus::NotFound);
         if (retCode == ExitStatus::Success)
         {
             lock_type guard (_mutex);
@@ -137,7 +142,7 @@ namespace mqmx
     {
     }
 
-    int message_queue_pool::push (message_queue::message_ptr_type && msg)
+    status_code message_queue_pool::push (message_queue::message_ptr_type && msg)
     {
         if ((msg.get () == nullptr) ||
             (msg->get_qid () == message::undefined_qid))
@@ -151,7 +156,7 @@ namespace mqmx
         ++_nreaders;
         rwguard.unlock ();
 
-        int retCode = _push (std::move (msg));
+        status_code retCode = _push (std::move (msg));
 
         rwguard.lock ();
         if (--_nreaders == 0)
@@ -161,7 +166,8 @@ namespace mqmx
         return retCode;
     }
 
-    int message_queue_pool::add_queue (const size_t qid, handler_ptr_type && handler)
+    status_code message_queue_pool::add_queue (
+        const queue_id_type qid, handler_ptr_type && handler)
     {
         if ((qid == message::undefined_qid) ||
             (handler.get () == nullptr))
@@ -175,7 +181,7 @@ namespace mqmx
         ++_nwriters;
         rwguard.unlock ();
 
-        int retCode = _add (qid, std::move (handler));
+        status_code retCode = _add (qid, std::move (handler));
 
         rwguard.lock ();
         if (--_nwriters == 0)

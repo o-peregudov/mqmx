@@ -107,6 +107,8 @@ SET (MQMX_SOURCES
 )
 
 SET (MQMX_HEADERS
+  types.h
+  message.h
   message_queue.h
   message_queue_pool.h
 )
