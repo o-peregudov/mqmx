@@ -15,6 +15,22 @@ int main (int argc, const char ** argv)
     assert ((msg.get () == nullptr) &&
             ("Initially queue is empty!"));
 
+    class listener_mock : public message_queue::listener
+    {
+    public:
+	listener_mock ()
+	    : message_queue::listener ()
+	{ }
+	virtual ~listener_mock ()
+	{ }
+	virtual void notify (const queue_id_type qid,
+			     const message_queue & mq,
+			     const MQNotification nid) noexcept override
+	{
+	}
+    };
+    // status_code retCode = queue.set_listener ();
+    
     /*
      * push operation
      */
