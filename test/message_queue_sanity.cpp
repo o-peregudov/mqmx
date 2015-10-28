@@ -24,37 +24,19 @@ int main (int argc, const char ** argv)
             ("Push should succeed!"));
 
     /*
-     * move constructor
+     * MQ exhaustion
      */
-    message_queue queue2 (std::move (queue));
-
     msg = queue.pop ();
-    assert ((msg.get () == nullptr) &&
-            ("Should be empty after move!"));
-
-    retCode = queue.push (
-        message_queue::message_ptr_type (new message (defQID, defMID)));
-    assert ((retCode == ExitStatus::NotSupported) &&
-            ("Push should fail, because moved out!"));
-
-    /*
-     * queue should be moved after move constructor
-     */
-    msg = queue2.pop ();
     assert ((msg.get () != nullptr) &&
-            ("Should not be empty, because moved from existing!"));
+	    ("Should not be empty!"));
     assert ((msg->get_qid () == defQID) &&
-            ("QID should match!"));
+	    ("QID should match!"));
     assert ((msg->get_mid () == defMID) &&
-            ("MID should match!"));
+	    ("MID should match!"));
 
-    /*
-     * move assignment
-     */
-    queue = message_queue (defQID);
     msg = queue.pop ();
     assert ((msg.get () == nullptr) &&
-            ("Initially queue is empty!"));
+	    ("Should be empty!"));
 
     /*
      * FIFO message ordering
@@ -70,7 +52,7 @@ int main (int argc, const char ** argv)
     {
         msg = queue.pop ();
         assert ((msg.get () != nullptr) &&
-                ("Should not be empty, because moved from existing!"));
+                ("Should not be empty!"));
         assert ((msg->get_qid () == defQID) &&
                 ("QID should match!"));
         assert ((msg->get_mid () == (defMID + ix)) &&

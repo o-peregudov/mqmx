@@ -90,40 +90,6 @@ namespace mqmx
         }
     }
 
-    status_code message_queue_pool::_add (const size_t qid, handler_ptr_type && h)
-    {
-        lock_type guard (_mutex);
-        if (_queue.size () <= qid)
-        {
-            _queue.resize (qid + 1);
-            _queue[qid] = message_queue (qid);
-
-            _counter.resize (qid + 1, 0);
-
-            _handler.resize (qid + 1);
-            _handler[qid] = std::move (h);
-
-            return ExitStatus::Success;
-        }
-        return ExitStatus::AlreadyExist;
-    }
-
-    status_code message_queue_pool::_push (message_queue::message_ptr_type && msg)
-    {
-        const size_t qid = msg->get_qid ();
-        status_code retCode = ((qid < _queue.size ())
-                               ? _queue[qid].push (std::move (msg))
-                               : ExitStatus::NotFound);
-        if (retCode == ExitStatus::Success)
-        {
-            lock_type guard (_mutex);
-            ++(_counter[qid]);
-            _has_messages = true;
-            _condition.notify_one ();
-        }
-        return retCode;
-    }
-
     message_queue_pool::message_queue_pool ()
         : _mutex ()
         , _condition ()
@@ -140,54 +106,5 @@ namespace mqmx
 
     message_queue_pool::~message_queue_pool ()
     {
-    }
-
-    status_code message_queue_pool::push (message_queue::message_ptr_type && msg)
-    {
-        if ((msg.get () == nullptr) ||
-            (msg->get_qid () == message::undefined_qid))
-        {
-            return ExitStatus::InvalidArgument;
-        }
-
-        lock_type rwguard (_rwmutex);
-        _rwcondition.wait (
-            rwguard, [&]{ return (_nwriters == 0); });
-        ++_nreaders;
-        rwguard.unlock ();
-
-        status_code retCode = _push (std::move (msg));
-
-        rwguard.lock ();
-        if (--_nreaders == 0)
-        {
-            _rwcondition.notify_one ();
-        }
-        return retCode;
-    }
-
-    status_code message_queue_pool::add_queue (
-        const queue_id_type qid, handler_ptr_type && handler)
-    {
-        if ((qid == message::undefined_qid) ||
-            (handler.get () == nullptr))
-        {
-            return ExitStatus::InvalidArgument;
-        }
-
-        lock_type rwguard (_rwmutex);
-        _rwcondition.wait (
-            rwguard, [&]{ return (_nwriters == 0) && (_nreaders == 0); });
-        ++_nwriters;
-        rwguard.unlock ();
-
-        status_code retCode = _add (qid, std::move (handler));
-
-        rwguard.lock ();
-        if (--_nwriters == 0)
-        {
-            _rwcondition.notify_one ();
-        }
-        return retCode;
     }
 } /* namespace mqmx */

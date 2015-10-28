@@ -1,5 +1,7 @@
 #include "mqmx/message_queue.h"
 #include <cassert>
+#include <tuple>
+#include <vector>
 
 int main (int argc, const char ** argv)
 {
@@ -18,79 +20,41 @@ int main (int argc, const char ** argv)
     class listener_mock : public message_queue::listener
     {
     public:
+	typedef std::tuple<const queue_id_type,
+			   message_queue *,
+			   const MQNotification> notification_rec;
+	typedef std::vector<notification_rec>    notification_list;
+
+    private:
+	notification_list _notifications;
+	
+    public:
 	listener_mock ()
 	    : message_queue::listener ()
+	    , _notifications ()
 	{ }
+
 	virtual ~listener_mock ()
 	{ }
+
 	virtual void notify (const queue_id_type qid,
-			     const message_queue & mq,
+			     message_queue * mq,
 			     const MQNotification nid) noexcept override
 	{
+	    _notifications.push_back (std::make_tuple (qid, mq, nid));
 	}
     };
-    // status_code retCode = queue.set_listener ();
-    
+
+    listener_mock sampleListener;
+    status_code retCode = queue.set_listener (sampleListener);
+    assert ((retCode == ExitStatus::Success) &&
+            ("Listener should be registered!"));
+
     /*
      * push operation
      */
-    status_code retCode = queue.push (
-        message_queue::message_ptr_type (new message (defQID, defMID)));
+    retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed!"));
-
-    /*
-     * move constructor
-     */
-    message_queue queue2 (std::move (queue));
-
-    msg = queue.pop ();
-    assert ((msg.get () == nullptr) &&
-            ("Should be empty after move!"));
-
-    retCode = queue.push (
-        message_queue::message_ptr_type (new message (defQID, defMID)));
-    assert ((retCode == ExitStatus::NotSupported) &&
-            ("Push should fail, because moved out!"));
-
-    /*
-     * queue should be moved after move constructor
-     */
-    msg = queue2.pop ();
-    assert ((msg.get () != nullptr) &&
-            ("Should not be empty, because moved from existing!"));
-    assert ((msg->get_qid () == defQID) &&
-            ("QID should match!"));
-    assert ((msg->get_mid () == defMID) &&
-            ("MID should match!"));
-
-    /*
-     * move assignment
-     */
-    queue = message_queue (defQID);
-    msg = queue.pop ();
-    assert ((msg.get () == nullptr) &&
-            ("Initially queue is empty!"));
-
-    /*
-     * FIFO message ordering
-     */
-    for (size_t ix = 0; ix < 10; ++ix)
-    {
-        retCode = queue.push (
-            message_queue::message_ptr_type (new message (defQID, defMID + ix)));
-        assert ((retCode == ExitStatus::Success) &&
-                ("Push should succeed!"));
-    }
-    for (size_t ix = 0; ix < 10; ++ix)
-    {
-        msg = queue.pop ();
-        assert ((msg.get () != nullptr) &&
-                ("Should not be empty, because moved from existing!"));
-        assert ((msg->get_qid () == defQID) &&
-                ("QID should match!"));
-        assert ((msg->get_mid () == (defMID + ix)) &&
-                ("MID should match!"));
-    }
     return 0;
 }

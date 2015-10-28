@@ -42,9 +42,6 @@ namespace mqmx
         message_queue_pool ();
         ~message_queue_pool ();
 
-        status_code push (message_queue::message_ptr_type &&);
-        status_code add_queue (const queue_id_type qid, handler_ptr_type &&);
-
         status_code wait ();
         status_code wait_for (
             const std::chrono::high_resolution_clock::duration &);
@@ -68,7 +65,6 @@ namespace mqmx
         size_t                 _nwriters;
         condvar_type           _rwcondition;
 
-        status_code _add (const queue_id_type qid, handler_ptr_type &&);
         status_code _push (message_queue::message_ptr_type &&);
         void        _dispatch ();
     };

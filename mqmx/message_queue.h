@@ -11,8 +11,7 @@ namespace mqmx
 {
     enum MQNotification
     {
-        NewMessage,
-        Detached
+        NewMessage
     };
 
     class message_queue
@@ -31,15 +30,12 @@ namespace mqmx
         public:
             virtual ~listener () { }
             virtual void notify (const queue_id_type,
-                                 const message_queue &,
+                                 message_queue *,
                                  const MQNotification) noexcept = 0;
         };
 
     public:
         message_queue (const queue_id_type = message::undefined_qid) noexcept;
-        message_queue (message_queue && o) noexcept;
-
-        message_queue & operator = (message_queue && o) noexcept;
 
         status_code push (message_ptr_type && msg);
         message_ptr_type pop ();
