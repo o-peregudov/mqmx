@@ -42,14 +42,21 @@ int main (int argc, const char ** argv)
                              message_queue * mq,
                              const MQNotification nid) noexcept override
         {
-	    const auto compare = [](const notification_rec & a,
-				    const notification_rec & b)
+	    const auto compare = [](const notification_rec & a, const notification_rec & b)
 	    {
 		return std::get<0> (a) < std::get<0> (b);
 	    };
 	    notification_rec elem (qid, mq, nid);
 	    notification_list::const_iterator iter = std::upper_bound (
 	     	_notifications.begin (), _notifications.end (), elem, compare);
+	    if (iter != _notifications.begin ())
+	    {
+		notification_list::const_iterator prev = iter;
+		if (std::get<0> (*(--prev)) == qid)
+		{
+		    return; /* queue already has some notification(s) */
+		}
+	    }
 	    _notifications.insert (iter, std::move (elem));
         }
 
@@ -72,6 +79,7 @@ int main (int argc, const char ** argv)
     /*
      * push operation
      */
+    retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
     retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed"));
