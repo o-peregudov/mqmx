@@ -2,6 +2,7 @@
 #include <cassert>
 #include <tuple>
 #include <vector>
+#include <algorithm>
 
 int main (int argc, const char ** argv)
 {
@@ -20,10 +21,10 @@ int main (int argc, const char ** argv)
     class listener_mock : public message_queue::listener
     {
     public:
-        typedef std::tuple<const queue_id_type,
+        typedef std::tuple<queue_id_type,
                            message_queue *,
-                           const MQNotification> notification_rec;
-        typedef std::vector<notification_rec>    notification_list;
+                           MQNotification>    notification_rec;
+        typedef std::vector<notification_rec> notification_list;
 
     private:
         notification_list _notifications;
@@ -41,7 +42,15 @@ int main (int argc, const char ** argv)
                              message_queue * mq,
                              const MQNotification nid) noexcept override
         {
-            _notifications.push_back (std::make_tuple (qid, mq, nid));
+	    const auto compare = [](const notification_rec & a,
+				    const notification_rec & b)
+	    {
+		return std::get<0> (a) < std::get<0> (b);
+	    };
+	    notification_rec elem (qid, mq, nid);
+	    notification_list::const_iterator iter = std::upper_bound (
+	     	_notifications.begin (), _notifications.end (), elem, compare);
+	    _notifications.insert (iter, std::move (elem));
         }
 
         const notification_list & get_notifications () const
