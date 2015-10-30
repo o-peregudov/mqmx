@@ -30,7 +30,7 @@ namespace mqmx
         public:
             virtual ~listener () { }
             virtual void notify (const queue_id_type,
-                                 message_queue *,
+				 message_queue *,
                                  const MQNotification) noexcept = 0;
         };
 
@@ -41,6 +41,7 @@ namespace mqmx
         message_ptr_type pop ();
 
     public:
+	queue_id_type get_id () const;
         status_code set_listener (listener &);
         void clear_listener ();
 

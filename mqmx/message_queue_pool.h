@@ -2,71 +2,44 @@
 #define MQMX_MESSAGE_QUEUE_POOL_H_INCLUDED 1
 
 #include <mqmx/message_queue.h>
+#include <mqmx/wait_time_provider.h>
+
 #include <condition_variable>
 #include <vector>
+#include <tuple>
 
 namespace mqmx
 {
-    class message_queue_pool
+    class message_queue_pool : message_queue::listener
     {
         message_queue_pool (const message_queue_pool &) = delete;
         message_queue_pool & operator = (const message_queue_pool &) = delete;
 
     public:
-        class message_handler
-        {
-        public:
-            status_code operator () (
-                message_queue::message_ptr_type && msg) noexcept
-            {
-                return handle (std::move (msg));
-            }
+        typedef message_queue::mutex_type     mutex_type;
+        typedef message_queue::lock_type      lock_type;
+	typedef std::condition_variable       condvar_type;
+        typedef std::tuple<queue_id_type,
+			   message_queue *,
+                           MQNotification>    notification_rec;
+        typedef std::vector<notification_rec> notifications_list;
 
-            virtual status_code handle (
-                message_queue::message_ptr_type &&) noexcept = 0;
+    private:
+	mutex_type         _poll_mutex;
+	mutable mutex_type _notifications_mutex;
+	condvar_type       _notifications_condition;
+        notifications_list _notifications;
 
-            virtual ~message_handler ()
-            {
-            }
-        };
-
-        typedef std::mutex                       mutex_type;
-        typedef std::unique_lock<mutex_type>     lock_type;
-        typedef std::condition_variable          condvar_type;
-        typedef std::unique_ptr<message_handler> handler_ptr_type;
-        typedef std::vector<message_queue>       container_type;
-        typedef std::vector<size_t>              counter_container_type;
-        typedef std::vector<handler_ptr_type>    handler_container_type;
+        virtual void notify (const queue_id_type,
+			     message_queue *,
+                             const MQNotification) noexcept override;
 
     public:
         message_queue_pool ();
-        ~message_queue_pool ();
+        virtual ~message_queue_pool ();
 
-        status_code wait ();
-        status_code wait_for (
-            const std::chrono::high_resolution_clock::duration &);
-        status_code wait_until (
-            const std::chrono::high_resolution_clock::time_point &);
-
-        void terminate ();
-        void dispatch ();
-
-    private:
-        mutex_type             _mutex;
-        condvar_type           _condition;
-        bool                   _has_messages;
-        bool                   _terminated;
-        container_type         _queue;
-        counter_container_type _counter;
-        handler_container_type _handler;
-
-        mutex_type             _rwmutex;
-        size_t                 _nreaders;
-        size_t                 _nwriters;
-        condvar_type           _rwcondition;
-
-        status_code _push (message_queue::message_ptr_type &&);
-        void        _dispatch ();
+	notifications_list poll (const std::vector<message_queue *> &,
+				 const wait_time_provider & = wait_time_provider ());
     };
 } /* namespace mqmx */
 #endif /* MQMX_MESSAGE_QUEUE_POOL_H_INCLUDED */

@@ -27,11 +27,13 @@ int main (int argc, const char ** argv)
         typedef std::vector<notification_rec> notification_list;
 
     private:
-        notification_list _notifications;
+	mutable message_queue::mutex_type _mutex;
+        notification_list                 _notifications;
 
     public:
         listener_mock ()
             : message_queue::listener ()
+	    , _mutex ()
             , _notifications ()
         { }
 
@@ -39,34 +41,42 @@ int main (int argc, const char ** argv)
         { }
 
         virtual void notify (const queue_id_type qid,
-                             message_queue * mq,
+			     message_queue * mq,
                              const MQNotification nid) noexcept override
         {
-	    const auto compare = [](const notification_rec & a, const notification_rec & b)
+	    try
 	    {
-		return std::get<0> (a) < std::get<0> (b);
-	    };
-	    notification_rec elem (qid, mq, nid);
-	    notification_list::const_iterator iter = std::upper_bound (
-	     	_notifications.begin (), _notifications.end (), elem, compare);
-	    if (iter != _notifications.begin ())
-	    {
-		notification_list::const_iterator prev = iter;
-		if (std::get<0> (*(--prev)) == qid)
+		message_queue::lock_type guard (_mutex);
+		const auto compare = [](const notification_rec & a,
+					const notification_rec & b) {
+		    return std::get<0> (a) < std::get<0> (b);
+		};
+		const notification_rec elem (qid, mq, nid);
+		notification_list::const_iterator iter = std::upper_bound (
+		    _notifications.begin (), _notifications.end (), elem, compare);
+		if (iter != _notifications.begin ())
 		{
-		    return; /* queue already has some notification(s) */
+		    notification_list::const_iterator prev = iter;
+		    if (std::get<0> (*(--prev)) == qid)
+		    {
+			return; /* queue already has some notification(s) */
+		    }
 		}
+		_notifications.insert (iter, std::move (elem));
 	    }
-	    _notifications.insert (iter, std::move (elem));
+	    catch (...)
+	    { }
         }
 
-        const notification_list & get_notifications () const
+        notification_list get_notifications () const
         {
+	    message_queue::lock_type guard (_mutex);
             return _notifications;
         }
 
         void clear_notifications ()
         {
+	    message_queue::lock_type guard (_mutex);
             _notifications.clear ();
         }
     };
@@ -79,7 +89,6 @@ int main (int argc, const char ** argv)
     /*
      * push operation
      */
-    retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
     retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed"));

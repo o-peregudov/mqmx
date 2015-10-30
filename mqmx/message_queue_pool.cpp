@@ -1,110 +1,79 @@
 #include <mqmx/message_queue_pool.h>
 #include <cassert>
+#include <algorithm>
 
 namespace mqmx
 {
-    void message_queue_pool::terminate ()
-    {
-        lock_type guard (_mutex);
-        _terminated = true;
-        _condition.notify_one ();
-    }
-
-    status_code message_queue_pool::wait ()
-    {
-        lock_type guard (_mutex);
-        _condition.wait (guard, [&]{ return (_has_messages || _terminated); });
-        const status_code retCode (_terminated
-                                   ? ExitStatus::Finished
-                                   : ExitStatus::Success);
-        _has_messages = false;
-        _terminated = false;
-        return retCode;
-    }
-
-    status_code message_queue_pool::wait_for (
-        const std::chrono::high_resolution_clock::duration & rel_time)
-    {
-        lock_type guard (_mutex);
-        if (_condition.wait_for (guard, rel_time,
-                                 [&]{ return (_has_messages || _terminated); }))
-        {
-            const status_code retCode (_terminated
-                                       ? ExitStatus::Finished
-                                       : ExitStatus::Success);
-            _has_messages = false;
-            _terminated = false;
-            return retCode;
-        }
-        return ExitStatus::Timeout;
-    }
-
-    status_code message_queue_pool::wait_until (
-        const std::chrono::high_resolution_clock::time_point & abs_time)
-    {
-        lock_type guard (_mutex);
-        if (_condition.wait_until (guard, abs_time,
-                                   [&]{ return (_has_messages || _terminated); }))
-        {
-            const status_code retCode (_terminated
-                                       ? ExitStatus::Finished
-                                       : ExitStatus::Success);
-            _has_messages = false;
-            _terminated = false;
-            return retCode;
-        }
-        return ExitStatus::Timeout;
-    }
-
-    void message_queue_pool::dispatch ()
-    {
-        lock_type rwguard (_rwmutex);
-        _rwcondition.wait (rwguard, [&]{ return (_nwriters == 0); });
-        ++_nreaders;
-        rwguard.unlock ();
-
-        _dispatch ();
-
-        rwguard.lock ();
-        if (--_nreaders == 0)
-        {
-            _rwcondition.notify_one ();
-        }
-    }
-
-    void message_queue_pool::_dispatch ()
-    {
-        counter_container_type snapshot_counter (_queue.size (), 0);
-        std::swap (_counter, snapshot_counter);
-        for (size_t ix = 0; ix < _queue.size (); ++ix)
-        {
-            for (; 0 < snapshot_counter[ix]; --snapshot_counter[ix])
-            {
-                message_queue::message_ptr_type msg = _queue[ix].pop ();
-                if (msg)
-                {
-                    assert (_handler[ix]);
-                    (*_handler[ix])(std::move (msg));
-                }
-            }
-        }
-    }
-
     message_queue_pool::message_queue_pool ()
-        : _mutex ()
-        , _condition ()
-        , _has_messages (false)
-        , _terminated (false)
-        , _queue ()
-        , _counter ()
-        , _rwmutex ()
-        , _nreaders (0)
-        , _nwriters (0)
-        , _rwcondition ()
+        : _poll_mutex ()
+	, _notifications_mutex ()
+	, _notifications_condition ()
+	, _notifications ()
     {
     }
 
     message_queue_pool::~message_queue_pool ()
     {
+    }
+
+    void message_queue_pool::notify (const queue_id_type qid,
+				     message_queue * mq,
+				     const MQNotification nid) noexcept
+    {
+	try
+	{
+	    message_queue::lock_type notifications_guard (_notifications_mutex);
+	    const auto compare = [](const notification_rec & a,
+				    const notification_rec & b) {
+		return std::get<0> (a) < std::get<0> (b);
+	    };
+	    const notification_rec elem (qid, mq, nid);
+	    notifications_list::const_iterator iter = std::upper_bound (
+		_notifications.begin (), _notifications.end (), elem, compare);
+	    if (iter != _notifications.begin ())
+	    {
+		notifications_list::const_iterator prev = iter;
+		if (std::get<0> (*(--prev)) == qid)
+		{
+		    return; /* queue already has some notification(s) */
+		}
+	    }
+	    _notifications.insert (iter, elem);
+	}
+	catch (...)
+	{ }
+    }
+
+    message_queue_pool::notifications_list message_queue_pool::poll (
+	const std::vector<message_queue *> & mqs,
+        const wait_time_provider & wtp)
+    {
+	lock_type poll_guard (_poll_mutex); /* to block re-entrance */
+	{
+	    lock_type notifications_guard (_notifications_mutex);
+	    _notifications.clear ();
+	}
+
+	for (const auto & mq : mqs)
+	{
+	    const status_code ret_code = mq->set_listener (*this);
+	    assert (ret_code == ExitStatus::Success);
+	}
+
+	lock_type notifications_guard (_notifications_mutex);
+	const auto abs_time = wtp.get_time_point ();
+	if (_notifications.empty ())
+	{
+	    auto pred = [&]{ return !_notifications.empty (); };
+	    if (wtp.wait_infinitely ())
+	    {
+		_notifications_condition.wait (notifications_guard, pred);
+	    }
+	    else if (abs_time.time_since_epoch ().count () != 0)
+	    {
+		_notifications_condition.wait_until (notifications_guard, abs_time, pred);
+	    }
+	}
+	return _notifications;
     }
 } /* namespace mqmx */

@@ -11,6 +11,11 @@ namespace mqmx
     {
     }
 
+    queue_id_type message_queue::get_id () const
+    {
+        return _id;
+    }
+
     status_code message_queue::push (message_ptr_type && msg)
     {
         if (msg.get () == nullptr)
