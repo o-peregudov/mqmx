@@ -32,10 +32,12 @@ namespace mqmx
 		notifications_list::const_iterator prev = iter;
 		if ((--prev)->first == qid)
 		{
+		    _notifications_condition.notify_one ();
 		    return; /* queue already has some notification(s) */
 		}
 	    }
 	    _notifications.insert (iter, elem);
+	    _notifications_condition.notify_one ();
 	}
 	catch (...)
 	{ }
