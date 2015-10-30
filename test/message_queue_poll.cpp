@@ -78,10 +78,26 @@ struct test_fixture : poll_fixture
     void relative_timeout_test ()
     {
 	using namespace mqmx;
-	auto mqlist = sut.poll (std::begin (mq), std::end (mq),
-				std::chrono::milliseconds (10));
-	assert ((mqlist.size () == 0) &&
-		("There should be no events reported!"));
+	for (size_t ix = 0; ix < 3; ++ix)
+	{
+	    auto mqlist = sut.poll (std::begin (mq), std::end (mq),
+				    std::chrono::milliseconds (10));
+	    assert ((mqlist.size () == 0) &&
+		    ("There should be no events reported!"));
+	}
+    }
+
+    void absolute_timeout_test ()
+    {
+	using namespace mqmx;
+	for (size_t ix = 0; ix < 3; ++ix)
+	{
+	    auto mqlist = sut.poll (std::begin (mq), std::end (mq),
+				    std::chrono::steady_clock::now () +
+				    std::chrono::milliseconds (10));
+	    assert ((mqlist.size () == 0) &&
+		    ("There should be no events reported!"));
+	}
     }
 };
 
@@ -102,6 +118,10 @@ int main (int argc, const char ** argv)
     {
 	test_fixture fixture;
 	fixture.relative_timeout_test ();
+    }
+    {
+	test_fixture fixture;
+	fixture.absolute_timeout_test ();
     }
     return 0;
 }

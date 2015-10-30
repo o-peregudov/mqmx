@@ -38,7 +38,7 @@ namespace mqmx
         virtual ~message_queue_poll ();
 
 	/*
-	 * NOTE: iterators should belong to a sequence of pointers to message_queue
+	 * NOTE: iterators should represent a sequence of pointers to message_queue
 	 */
 	template <typename ForwardIt>
         notifications_list poll (const ForwardIt it_begin, const ForwardIt it_end,
@@ -46,10 +46,16 @@ namespace mqmx
 	{
 	    lock_type poll_guard (_poll_mutex); /* to block re-entrance */
 	    {
+		/*
+		 * initialize list of notifications
+		 */
 		lock_type notifications_guard (_notifications_mutex);
 		_notifications.clear ();
 	    }
 
+	    /*
+	     * set listeners for each message queue
+	     */
 	    std::for_each (it_begin, it_end,
 			   [&](typename std::iterator_traits<ForwardIt>::reference mq)
 			   {
@@ -57,6 +63,9 @@ namespace mqmx
 			       assert (ret_code == ExitStatus::Success);
 			   });
 
+	    /*
+	     * wait for notifications
+	     */
 	    lock_type notifications_guard (_notifications_mutex);
 	    const auto abs_time = wtp.get_time_point ();
 	    if (_notifications.empty ())
@@ -72,6 +81,15 @@ namespace mqmx
 			notifications_guard, abs_time, pred);
 		}
 	    }
+
+	    /*
+	     * remove listeners from each message queue
+	     */
+	    std::for_each (it_begin, it_end,
+			   [&](typename std::iterator_traits<ForwardIt>::reference mq)
+			   {
+			       mq->clear_listener ();
+			   });
 	    return _notifications;
 	}
     };
