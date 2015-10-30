@@ -20,12 +20,10 @@ namespace mqmx
         typedef std::unique_lock<mutex_type> lock_type;
         typedef std::deque<message_ptr_type> container_type;
 
-        class listener
+        struct listener
         {
-        public:
             virtual ~listener () { }
-            virtual void notify (const queue_id_type,
-				 message_queue *) noexcept = 0;
+            virtual void notify (const queue_id_type, message_queue *) noexcept = 0;
         };
 
     public:

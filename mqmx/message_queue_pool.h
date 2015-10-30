@@ -28,8 +28,7 @@ namespace mqmx
 	condvar_type       _notifications_condition;
         notifications_list _notifications;
 
-        virtual void notify (const queue_id_type,
-			     message_queue *) noexcept override;
+        virtual void notify (const queue_id_type, message_queue *) noexcept override;
 
     public:
         message_queue_pool ();
