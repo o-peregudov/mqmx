@@ -104,7 +104,7 @@ LINK_DIRECTORIES (
 SET (MQMX_SOURCES
   wait_time_provider.cpp
   message_queue.cpp
-  message_queue_pool.cpp
+  message_queue_poll.cpp
 )
 
 SET (MQMX_HEADERS
@@ -112,7 +112,7 @@ SET (MQMX_HEADERS
   wait_time_provider.h
   message.h
   message_queue.h
-  message_queue_pool.h
+  message_queue_poll.h
 )
 
 ADD_LIBRARY (${PROJECT_NAME} STATIC

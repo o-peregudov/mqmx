@@ -1,10 +1,10 @@
-#include <mqmx/message_queue_pool.h>
+#include <mqmx/message_queue_poll.h>
 #include <cassert>
 #include <algorithm>
 
 namespace mqmx
 {
-    message_queue_pool::message_queue_pool ()
+    message_queue_poll::message_queue_poll ()
         : _poll_mutex ()
 	, _notifications_mutex ()
 	, _notifications_condition ()
@@ -12,11 +12,11 @@ namespace mqmx
     {
     }
 
-    message_queue_pool::~message_queue_pool ()
+    message_queue_poll::~message_queue_poll ()
     {
     }
 
-    void message_queue_pool::notify (const queue_id_type qid,
+    void message_queue_poll::notify (const queue_id_type qid,
 				     message_queue * mq) noexcept
     {
 	try
@@ -43,7 +43,7 @@ namespace mqmx
 	{ }
     }
 
-    message_queue_pool::notifications_list message_queue_pool::poll (
+    message_queue_poll::notifications_list message_queue_poll::poll (
 	const std::vector<message_queue *> & mqs,
         const wait_time_provider & wtp)
     {

@@ -1,5 +1,5 @@
-#ifndef MQMX_MESSAGE_QUEUE_POOL_H_INCLUDED
-#define MQMX_MESSAGE_QUEUE_POOL_H_INCLUDED 1
+#ifndef MQMX_MESSAGE_QUEUE_POLL_H_INCLUDED
+#define MQMX_MESSAGE_QUEUE_POLL_H_INCLUDED 1
 
 #include <mqmx/message_queue.h>
 #include <mqmx/wait_time_provider.h>
@@ -9,10 +9,10 @@
 
 namespace mqmx
 {
-    class message_queue_pool : message_queue::listener
+    class message_queue_poll : message_queue::listener
     {
-        message_queue_pool (const message_queue_pool &) = delete;
-        message_queue_pool & operator = (const message_queue_pool &) = delete;
+        message_queue_poll (const message_queue_pool &) = delete;
+        message_queue_poll & operator = (const message_queue_pool &) = delete;
 
     public:
         typedef message_queue::mutex_type     mutex_type;
@@ -31,11 +31,11 @@ namespace mqmx
         virtual void notify (const queue_id_type, message_queue *) noexcept override;
 
     public:
-        message_queue_pool ();
-        virtual ~message_queue_pool ();
+        message_queue_poll ();
+        virtual ~message_queue_poll ();
 
 	notifications_list poll (const std::vector<message_queue *> &,
 				 const wait_time_provider & = wait_time_provider ());
     };
 } /* namespace mqmx */
-#endif /* MQMX_MESSAGE_QUEUE_POOL_H_INCLUDED */
+#endif /* MQMX_MESSAGE_QUEUE_POLL_H_INCLUDED */

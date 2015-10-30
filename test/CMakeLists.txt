@@ -45,16 +45,16 @@ ADD_TEST (NAME message_queue_listener
 
 ############################################################
 
-ADD_EXECUTABLE (message_queue_pool
-  message_queue_pool.cpp
+ADD_EXECUTABLE (message_queue_poll
+  message_queue_poll.cpp
 )
 
-TARGET_LINK_LIBRARIES (message_queue_pool
+TARGET_LINK_LIBRARIES (message_queue_poll
   ${CMAKE_THREAD_LIBS_INIT}
   mqmx
 )
 
-# ADD_TEST (NAME message_queue_pool
-#   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-#   COMMAND message_queue_pool
-# )
+ADD_TEST (NAME message_queue_poll
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_poll
+)
