@@ -9,11 +9,6 @@
 
 namespace mqmx
 {
-    enum MQNotification
-    {
-        NewMessage
-    };
-
     class message_queue
     {
         message_queue (const message_queue &) = delete;
@@ -30,8 +25,7 @@ namespace mqmx
         public:
             virtual ~listener () { }
             virtual void notify (const queue_id_type,
-				 message_queue *,
-                                 const MQNotification) noexcept = 0;
+				 message_queue *) noexcept = 0;
         };
 
     public:

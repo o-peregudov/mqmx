@@ -33,7 +33,7 @@ namespace mqmx
         _queue.push_back (std::move (msg));
         if (_listener)
         {
-            _listener->notify (_id, this, MQNotification::NewMessage);
+            _listener->notify (_id, this);
         }
         return ExitStatus::Success;
     }
@@ -61,7 +61,7 @@ namespace mqmx
         _listener = &l;
         if (!_queue.empty ())
         {
-            _listener->notify (_id, this, MQNotification::NewMessage);
+            _listener->notify (_id, this);
         }
         return ExitStatus::Success;
     }

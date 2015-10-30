@@ -6,7 +6,6 @@
 
 #include <condition_variable>
 #include <vector>
-#include <tuple>
 
 namespace mqmx
 {
@@ -19,9 +18,8 @@ namespace mqmx
         typedef message_queue::mutex_type     mutex_type;
         typedef message_queue::lock_type      lock_type;
 	typedef std::condition_variable       condvar_type;
-        typedef std::tuple<queue_id_type,
-			   message_queue *,
-                           MQNotification>    notification_rec;
+        typedef std::pair<queue_id_type, message_queue *>
+                                              notification_rec;
         typedef std::vector<notification_rec> notifications_list;
 
     private:
@@ -31,8 +29,7 @@ namespace mqmx
         notifications_list _notifications;
 
         virtual void notify (const queue_id_type,
-			     message_queue *,
-                             const MQNotification) noexcept override;
+			     message_queue *) noexcept override;
 
     public:
         message_queue_pool ();

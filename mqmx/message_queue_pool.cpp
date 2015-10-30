@@ -17,23 +17,22 @@ namespace mqmx
     }
 
     void message_queue_pool::notify (const queue_id_type qid,
-				     message_queue * mq,
-				     const MQNotification nid) noexcept
+				     message_queue * mq) noexcept
     {
 	try
 	{
 	    message_queue::lock_type notifications_guard (_notifications_mutex);
 	    const auto compare = [](const notification_rec & a,
 				    const notification_rec & b) {
-		return std::get<0> (a) < std::get<0> (b);
+		return a.first < b.first;
 	    };
-	    const notification_rec elem (qid, mq, nid);
+	    const notification_rec elem (qid, mq);
 	    notifications_list::const_iterator iter = std::upper_bound (
 		_notifications.begin (), _notifications.end (), elem, compare);
 	    if (iter != _notifications.begin ())
 	    {
 		notifications_list::const_iterator prev = iter;
-		if (std::get<0> (*(--prev)) == qid)
+		if ((--prev)->first == qid)
 		{
 		    return; /* queue already has some notification(s) */
 		}
@@ -64,7 +63,7 @@ namespace mqmx
 	const auto abs_time = wtp.get_time_point ();
 	if (_notifications.empty ())
 	{
-	    auto pred = [&]{ return !_notifications.empty (); };
+	    const auto pred = [&]{ return !_notifications.empty (); };
 	    if (wtp.wait_infinitely ())
 	    {
 		_notifications_condition.wait (notifications_guard, pred);
