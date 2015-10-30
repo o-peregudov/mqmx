@@ -11,8 +11,8 @@ namespace mqmx
 {
     class message_queue_poll : message_queue::listener
     {
-        message_queue_poll (const message_queue_pool &) = delete;
-        message_queue_poll & operator = (const message_queue_pool &) = delete;
+        message_queue_poll (const message_queue_poll &) = delete;
+        message_queue_poll & operator = (const message_queue_poll &) = delete;
 
     public:
         typedef message_queue::mutex_type     mutex_type;
