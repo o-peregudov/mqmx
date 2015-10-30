@@ -5,7 +5,7 @@
 
 namespace mqmx
 {
-    struct WAIT_INFINITELY {};
+    struct infinite_wait_time {};
 
     class wait_time_provider final
     {
@@ -14,10 +14,12 @@ namespace mqmx
 	typedef clock_type::duration      duration_type;
 	typedef clock_type::time_point    time_point_type;
 
+	static const infinite_wait_time WAIT_INFINITELY;
+
     private:
-	const duration_type _rel_time;
+	const duration_type   _rel_time;
 	const time_point_type _abs_time;
-	const bool _wait_infinitely;
+	const bool            _wait_infinitely;
 
 	time_point_type get_now () const
 	{
@@ -31,7 +33,7 @@ namespace mqmx
 	    , _wait_infinitely (false)
 	{ }
 
-	wait_time_provider (const WAIT_INFINITELY &)
+	wait_time_provider (const infinite_wait_time &)
 	    : _rel_time ()
 	    , _abs_time ()
 	    , _wait_infinitely (true)

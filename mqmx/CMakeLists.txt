@@ -102,12 +102,14 @@ LINK_DIRECTORIES (
 )
 
 SET (MQMX_SOURCES
+  wait_time_provider.cpp
   message_queue.cpp
   message_queue_pool.cpp
 )
 
 SET (MQMX_HEADERS
   types.h
+  wait_time_provider.h
   message.h
   message_queue.h
   message_queue_pool.h
