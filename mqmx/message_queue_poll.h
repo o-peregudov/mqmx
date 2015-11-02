@@ -9,6 +9,7 @@
 #include <vector>
 #include <cassert>
 #include <iterator>
+#include <tuple>
 
 namespace mqmx
 {
@@ -18,12 +19,13 @@ namespace mqmx
         message_queue_poll & operator = (const message_queue_poll &) = delete;
 
     public:
-        typedef message_queue::mutex_type     mutex_type;
-        typedef message_queue::lock_type      lock_type;
-	typedef std::condition_variable       condvar_type;
-        typedef std::pair<queue_id_type, message_queue *>
-                                              notification_rec;
-        typedef std::vector<notification_rec> notifications_list;
+        typedef message_queue::mutex_type                 mutex_type;
+        typedef message_queue::lock_type                  lock_type;
+	typedef std::condition_variable                   condvar_type;
+        typedef std::tuple<queue_id_type, message_queue *,
+			   message_queue::notification_flags_type>
+	                                                  notification_rec;
+        typedef std::vector<notification_rec>             notifications_list;
 
     private:
 	mutex_type         _poll_mutex;
@@ -31,7 +33,9 @@ namespace mqmx
 	condvar_type       _notifications_condition;
         notifications_list _notifications;
 
-        virtual void notify (const queue_id_type, message_queue *) noexcept override;
+        virtual void notify (const queue_id_type,
+			     message_queue *,
+			     const message_queue::notification_flags_type) noexcept override;
 
     public:
         message_queue_poll ();

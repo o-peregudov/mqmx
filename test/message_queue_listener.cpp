@@ -6,9 +6,10 @@
 class listener_mock : public mqmx::message_queue::listener
 {
 public:
-    typedef std::pair<mqmx::queue_id_type,
-		      mqmx::message_queue *> notification_rec;
-    typedef std::vector<notification_rec>    notification_list;
+    typedef std::tuple<mqmx::queue_id_type,
+		       mqmx::message_queue *,
+		       mqmx::message_queue::notification_flags_type> notification_rec;
+    typedef std::vector<notification_rec>                            notification_list;
 
 private:
     notification_list _notifications;
@@ -22,23 +23,27 @@ public:
     virtual ~listener_mock ()
     { }
 
-    virtual void notify (const mqmx::queue_id_type qid,
-			 mqmx::message_queue * mq) noexcept override
+    virtual void notify (
+	const mqmx::queue_id_type qid,
+	mqmx::message_queue * mq,
+	const mqmx::message_queue::notification_flags_type flag) noexcept override
     {
 	try
 	{
+	    const notification_rec elem (qid, mq, flag);
 	    const auto compare = [](const notification_rec & a,
 				    const notification_rec & b) {
-		return a.first < b.first;
+		return std::get<0> (a) < std::get<0> (b);
 	    };
-	    const notification_rec elem (qid, mq);
-	    notification_list::const_iterator iter = std::upper_bound (
+
+	    notification_list::iterator iter = std::upper_bound (
 		_notifications.begin (), _notifications.end (), elem, compare);
 	    if (iter != _notifications.begin ())
 	    {
-		notification_list::const_iterator prev = iter;
-		if ((--prev)->first == qid)
+		notification_list::iterator prev = iter;
+		if (std::get<0> (*(--prev)) == qid)
 		{
+		    std::get<2> (*prev) |= flag;
 		    return; /* queue already has some notification(s) */
 		}
 	    }
@@ -66,6 +71,11 @@ int main (int argc, const char ** argv)
     const message_id_type defMID = 10;
 
     /*
+     * listener should have longer lifetime than message_queue
+     */
+    listener_mock sample_listener;
+
+    /*
      * default constructor
      */
     message_queue queue (defQID);
@@ -73,7 +83,6 @@ int main (int argc, const char ** argv)
     assert ((msg.get () == nullptr) &&
             ("Initially queue is empty"));
 
-    listener_mock sample_listener;
     status_code retCode = queue.set_listener (sample_listener);
     assert ((retCode == ExitStatus::Success) &&
             ("Listener should be registered"));

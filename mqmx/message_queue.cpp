@@ -11,6 +11,14 @@ namespace mqmx
     {
     }
 
+    message_queue::~message_queue ()
+    {
+        if (_listener)
+        {
+            _listener->notify (_id, nullptr, NotificationFlag::Closed);
+        }
+    }
+
     queue_id_type message_queue::get_id () const
     {
         return _id;
@@ -31,9 +39,10 @@ namespace mqmx
         }
 
         _queue.push_back (std::move (msg));
-        if (_listener)
+        if (_listener && (_queue.size () == 1))
         {
-            _listener->notify (_id, this);
+            /* only first message will be reported */
+            _listener->notify (_id, this, NotificationFlag::NewData);
         }
         return ExitStatus::Success;
     }
@@ -61,7 +70,7 @@ namespace mqmx
         _listener = &l;
         if (!_queue.empty ())
         {
-            _listener->notify (_id, this);
+            _listener->notify (_id, this, NotificationFlag::NewData);
         }
         return ExitStatus::Success;
     }

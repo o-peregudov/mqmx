@@ -14,24 +14,28 @@ namespace mqmx
     {
     }
 
-    void message_queue_poll::notify (const queue_id_type qid,
-				     message_queue * mq) noexcept
+    void message_queue_poll::notify (
+	const queue_id_type qid,
+	message_queue * mq,
+	const message_queue::notification_flags_type flag) noexcept
     {
 	try
 	{
-	    message_queue::lock_type notifications_guard (_notifications_mutex);
+	    const notification_rec elem (qid, mq, flag);
 	    const auto compare = [](const notification_rec & a,
 				    const notification_rec & b) {
-		return a.first < b.first;
+		return std::get<0> (a) < std::get<0> (b);
 	    };
-	    const notification_rec elem (qid, mq);
-	    notifications_list::const_iterator iter = std::upper_bound (
+
+	    message_queue::lock_type notifications_guard (_notifications_mutex);
+	    notifications_list::iterator iter = std::upper_bound (
 		_notifications.begin (), _notifications.end (), elem, compare);
 	    if (iter != _notifications.begin ())
 	    {
-		notifications_list::const_iterator prev = iter;
-		if ((--prev)->first == qid)
+		notifications_list::iterator prev = iter;
+		if (std::get<0> (*(--prev)) == qid)
 		{
+		    std::get<2> (*prev) |= flag;
 		    _notifications_condition.notify_one ();
 		    return; /* queue already has some notification(s) */
 		}

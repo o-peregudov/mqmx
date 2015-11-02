@@ -19,21 +19,33 @@ namespace mqmx
         typedef std::mutex                   mutex_type;
         typedef std::unique_lock<mutex_type> lock_type;
         typedef std::deque<message_ptr_type> container_type;
+        typedef size_t                       notification_flags_type;
+
+        enum NotificationFlag
+        {
+            NewData  = 0x0001,
+            Detached = 0x0002,
+            Closed   = 0x0004
+        };
 
         struct listener
         {
             virtual ~listener () { }
-            virtual void notify (const queue_id_type, message_queue *) noexcept = 0;
+            virtual void notify (const queue_id_type,
+                                 message_queue *,
+                                 const notification_flags_type) noexcept = 0;
         };
 
     public:
         message_queue (const queue_id_type = message::undefined_qid) noexcept;
+        ~message_queue ();
+
+        queue_id_type get_id () const;
 
         status_code push (message_ptr_type && msg);
         message_ptr_type pop ();
 
     public:
-	queue_id_type get_id () const;
         status_code set_listener (listener &);
         void clear_listener ();
 

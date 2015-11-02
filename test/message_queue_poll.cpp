@@ -71,7 +71,7 @@ struct test_fixture : poll_fixture
 	}
 	assert ((mqlist.size () == 1) &&
 		("Number of signaled queues should be correct"));
-	assert ((mqlist.front ().first == mq[idx]->get_id ()) &&
+	assert ((std::get<0> (mqlist.front ()) == mq[idx]->get_id ()) &&
 		("Proper QID should be reported"));
     }
 
