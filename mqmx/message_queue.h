@@ -38,8 +38,10 @@ namespace mqmx
 
     public:
         message_queue (const queue_id_type = message::undefined_qid);
-        message_queue (message_queue &&);
         ~message_queue ();
+
+        message_queue (message_queue &&);
+	message_queue & operator = (message_queue &&);
 
         queue_id_type get_id () const;
 

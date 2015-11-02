@@ -28,6 +28,32 @@ namespace mqmx
         }
     }
 
+    message_queue & message_queue::operator = (message_queue && o)
+    {
+	if (this != &o)
+	{
+	    std::lock (_mutex, o._mutex);
+	    lock_type guard_this (_mutex, std::adopt_lock_t ());
+	    lock_type guard_o (o._mutex, std::adopt_lock_t ());
+	    if (_listener)
+	    {
+		_listener->notify (_id, this, NotificationFlag::Detached);
+		_listener = nullptr;
+	    }
+	    _queue.clear ();
+	    _id = message::undefined_qid;
+	    std::swap (_queue, o._queue);
+	    std::swap (_id, o._id);
+	    std::swap (_listener, o._listener);
+	    if (_listener)
+	    {
+		_listener->notify (_id, &o, NotificationFlag::Detached);
+		_listener = nullptr;
+	    }
+	}
+	return *this;
+    }
+
     message_queue::~message_queue ()
     {
         if (_listener)
