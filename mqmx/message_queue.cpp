@@ -3,12 +3,29 @@
 
 namespace mqmx
 {
-    message_queue::message_queue (const queue_id_type ID) noexcept
+    message_queue::message_queue (const queue_id_type ID)
         : _id (ID)
         , _mutex ()
         , _queue ()
         , _listener (nullptr)
     {
+    }
+
+    message_queue::message_queue (message_queue && o)
+        : _id (message::undefined_qid)
+        , _mutex ()
+        , _queue ()
+        , _listener (nullptr)
+    {
+        lock_type guard (o._mutex);
+        std::swap (_queue, o._queue);
+        std::swap (_id, o._id);
+        std::swap (_listener, o._listener);
+        if (_listener)
+        {
+            _listener->notify (_id, &o, NotificationFlag::Detached);
+            _listener = nullptr;
+        }
     }
 
     message_queue::~message_queue ()

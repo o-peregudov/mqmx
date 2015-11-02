@@ -23,9 +23,9 @@ namespace mqmx
 
         enum NotificationFlag
         {
-            NewData  = 0x0001,
-            Detached = 0x0002,
-            Closed   = 0x0004
+            NewData  = 0x0001,        /* push operation called on this queue */
+            Detached = 0x0002,        /* move ctor or move assignment called on this queue */
+            Closed   = 0x0004         /* destructor called on this queue */
         };
 
         struct listener
@@ -37,7 +37,8 @@ namespace mqmx
         };
 
     public:
-        message_queue (const queue_id_type = message::undefined_qid) noexcept;
+        message_queue (const queue_id_type = message::undefined_qid);
+        message_queue (message_queue &&);
         ~message_queue ();
 
         queue_id_type get_id () const;
