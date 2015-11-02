@@ -72,6 +72,7 @@ int main (int argc, const char ** argv)
 
     /*
      * listener should have longer lifetime than message_queue
+     * to check "Closed" notification from MQ
      */
     listener_mock sample_listener;
     {
@@ -99,5 +100,14 @@ int main (int argc, const char ** argv)
 		  message_queue::NotificationFlag::NewData) != 0) &&
 		("Proper notification flag should be delivered"));
     }
+
+    /*
+     * MQ destructor should deliver "Closed" notification
+     */
+    assert ((sample_listener.get_notifications ().size () == 1) &&
+	    ("Still single notification should be delivered"));
+    assert (((std::get<2> (sample_listener.get_notifications ().front ()) &
+		       message_queue::NotificationFlag::Closed) != 0) &&
+	     ("Proper notification flag should be delivered"));
     return 0;
 }
