@@ -74,26 +74,30 @@ int main (int argc, const char ** argv)
      * listener should have longer lifetime than message_queue
      */
     listener_mock sample_listener;
+    {
+	/*
+	 * default constructor
+	 */
+	message_queue queue (defQID);
+	message_queue::message_ptr_type msg (queue.pop ());
+	assert ((msg.get () == nullptr) &&
+		("Initially queue is empty"));
 
-    /*
-     * default constructor
-     */
-    message_queue queue (defQID);
-    message_queue::message_ptr_type msg (queue.pop ());
-    assert ((msg.get () == nullptr) &&
-            ("Initially queue is empty"));
+	status_code retCode = queue.set_listener (sample_listener);
+	assert ((retCode == ExitStatus::Success) &&
+		("Listener should be registered"));
 
-    status_code retCode = queue.set_listener (sample_listener);
-    assert ((retCode == ExitStatus::Success) &&
-            ("Listener should be registered"));
-
-    /*
-     * push operation
-     */
-    retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
-    assert ((retCode == ExitStatus::Success) &&
-            ("Push should succeed"));
-    assert ((sample_listener.get_notifications ().size () == 1) &&
-	    ("Single notification should be delivered"));
+	/*
+	 * push operation
+	 */
+	retCode = queue.push (message_queue::message_ptr_type (new message (defQID, defMID)));
+	assert ((retCode == ExitStatus::Success) &&
+		("Push should succeed"));
+	assert ((sample_listener.get_notifications ().size () == 1) &&
+		("Single notification should be delivered"));
+	assert (((std::get<2> (sample_listener.get_notifications ().front ()) &
+		  message_queue::NotificationFlag::NewData) != 0) &&
+		("Proper notification flag should be delivered"));
+    }
     return 0;
 }
