@@ -29,6 +29,22 @@ ADD_TEST (NAME message_queue_sanity
 
 ############################################################
 
+ADD_EXECUTABLE (message_queue_basic_listener
+  message_queue_basic_listener.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_basic_listener
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_basic_listener
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_basic_listener
+)
+
+############################################################
+
 ADD_EXECUTABLE (message_queue_listener
   message_queue_listener.cpp
 )

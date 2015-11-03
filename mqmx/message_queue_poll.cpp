@@ -24,7 +24,8 @@ namespace mqmx
 	    const notification_rec elem (qid, mq, flag);
 	    const auto compare = [](const notification_rec & a,
 				    const notification_rec & b) {
-		return std::get<0> (a) < std::get<0> (b);
+		return ((std::get<0> (a) <= std::get<0> (b)) &&
+			(std::get<1> (a) <  std::get<1> (b)));
 	    };
 
 	    message_queue::lock_type notifications_guard (_notifications_mutex);
@@ -33,7 +34,9 @@ namespace mqmx
 	    if (iter != _notifications.begin ())
 	    {
 		notifications_list::iterator prev = iter;
-		if (std::get<0> (*(--prev)) == qid)
+		--prev;
+
+		if ((std::get<0> (*prev) == qid) && (std::get<1> (*prev) == mq))
 		{
 		    std::get<2> (*prev) |= flag;
 		    _notifications_condition.notify_one ();
