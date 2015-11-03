@@ -5,9 +5,9 @@ SET (MQMX_SOURCES
 )
 
 SET (MQMX_HEADERS
-  types.h
+  Types.h
   WaitTimeProvider.h
-  message.h
+  Message.h
   message_queue.h
   message_queue_poll.h
 )

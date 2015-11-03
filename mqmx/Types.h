@@ -1,5 +1,4 @@
-#ifndef MQMX_TYPES_H_INCLUDED
-#define MQMX_TYPES_H_INCLUDED 1
+#pragma once
 
 #include <cstdarg>
 
@@ -20,4 +19,3 @@ namespace mqmx
     typedef size_t queue_id_type;
     typedef size_t message_id_type;
 } /* namespace mqmx */
-#endif /* MQMX_TYPES_H_INCLUDED */
