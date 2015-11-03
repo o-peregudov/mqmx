@@ -1,4 +1,4 @@
-#include "mqmx/message_queue.h"
+#include <mqmx/MessageQueue.h>
 #include "test/stub/listener.h"
 
 #include <cassert>

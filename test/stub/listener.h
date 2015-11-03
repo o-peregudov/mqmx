@@ -1,7 +1,6 @@
-#ifndef MQMX_TEST_STUB_LISTENER_H_INCLUDED
-#define MQMX_TEST_STUB_LISTENER_H_INCLUDED 1
+#pragma once
 
-#include "mqmx/message_queue.h"
+#include <mqmx/MessageQueue.h>
 
 #include <tuple>
 #include <vector>
@@ -73,4 +72,3 @@ namespace stub
 	}
     };
 } /* namespace stub */
-#endif /* MQMX_TEST_STUB_LISTENER_H_INCLUDED */

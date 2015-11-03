@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mqmx/message_queue.h>
+#include <mqmx/MessageQueue.h>
 #include <mqmx/WaitTimeProvider.h>
 
 #include <condition_variable>
