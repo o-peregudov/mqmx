@@ -1,4 +1,4 @@
-#include <mqmx/message_queue_poll.h>
+#include <mqmx/MessageQueuePoll.h>
 
 namespace mqmx
 {

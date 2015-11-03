@@ -1,4 +1,3 @@
-#include "mqmx/message_queue_poll.h"
 #include "test/fixture/poll.h"
 
 #include <cassert>

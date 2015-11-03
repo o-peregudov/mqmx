@@ -1,7 +1,5 @@
-#ifndef MQMX_TEST_FIXTURE_POLL_H_INCLUDE
-#define MQMX_TEST_FIXTURE_POLL_H_INCLUDE 1
-
-#include "mqmx/message_queue_poll.h"
+#pragma once
+#include <mqmx/MessageQueuePoll.h>
 
 namespace fixture
 {
@@ -29,4 +27,4 @@ namespace fixture
 	}
     };
 } /* namespace fixture */
-#endif /* MQMX_TEST_FIXTURE_POLL_H_INCLUDE */
+
