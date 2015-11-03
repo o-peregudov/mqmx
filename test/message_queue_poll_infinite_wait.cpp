@@ -18,7 +18,7 @@ struct test_fixture : fixture::poll
 				   new message (mq[idx]->get_id (), 0)));
 	    });
 	auto mqlist = sut.poll (std::begin (mq), std::end (mq),
-				wait_time_provider::WAIT_INFINITELY);
+				WaitTimeProvider::WAIT_INFINITELY);
 	if (thr.joinable ())
 	{
 	    thr.join ();

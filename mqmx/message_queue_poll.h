@@ -45,10 +45,10 @@ namespace mqmx
 	 * NOTE: iterators should represent a sequence of pointers to message_queue
 	 */
 	template <typename forward_it,
-		  typename ref_clock_provider = wait_time_provider>
+		  typename ref_clock_provider = WaitTimeProvider>
         notifications_list poll (const forward_it ibegin, const forward_it iend,
-				 const wait_time_provider & wtp = wait_time_provider (),
-				 const ref_clock_provider & rcp = wait_time_provider ())
+				 const WaitTimeProvider & wtp = WaitTimeProvider (),
+				 const ref_clock_provider & rcp = WaitTimeProvider ())
 	{
 	    lock_type poll_guard (_poll_mutex); /* to block re-entrance */
 	    {
@@ -73,11 +73,11 @@ namespace mqmx
 	     * wait for notifications
 	     */
 	    lock_type notifications_guard (_notifications_mutex);
-	    const auto abs_time = wtp.get_time_point (rcp);
+	    const auto abs_time = wtp.getTimepoint (rcp);
 	    if (_notifications.empty ())
 	    {
 		const auto pred = [&]{ return !_notifications.empty (); };
-		if (wtp.wait_infinitely ())
+		if (wtp.waitInfinitely ())
 		{
 		    _notifications_condition.wait (notifications_guard, pred);
 		}

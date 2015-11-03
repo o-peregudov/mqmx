@@ -1,69 +1,68 @@
-#ifndef MQMX_WAIT_TIME_PROVIDER_H_INCLUDED
-#define MQMX_WAIT_TIME_PROVIDER_H_INCLUDED 1
+#pragma once
 
 #include <chrono>
 
 namespace mqmx
 {
-    struct infinite_wait_time {};
+    struct InfiniteWaitTime {};
 
-    class wait_time_provider final
+    class WaitTimeProvider final
     {
     public:
         typedef std::chrono::steady_clock clock_type;
         typedef clock_type::duration      duration_type;
         typedef clock_type::time_point    time_point_type;
 
-        static const infinite_wait_time WAIT_INFINITELY;
+        static const InfiniteWaitTime WAIT_INFINITELY;
 
     private:
         const duration_type   _rel_time;
         const time_point_type _abs_time;
         const bool            _wait_infinitely;
 
-        time_point_type get_now () const
+        time_point_type getCurrentTimepoint () const
         {
             return clock_type::now ();
         }
 
     public:
-        wait_time_provider ()
+        WaitTimeProvider ()
             : _rel_time ()
             , _abs_time ()
             , _wait_infinitely (false)
         { }
 
-        wait_time_provider (const infinite_wait_time &)
+        WaitTimeProvider (const InfiniteWaitTime &)
             : _rel_time ()
             , _abs_time ()
             , _wait_infinitely (true)
         { }
 
         template <class Rep, class Period>
-        wait_time_provider (const std::chrono::duration<Rep, Period> rel_time)
+        WaitTimeProvider (const std::chrono::duration<Rep, Period> & rel_time)
             : _rel_time (rel_time)
             , _abs_time ()
             , _wait_infinitely (false)
         { }
 
-        wait_time_provider (const time_point_type & abs_time)
+        WaitTimeProvider (const time_point_type & abs_time)
             : _rel_time ()
             , _abs_time (abs_time)
             , _wait_infinitely (false)
         { }
 
-        bool wait_infinitely () const
+        bool waitInfinitely () const
         {
             return _wait_infinitely;
         }
 
-        time_point_type get_time_point () const
+        time_point_type getTimepoint () const
         {
-            return get_time_point (*this);
+            return getTimepoint (*this);
         }
 
         template <class reference_clock_provider>
-        time_point_type get_time_point (const reference_clock_provider & rcp) const
+        time_point_type getTimepoint (const reference_clock_provider & rcp) const
         {
             if ((_abs_time.time_since_epoch ().count () == 0) &&
                 (_rel_time.count () == 0))
@@ -72,9 +71,8 @@ namespace mqmx
             }
 
             return ((_abs_time.time_since_epoch ().count () == 0)
-                    ? (rcp.get_now () + _rel_time)
+                    ? (rcp.getCurrentTimepoint () + _rel_time)
                     : _abs_time);
         }
     };
 } /* namespace mqmx */
-#endif /* MQMX_WAIT_TIME_PROVIDER_H_INCLUDED */
