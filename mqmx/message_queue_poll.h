@@ -12,17 +12,17 @@
 
 namespace mqmx
 {
-    class message_queue_poll final : message_queue::listener
+    class message_queue_poll final : MessageQueue::Listener
     {
         message_queue_poll (const message_queue_poll &) = delete;
         message_queue_poll & operator = (const message_queue_poll &) = delete;
 
     public:
-        typedef message_queue::mutex_type                 mutex_type;
-        typedef message_queue::lock_type                  lock_type;
+        typedef MessageQueue::mutex_type                  mutex_type;
+        typedef MessageQueue::lock_type                   lock_type;
 	typedef std::condition_variable                   condvar_type;
-        typedef std::tuple<queue_id_type, message_queue *,
-			   message_queue::notification_flags_type>
+        typedef std::tuple<queue_id_type, MessageQueue *,
+			   MessageQueue::notification_flags_type>
 	                                                  notification_rec;
         typedef std::vector<notification_rec>             notifications_list;
 
@@ -33,8 +33,8 @@ namespace mqmx
         notifications_list _notifications;
 
         virtual void notify (const queue_id_type,
-			     message_queue *,
-			     const message_queue::notification_flags_type) noexcept override;
+			     MessageQueue *,
+			     const MessageQueue::notification_flags_type) noexcept override;
 
     public:
         message_queue_poll ();
@@ -64,7 +64,7 @@ namespace mqmx
 	    std::for_each (ibegin, iend,
 			   [&](typename std::iterator_traits<forward_it>::reference mq)
 			   {
-			       const status_code ret_code = mq->set_listener (*this);
+			       const status_code ret_code = mq->setListener (*this);
 			       assert (ret_code == ExitStatus::Success);
 			   });
 
@@ -93,7 +93,7 @@ namespace mqmx
 	    std::for_each (ibegin, iend,
 			   [&](typename std::iterator_traits<forward_it>::reference mq)
 			   {
-			       mq->clear_listener ();
+			       mq->clearListener ();
 			   });
 	    return _notifications;
 	}

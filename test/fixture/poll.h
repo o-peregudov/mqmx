@@ -8,14 +8,14 @@ namespace fixture
     struct poll
     {
 	static const size_t NQUEUES = 10;
-	mqmx::message_queue * mq [NQUEUES];
+	mqmx::MessageQueue * mq [NQUEUES];
 
 	poll ()
 	    : mq ()
 	{
 	    for (size_t ix = 0; ix < NQUEUES; ++ix)
 	    {
-		mq[ix] = new mqmx::message_queue (ix);
+		mq[ix] = new mqmx::MessageQueue (ix);
 	    }
 	}
 

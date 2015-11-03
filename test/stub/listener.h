@@ -9,20 +9,20 @@
 
 namespace stub
 {
-    class listener : public mqmx::message_queue::listener
+    class listener : public mqmx::MessageQueue::Listener
     {
     public:
 	typedef std::tuple<mqmx::queue_id_type,
-			   mqmx::message_queue *,
-			   mqmx::message_queue::notification_flags_type> notification_rec;
-	typedef std::vector<notification_rec>                            notification_list;
+			   mqmx::MessageQueue *,
+			   mqmx::MessageQueue::notification_flags_type> notification_rec;
+	typedef std::vector<notification_rec>                           notification_list;
 
     private:
 	notification_list _notifications;
 
     public:
 	listener ()
-	    : mqmx::message_queue::listener ()
+	    : mqmx::MessageQueue::Listener ()
 	    , _notifications ()
 	{ }
 
@@ -31,8 +31,8 @@ namespace stub
 
 	virtual void notify (
 	    const mqmx::queue_id_type qid,
-	    mqmx::message_queue * mq,
-	    const mqmx::message_queue::notification_flags_type flag) noexcept override
+	    mqmx::MessageQueue * mq,
+	    const mqmx::MessageQueue::notification_flags_type flag) noexcept override
 	{
 	    try
 	    {

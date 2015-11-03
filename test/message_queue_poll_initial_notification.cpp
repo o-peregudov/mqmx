@@ -14,8 +14,8 @@ struct test_fixture : fixture::poll
 	size_t nqueues_signaled = 0;
 	for (size_t ix = 0; ix < NQUEUES; ix += STRIDE)
 	{
-	    mq[ix]->push (message_queue::message_ptr_type (
-			      new Message (mq[ix]->get_id (), 0)));
+	    mq[ix]->push (MessageQueue::message_ptr_type (
+			      new Message (mq[ix]->getQID (), 0)));
 	    ++nqueues_signaled;
 	}
 	auto mqlist = sut.poll (std::begin (mq), std::end (mq));

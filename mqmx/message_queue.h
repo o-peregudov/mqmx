@@ -8,10 +8,10 @@
 
 namespace mqmx
 {
-    class message_queue
+    class MessageQueue
     {
-        message_queue (const message_queue &) = delete;
-        message_queue & operator = (const message_queue &) = delete;
+        MessageQueue (const MessageQueue &) = delete;
+        MessageQueue & operator = (const MessageQueue &) = delete;
 
     public:
         typedef std::unique_ptr<Message>     message_ptr_type;
@@ -27,34 +27,34 @@ namespace mqmx
             Closed   = 0x0004         /* destructor called on this queue */
         };
 
-        struct listener
+        struct Listener
         {
-            virtual ~listener () { }
+            virtual ~Listener () { }
             virtual void notify (const queue_id_type,
-                                 message_queue *,
+                                 MessageQueue *,
                                  const notification_flags_type) noexcept = 0;
         };
 
     public:
-        message_queue (const queue_id_type = Message::UndefinedQID);
-        ~message_queue ();
+        MessageQueue (const queue_id_type = Message::UndefinedQID);
+        ~MessageQueue ();
 
-        message_queue (message_queue &&);
-	message_queue & operator = (message_queue &&);
+        MessageQueue (MessageQueue &&);
+	MessageQueue & operator = (MessageQueue &&);
 
-        queue_id_type get_id () const;
+        queue_id_type getQID () const;
 
         status_code push (message_ptr_type && msg);
         message_ptr_type pop ();
 
     public:
-        status_code set_listener (listener &);
-        void clear_listener ();
+        status_code setListener (Listener &);
+        void clearListener ();
 
     private:
         queue_id_type  _id;
         mutex_type     _mutex;
         container_type _queue;
-        listener *     _listener;
+        Listener *     _listener;
     };
 } /* namespace mqmx */

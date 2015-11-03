@@ -16,8 +16,8 @@ namespace mqmx
 
     void message_queue_poll::notify (
 	const queue_id_type qid,
-	message_queue * mq,
-	const message_queue::notification_flags_type flag) noexcept
+	MessageQueue * mq,
+	const MessageQueue::notification_flags_type flag) noexcept
     {
 	try
 	{
@@ -28,7 +28,7 @@ namespace mqmx
 			(std::get<1> (a) <  std::get<1> (b)));
 	    };
 
-	    message_queue::lock_type notifications_guard (_notifications_mutex);
+	    MessageQueue::lock_type notifications_guard (_notifications_mutex);
 	    notifications_list::iterator iter = std::upper_bound (
 		_notifications.begin (), _notifications.end (), elem, compare);
 	    if (iter != _notifications.begin ())

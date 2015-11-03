@@ -14,8 +14,8 @@ struct test_fixture : fixture::poll
 	const size_t idx = NQUEUES - 1;
 	std::thread thr ([&] {
 		std::this_thread::sleep_for (std::chrono::milliseconds (50));
-		mq[idx]->push (message_queue::message_ptr_type (
-				   new Message (mq[idx]->get_id (), 0)));
+		mq[idx]->push (MessageQueue::message_ptr_type (
+				   new Message (mq[idx]->getQID (), 0)));
 	    });
 	auto mqlist = sut.poll (std::begin (mq), std::end (mq),
 				WaitTimeProvider::WAIT_INFINITELY);
@@ -25,7 +25,7 @@ struct test_fixture : fixture::poll
 	}
 	assert ((mqlist.size () == 1) &&
 		("Number of signaled queues should be correct"));
-	assert ((std::get<0> (mqlist.front ()) == mq[idx]->get_id ()) &&
+	assert ((std::get<0> (mqlist.front ()) == mq[idx]->getQID ()) &&
 		("Proper QID should be reported"));
     }
 };

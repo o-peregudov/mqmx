@@ -3,7 +3,7 @@
 
 namespace mqmx
 {
-    message_queue::message_queue (const queue_id_type ID)
+    MessageQueue::MessageQueue (const queue_id_type ID)
         : _id (ID)
         , _mutex ()
         , _queue ()
@@ -11,7 +11,7 @@ namespace mqmx
     {
     }
 
-    message_queue::message_queue (message_queue && o)
+    MessageQueue::MessageQueue (MessageQueue && o)
         : _id (Message::UndefinedQID)
         , _mutex ()
         , _queue ()
@@ -28,7 +28,7 @@ namespace mqmx
         }
     }
 
-    message_queue & message_queue::operator = (message_queue && o)
+    MessageQueue & MessageQueue::operator = (MessageQueue && o)
     {
 	if (this != &o)
 	{
@@ -54,7 +54,7 @@ namespace mqmx
 	return *this;
     }
 
-    message_queue::~message_queue ()
+    MessageQueue::~MessageQueue ()
     {
         if (_listener)
         {
@@ -62,12 +62,12 @@ namespace mqmx
         }
     }
 
-    queue_id_type message_queue::get_id () const
+    queue_id_type MessageQueue::getQID () const
     {
         return _id;
     }
 
-    status_code message_queue::push (message_ptr_type && msg)
+    status_code MessageQueue::push (message_ptr_type && msg)
     {
         if (msg.get () == nullptr)
         {
@@ -90,7 +90,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    message_queue::message_ptr_type message_queue::pop ()
+    MessageQueue::message_ptr_type MessageQueue::pop ()
     {
         message_ptr_type msg;
         lock_type guard (_mutex);
@@ -102,7 +102,7 @@ namespace mqmx
         return std::move (msg);
     }
 
-    status_code message_queue::set_listener (listener & l)
+    status_code MessageQueue::setListener (Listener & l)
     {
         lock_type guard (_mutex);
         if (_listener)
@@ -118,7 +118,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    void message_queue::clear_listener ()
+    void MessageQueue::clearListener ()
     {
         lock_type guard (_mutex);
         _listener = nullptr;

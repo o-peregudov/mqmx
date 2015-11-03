@@ -20,21 +20,21 @@ int main (int argc, const char ** argv)
 	/*
 	 * default constructor
 	 */
-	message_queue queueA (defQIDa);
-	message_queue::message_ptr_type msg (queueA.pop ());
+	MessageQueue queueA (defQIDa);
+	MessageQueue::message_ptr_type msg (queueA.pop ());
 	assert ((msg.get () == nullptr) &&
 		("Initially queue is empty"));
 
-	status_code retCode = queueA.set_listener (slistener);
+	status_code retCode = queueA.setListener (slistener);
 	assert ((retCode == ExitStatus::Success) &&
 		("Listener should be registered"));
 
-	message_queue queueB (defQIDb);
+	MessageQueue queueB (defQIDb);
 	msg = queueB.pop ();
 	assert ((msg.get () == nullptr) &&
 		("Initially queue is empty"));
 
-	retCode = queueB.set_listener (slistener);
+	retCode = queueB.setListener (slistener);
 	assert ((retCode == ExitStatus::Success) &&
 		("Listener should be registered"));
 
@@ -42,7 +42,7 @@ int main (int argc, const char ** argv)
 	 * push sample data
 	 */
 	retCode = queueA.push (
-	    message_queue::message_ptr_type (new Message (defQIDa, defMID)));
+	    MessageQueue::message_ptr_type (new Message (defQIDa, defMID)));
 	slistener.clear_notifications ();
 
 	/*
@@ -63,10 +63,10 @@ int main (int argc, const char ** argv)
 	assert ((slistener.get_notifications ().size () == 2) &&
 		("Both queues should be 'Detached'"));
 	assert (((std::get<2> (slistener.get_notifications ()[0]) &
-		  message_queue::NotificationFlag::Detached) != 0) &&
+		  MessageQueue::NotificationFlag::Detached) != 0) &&
 		("'Detached' flag should be reported"));
 	assert (((std::get<2> (slistener.get_notifications ()[1]) &
-		  message_queue::NotificationFlag::Detached) != 0) &&
+		  MessageQueue::NotificationFlag::Detached) != 0) &&
 		("'Detached' flag should be reported"));
 
 	slistener.clear_notifications ();
