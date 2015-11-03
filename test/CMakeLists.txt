@@ -9,7 +9,7 @@ TARGET_LINK_LIBRARIES (message_queue_sanity
   mqmx
 )
 
-ADD_TEST (NAME message_queue_sanity
+ADD_TEST (NAME MessageQueue/Sanity
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_sanity
 )
@@ -25,7 +25,7 @@ TARGET_LINK_LIBRARIES (message_queue_listener_move_ctor
   mqmx
 )
 
-ADD_TEST (NAME message_queue_listener_move_ctor
+ADD_TEST (NAME MessageQueue/Listener/Move-ctor
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_listener_move_ctor
 )
@@ -41,7 +41,7 @@ TARGET_LINK_LIBRARIES (message_queue_listener_move_assignment
   mqmx
 )
 
-ADD_TEST (NAME message_queue_listener_move_assignment
+ADD_TEST (NAME MessageQueue/Listener/Move-assignment
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_listener_move_assignment
 )
@@ -57,7 +57,7 @@ TARGET_LINK_LIBRARIES (message_queue_poll_sanity
   mqmx
 )
 
-ADD_TEST (NAME message_queue_poll_sanity
+ADD_TEST (NAME MessageQueue/Poll/Sanity
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll_sanity
 )
@@ -73,7 +73,7 @@ TARGET_LINK_LIBRARIES (message_queue_poll_initial_notification
   mqmx
 )
 
-ADD_TEST (NAME message_queue_poll_initial_notification
+ADD_TEST (NAME MessageQueue/Poll/Initial-notification
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll_initial_notification
 )
@@ -89,7 +89,7 @@ TARGET_LINK_LIBRARIES (message_queue_poll_infinite_wait
   mqmx
 )
 
-ADD_TEST (NAME message_queue_poll_infinite_wait
+ADD_TEST (NAME MessageQueue/Poll/Infinite-wait
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll_infinite_wait
 )
@@ -105,7 +105,7 @@ TARGET_LINK_LIBRARIES (message_queue_poll_rel_timeout
   mqmx
 )
 
-ADD_TEST (NAME message_queue_poll_rel_timeout
+ADD_TEST (NAME MessageQueue/Poll/Rel.-timeout
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll_rel_timeout
 )
@@ -121,7 +121,7 @@ TARGET_LINK_LIBRARIES (message_queue_poll_abs_timeout
   mqmx
 )
 
-ADD_TEST (NAME message_queue_poll_abs_timeout
+ADD_TEST (NAME MessageQueue/Poll/Abs.-timeout
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll_abs_timeout
 )
