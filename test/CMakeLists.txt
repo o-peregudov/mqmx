@@ -29,38 +29,6 @@ ADD_TEST (NAME message_queue_sanity
 
 ############################################################
 
-ADD_EXECUTABLE (message_queue_basic_listener
-  message_queue_basic_listener.cpp
-)
-
-TARGET_LINK_LIBRARIES (message_queue_basic_listener
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME message_queue_basic_listener
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND message_queue_basic_listener
-)
-
-############################################################
-
-ADD_EXECUTABLE (message_queue_move_ctor_listener
-  message_queue_move_ctor_listener.cpp
-)
-
-TARGET_LINK_LIBRARIES (message_queue_move_ctor_listener
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME message_queue_move_ctor_listener
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND message_queue_move_ctor_listener
-)
-
-############################################################
-
 ADD_EXECUTABLE (message_queue_listener
   message_queue_listener.cpp
 )
@@ -73,6 +41,38 @@ TARGET_LINK_LIBRARIES (message_queue_listener
 ADD_TEST (NAME message_queue_listener
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_listener
+)
+
+############################################################
+
+ADD_EXECUTABLE (message_queue_listener_move_ctor
+  message_queue_listener_move_ctor.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_listener_move_ctorlistener
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_listener_move_ctor
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_listener_move_ctor
+)
+
+############################################################
+
+ADD_EXECUTABLE (message_queue_listener_move_assignment
+  message_queue_listener_move_assignment.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_listener_move_assignment
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_listener_move_assignment
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_listener_move_assignment
 )
 
 ############################################################
