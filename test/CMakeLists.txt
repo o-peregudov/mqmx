@@ -1,16 +1,3 @@
-ENABLE_TESTING ()
-
-INCLUDE_DIRECTORIES (
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_BINARY_DIR}
-)
-
-LINK_DIRECTORIES (
-  ${LIBRARY_OUTPUT_PATH}
-)
-
 ############################################################
 
 ADD_EXECUTABLE (message_queue_sanity
