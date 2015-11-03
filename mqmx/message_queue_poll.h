@@ -1,8 +1,7 @@
-#ifndef MQMX_MESSAGE_QUEUE_POLL_H_INCLUDED
-#define MQMX_MESSAGE_QUEUE_POLL_H_INCLUDED 1
+#pragma once
 
 #include <mqmx/message_queue.h>
-#include <mqmx/wait_time_provider.h>
+#include <mqmx/WaitTimeProvider.h>
 
 #include <condition_variable>
 #include <algorithm>
@@ -100,4 +99,3 @@ namespace mqmx
 	}
     };
 } /* namespace mqmx */
-#endif /* MQMX_MESSAGE_QUEUE_POLL_H_INCLUDED */
