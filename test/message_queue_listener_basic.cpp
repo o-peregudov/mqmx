@@ -37,6 +37,8 @@ int main (int argc, const char ** argv)
 		("Push should succeed"));
 	assert ((slistener.get_notifications ().size () == 1) &&
 		("Single notification should be delivered"));
+	assert ((std::get<1> (slistener.get_notifications ().front ()) == &queue) &&
+		("'NewData' notification flag should be delivered from proper MQ"));
 	assert (((std::get<2> (slistener.get_notifications ().front ()) &
 		  message_queue::NotificationFlag::NewData) != 0) &&
 		("'NewData' notification flag should be delivered"));
