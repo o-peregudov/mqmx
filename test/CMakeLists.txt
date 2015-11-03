@@ -61,18 +61,18 @@ ADD_TEST (NAME message_queue_listener_move_assignment
 
 ############################################################
 
-ADD_EXECUTABLE (message_queue_poll
-  message_queue_poll.cpp
+ADD_EXECUTABLE (message_queue_poll_sanity
+  message_queue_poll_sanity.cpp
 )
 
-TARGET_LINK_LIBRARIES (message_queue_poll
+TARGET_LINK_LIBRARIES (message_queue_poll_sanity
   ${CMAKE_THREAD_LIBS_INIT}
   mqmx
 )
 
-ADD_TEST (NAME message_queue_poll
+ADD_TEST (NAME message_queue_poll_sanity
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND message_queue_poll
+  COMMAND message_queue_poll_sanity
 )
 
 ############################################################
@@ -105,4 +105,36 @@ TARGET_LINK_LIBRARIES (message_queue_poll_infinite_wait
 ADD_TEST (NAME message_queue_poll_infinite_wait
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll_infinite_wait
+)
+
+############################################################
+
+ADD_EXECUTABLE (message_queue_poll_rel_timeout
+  message_queue_poll_rel_timeout.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_poll_rel_timeout
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_poll_rel_timeout
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_poll_rel_timeout
+)
+
+############################################################
+
+ADD_EXECUTABLE (message_queue_poll_abs_timeout
+  message_queue_poll_abs_timeout.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_poll_abs_timeout
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_poll_abs_timeout
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_poll_abs_timeout
 )
