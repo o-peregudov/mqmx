@@ -44,9 +44,11 @@ namespace mqmx
 	/*
 	 * NOTE: iterators should represent a sequence of pointers to message_queue
 	 */
-	template <typename ForwardIt>
-        notifications_list poll (const ForwardIt it_begin, const ForwardIt it_end,
-				 const wait_time_provider & wtp = wait_time_provider ())
+	template <typename forward_it,
+		  typename ref_clock_provider = wait_time_provider>
+        notifications_list poll (const forward_it ibegin, const forward_it iend,
+				 const wait_time_provider & wtp = wait_time_provider (),
+				 const ref_clock_provider & rcp = wait_time_provider ())
 	{
 	    lock_type poll_guard (_poll_mutex); /* to block re-entrance */
 	    {
@@ -60,8 +62,8 @@ namespace mqmx
 	    /*
 	     * set listeners for each message queue
 	     */
-	    std::for_each (it_begin, it_end,
-			   [&](typename std::iterator_traits<ForwardIt>::reference mq)
+	    std::for_each (ibegin, iend,
+			   [&](typename std::iterator_traits<forward_it>::reference mq)
 			   {
 			       const status_code ret_code = mq->set_listener (*this);
 			       assert (ret_code == ExitStatus::Success);
@@ -71,7 +73,7 @@ namespace mqmx
 	     * wait for notifications
 	     */
 	    lock_type notifications_guard (_notifications_mutex);
-	    const auto abs_time = wtp.get_time_point ();
+	    const auto abs_time = wtp.get_time_point (rcp);
 	    if (_notifications.empty ())
 	    {
 		const auto pred = [&]{ return !_notifications.empty (); };
@@ -89,8 +91,8 @@ namespace mqmx
 	    /*
 	     * remove listeners from each message queue
 	     */
-	    std::for_each (it_begin, it_end,
-			   [&](typename std::iterator_traits<ForwardIt>::reference mq)
+	    std::for_each (ibegin, iend,
+			   [&](typename std::iterator_traits<forward_it>::reference mq)
 			   {
 			       mq->clear_listener ();
 			   });

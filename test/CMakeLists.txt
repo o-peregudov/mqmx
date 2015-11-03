@@ -74,3 +74,35 @@ ADD_TEST (NAME message_queue_poll
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
   COMMAND message_queue_poll
 )
+
+############################################################
+
+ADD_EXECUTABLE (message_queue_poll_initial_notification
+  message_queue_poll_initial_notification.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_poll_initial_notification
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_poll_initial_notification
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_poll_initial_notification
+)
+
+############################################################
+
+ADD_EXECUTABLE (message_queue_poll_infinite_wait
+  message_queue_poll_infinite_wait.cpp
+)
+
+TARGET_LINK_LIBRARIES (message_queue_poll_infinite_wait
+  ${CMAKE_THREAD_LIBS_INIT}
+  mqmx
+)
+
+ADD_TEST (NAME message_queue_poll_infinite_wait
+  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  COMMAND message_queue_poll_infinite_wait
+)

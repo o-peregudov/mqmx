@@ -38,22 +38,6 @@ struct test_fixture : poll_fixture
 		("No events should be reported"));
     }
 
-    void initial_notification_test ()
-    {
-	using namespace mqmx;
-	const size_t stride = 3;
-	size_t nqueues_signaled = 0;
-	for (size_t ix = 0; ix < NQUEUES; ix += stride)
-	{
-	    mq[ix]->push (message_queue::message_ptr_type (
-			      new message (mq[ix]->get_id (), 0)));
-	    ++nqueues_signaled;
-	}
-	auto mqlist = sut.poll (std::begin (mq), std::end (mq));
-	assert ((mqlist.size () == nqueues_signaled) &&
-		("Number of signaled queues should be correct"));
-    }
-
     void signal_while_infinte_wait_test ()
     {
 	using namespace mqmx;
@@ -106,10 +90,6 @@ int main (int argc, const char ** argv)
     {
 	test_fixture fixture;
 	fixture.sanity_test ();
-    }
-    {
-	test_fixture fixture;
-	fixture.initial_notification_test ();
     }
     {
 	test_fixture fixture;
