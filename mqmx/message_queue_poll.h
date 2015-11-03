@@ -12,10 +12,10 @@
 
 namespace mqmx
 {
-    class message_queue_poll final : MessageQueue::Listener
+    class MessageQueuePoll final : MessageQueue::Listener
     {
-        message_queue_poll (const message_queue_poll &) = delete;
-        message_queue_poll & operator = (const message_queue_poll &) = delete;
+        MessageQueuePoll (const MessageQueuePoll &) = delete;
+        MessageQueuePoll & operator = (const MessageQueuePoll &) = delete;
 
     public:
         typedef MessageQueue::mutex_type                  mutex_type;
@@ -23,31 +23,31 @@ namespace mqmx
 	typedef std::condition_variable                   condvar_type;
         typedef std::tuple<queue_id_type, MessageQueue *,
 			   MessageQueue::notification_flags_type>
-	                                                  notification_rec;
-        typedef std::vector<notification_rec>             notifications_list;
+	                                                  notification_rec_type;
+        typedef std::vector<notification_rec_type>        notifications_list_type;
 
     private:
-	mutex_type         _poll_mutex;
-	mutable mutex_type _notifications_mutex;
-	condvar_type       _notifications_condition;
-        notifications_list _notifications;
+	mutex_type              _poll_mutex;
+	mutable mutex_type      _notifications_mutex;
+	condvar_type            _notifications_condition;
+        notifications_list_type _notifications;
 
         virtual void notify (const queue_id_type,
 			     MessageQueue *,
 			     const MessageQueue::notification_flags_type) noexcept override;
 
     public:
-        message_queue_poll ();
-        virtual ~message_queue_poll ();
+        MessageQueuePoll ();
+        virtual ~MessageQueuePoll ();
 
 	/*
 	 * NOTE: iterators should represent a sequence of pointers to message_queue
 	 */
-	template <typename forward_it,
-		  typename ref_clock_provider = WaitTimeProvider>
-        notifications_list poll (const forward_it ibegin, const forward_it iend,
-				 const WaitTimeProvider & wtp = WaitTimeProvider (),
-				 const ref_clock_provider & rcp = WaitTimeProvider ())
+	template <typename ForwardIt,
+		  typename RefClockProvider = WaitTimeProvider>
+        notifications_list_type poll (const ForwardIt ibegin, const ForwardIt iend,
+				      const WaitTimeProvider & wtp = WaitTimeProvider (),
+				      const RefClockProvider & rcp = WaitTimeProvider ())
 	{
 	    lock_type poll_guard (_poll_mutex); /* to block re-entrance */
 	    {
@@ -62,7 +62,7 @@ namespace mqmx
 	     * set listeners for each message queue
 	     */
 	    std::for_each (ibegin, iend,
-			   [&](typename std::iterator_traits<forward_it>::reference mq)
+			   [&](typename std::iterator_traits<ForwardIt>::reference mq)
 			   {
 			       const status_code ret_code = mq->setListener (*this);
 			       assert (ret_code == ExitStatus::Success);
@@ -91,7 +91,7 @@ namespace mqmx
 	     * remove listeners from each message queue
 	     */
 	    std::for_each (ibegin, iend,
-			   [&](typename std::iterator_traits<forward_it>::reference mq)
+			   [&](typename std::iterator_traits<ForwardIt>::reference mq)
 			   {
 			       mq->clearListener ();
 			   });

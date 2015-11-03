@@ -2,7 +2,7 @@
 
 namespace mqmx
 {
-    message_queue_poll::message_queue_poll ()
+    MessageQueuePoll::MessageQueuePoll ()
         : _poll_mutex ()
 	, _notifications_mutex ()
 	, _notifications_condition ()
@@ -10,30 +10,30 @@ namespace mqmx
     {
     }
 
-    message_queue_poll::~message_queue_poll ()
+    MessageQueuePoll::~MessageQueuePoll ()
     {
     }
 
-    void message_queue_poll::notify (
+    void MessageQueuePoll::notify (
 	const queue_id_type qid,
 	MessageQueue * mq,
 	const MessageQueue::notification_flags_type flag) noexcept
     {
 	try
 	{
-	    const notification_rec elem (qid, mq, flag);
-	    const auto compare = [](const notification_rec & a,
-				    const notification_rec & b) {
+	    const notification_rec_type elem (qid, mq, flag);
+	    const auto compare = [](const notification_rec_type & a,
+				    const notification_rec_type & b) {
 		return ((std::get<0> (a) <= std::get<0> (b)) &&
 			(std::get<1> (a) <  std::get<1> (b)));
 	    };
 
 	    MessageQueue::lock_type notifications_guard (_notifications_mutex);
-	    notifications_list::iterator iter = std::upper_bound (
+	    notifications_list_type::iterator iter = std::upper_bound (
 		_notifications.begin (), _notifications.end (), elem, compare);
 	    if (iter != _notifications.begin ())
 	    {
-		notifications_list::iterator prev = iter;
+		notifications_list_type::iterator prev = iter;
 		--prev;
 
 		if ((std::get<0> (*prev) == qid) && (std::get<1> (*prev) == mq))

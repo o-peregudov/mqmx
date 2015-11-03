@@ -1,11 +1,11 @@
-#include "mqmx/message_queue_poll.h"
+#include <mqmx/message_queue_poll.h>
 #include "test/fixture/poll.h"
 
 #include <cassert>
 
 struct test_fixture : fixture::poll
 {
-    mqmx::message_queue_poll sut;
+    mqmx::MessageQueuePoll sut;
 
     void sanity_test ()
     {

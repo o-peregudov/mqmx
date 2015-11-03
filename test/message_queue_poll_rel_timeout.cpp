@@ -5,7 +5,7 @@
 
 struct test_fixture : fixture::poll
 {
-    mqmx::message_queue_poll sut;
+    mqmx::MessageQueuePoll sut;
 
     void relative_timeout_test ()
     {
