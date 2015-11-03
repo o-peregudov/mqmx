@@ -32,7 +32,7 @@ int main (int argc, const char ** argv)
 	 * push sample data and move queue
 	 */
 	retCode = queueA.push (
-	    message_queue::message_ptr_type (new message (defQID, defMID)));
+	    message_queue::message_ptr_type (new Message (defQID, defMID)));
 	message_queue queueB (std::move (queueA));
 
 	msg = queueA.pop ();
@@ -42,9 +42,9 @@ int main (int argc, const char ** argv)
 	msg = queueB.pop ();
         assert ((msg.get () != nullptr) &&
 		("New queue should not be empty"));
-        assert ((msg->get_qid () == defQID) &&
+        assert ((msg->getQID () == defQID) &&
 		("QID should match"));
-        assert ((msg->get_mid () == defMID) &&
+        assert ((msg->getMID () == defMID) &&
 		("MID should match"));
 
 	assert ((slistener.get_notifications ().size () == 1) &&

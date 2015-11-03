@@ -15,7 +15,7 @@ namespace mqmx
         message_queue & operator = (const message_queue &) = delete;
 
     public:
-        typedef std::unique_ptr<message>     message_ptr_type;
+        typedef std::unique_ptr<Message>     message_ptr_type;
         typedef std::mutex                   mutex_type;
         typedef std::unique_lock<mutex_type> lock_type;
         typedef std::deque<message_ptr_type> container_type;
@@ -37,7 +37,7 @@ namespace mqmx
         };
 
     public:
-        message_queue (const queue_id_type = message::undefined_qid);
+        message_queue (const queue_id_type = Message::UndefinedQID);
         ~message_queue ();
 
         message_queue (message_queue &&);

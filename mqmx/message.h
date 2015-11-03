@@ -1,39 +1,36 @@
-#ifndef MQMX_MESSAGE_H_INCLUDED
-#define MQMX_MESSAGE_H_INCLUDED 1
+#pragma once
 
 #include <mqmx/types.h>
 
 namespace mqmx
 {
-    class message
+    class Message
     {
         const queue_id_type _qid;
         const message_id_type _mid;
 
     public:
-        static const queue_id_type undefined_qid =
-            static_cast<queue_id_type> (-1);
+        static const queue_id_type UndefinedQID = static_cast<queue_id_type> (-1);
 
-        message (const queue_id_type queue_id,
+        Message (const queue_id_type queue_id,
                  const message_id_type message_id)
             : _qid (queue_id)
             , _mid (message_id)
         {
         }
 
-        virtual ~message ()
+        virtual ~Message ()
         {
         }
 
-        queue_id_type get_qid () const
+        queue_id_type getQID () const
         {
             return _qid;
         }
 
-        message_id_type get_mid () const
+        message_id_type getMID () const
         {
             return _mid;
         }
     };
 } /* namespace mqmx */
-#endif /* MQMX_MESSAGE_H_INCLUDED */

@@ -19,7 +19,7 @@ int main (int argc, const char ** argv)
      * push operation
      */
     status_code retCode = queue.push (
-        message_queue::message_ptr_type (new message (defQID, defMID)));
+        message_queue::message_ptr_type (new Message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed!"));
 
@@ -29,9 +29,9 @@ int main (int argc, const char ** argv)
     msg = queue.pop ();
     assert ((msg.get () != nullptr) &&
 	    ("Should not be empty!"));
-    assert ((msg->get_qid () == defQID) &&
+    assert ((msg->getQID () == defQID) &&
 	    ("QID should match!"));
-    assert ((msg->get_mid () == defMID) &&
+    assert ((msg->getMID () == defMID) &&
 	    ("MID should match!"));
 
     msg = queue.pop ();
@@ -44,7 +44,7 @@ int main (int argc, const char ** argv)
     for (size_t ix = 0; ix < 10; ++ix)
     {
         retCode = queue.push (
-            message_queue::message_ptr_type (new message (defQID, defMID + ix)));
+            message_queue::message_ptr_type (new Message (defQID, defMID + ix)));
         assert ((retCode == ExitStatus::Success) &&
                 ("Push should succeed!"));
     }
@@ -53,9 +53,9 @@ int main (int argc, const char ** argv)
         msg = queue.pop ();
         assert ((msg.get () != nullptr) &&
                 ("Should not be empty!"));
-        assert ((msg->get_qid () == defQID) &&
+        assert ((msg->getQID () == defQID) &&
                 ("QID should match!"));
-        assert ((msg->get_mid () == (defMID + ix)) &&
+        assert ((msg->getMID () == (defMID + ix)) &&
                 ("MID should match!"));
     }
     return 0;

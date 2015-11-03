@@ -15,7 +15,7 @@ struct test_fixture : fixture::poll
 	std::thread thr ([&] {
 		std::this_thread::sleep_for (std::chrono::milliseconds (50));
 		mq[idx]->push (message_queue::message_ptr_type (
-				   new message (mq[idx]->get_id (), 0)));
+				   new Message (mq[idx]->get_id (), 0)));
 	    });
 	auto mqlist = sut.poll (std::begin (mq), std::end (mq),
 				WaitTimeProvider::WAIT_INFINITELY);

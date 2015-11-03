@@ -42,7 +42,7 @@ int main (int argc, const char ** argv)
 	 * push sample data
 	 */
 	retCode = queueA.push (
-	    message_queue::message_ptr_type (new message (defQIDa, defMID)));
+	    message_queue::message_ptr_type (new Message (defQIDa, defMID)));
 	slistener.clear_notifications ();
 
 	/*
@@ -57,7 +57,7 @@ int main (int argc, const char ** argv)
 	msg = queueB.pop ();
 	assert ((msg.get () != nullptr) &&
 		("Queue A should not be empty, because moved in"));
-	assert ((msg->get_qid () == defQIDa) &&
+	assert ((msg->getQID () == defQIDa) &&
 		("There should be a message from QID A"));
 
 	assert ((slistener.get_notifications ().size () == 2) &&
