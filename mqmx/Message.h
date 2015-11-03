@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mqmx/types.h>
+#include <mqmx/Types.h>
 
 namespace mqmx
 {

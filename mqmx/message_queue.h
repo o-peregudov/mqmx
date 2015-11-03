@@ -1,11 +1,10 @@
-#ifndef MQMX_MESSAGE_QUEUE_H_INCLUDED
-#define MQMX_MESSAGE_QUEUE_H_INCLUDED 1
+#pragma once
 
 #include <memory>
 #include <mutex>
 #include <deque>
 
-#include <mqmx/message.h>
+#include <mqmx/Message.h>
 
 namespace mqmx
 {
@@ -59,4 +58,3 @@ namespace mqmx
         listener *     _listener;
     };
 } /* namespace mqmx */
-#endif /* MQMX_MESSAGE_QUEUE_H_INCLUDED */
