@@ -1,5 +1,4 @@
-#include <mqmx/MessageQueue.h>
-#include "test/stub/listener.h"
+#include "test/stubs/listener.h"
 
 #include <cassert>
 
@@ -14,7 +13,7 @@ int main (int argc, const char ** argv)
      * listener should have longer lifetime than message_queue
      * to check "Closed" notification from MQ
      */
-    stub::listener slistener;
+    stubs::listener slistener;
 
     {
 	/*

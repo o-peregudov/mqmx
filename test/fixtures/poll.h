@@ -1,7 +1,7 @@
 #pragma once
 #include <mqmx/MessageQueuePoll.h>
 
-namespace fixture
+namespace fixtures
 {
     struct poll
     {
@@ -26,5 +26,5 @@ namespace fixture
 	    }
 	}
     };
-} /* namespace fixture */
+} /* namespace fixtures */
 

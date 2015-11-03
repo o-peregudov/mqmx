@@ -6,7 +6,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace stub
+namespace stubs
 {
     class listener : public mqmx::MessageQueue::Listener
     {
@@ -71,4 +71,4 @@ namespace stub
 	    _notifications.clear ();
 	}
     };
-} /* namespace stub */
+} /* namespace stubs */
