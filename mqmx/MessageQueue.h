@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <mutex>
 #include <deque>
 
@@ -46,6 +45,13 @@ namespace mqmx
         status_code push (Message::upointer_type && msg);
 	Message::upointer_type pop ();
 
+	template <typename MessageType, typename... ParametersTypes>
+	Message::upointer_type newMessage (ParametersTypes&&... args) const
+	{
+	    return Message::upointer_type (
+		new MessageType (getQID (), std::forward<ParametersTypes> (args)...));
+	}
+	
     public:
         status_code setListener (Listener &);
         void clearListener ();

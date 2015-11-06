@@ -30,7 +30,7 @@ int main (int argc, const char ** argv)
 	/*
 	 * push operation
 	 */
-	retCode = queue.push (Message::upointer_type (new Message (defQID, defMID)));
+	retCode = queue.push (queue.newMessage<Message> (defMID));
 	assert ((retCode == ExitStatus::Success) &&
 		("Push should succeed"));
 	assert ((slistener.get_notifications ().size () == 1) &&

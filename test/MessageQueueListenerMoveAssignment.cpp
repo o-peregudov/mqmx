@@ -40,7 +40,7 @@ int main (int argc, const char ** argv)
 	/*
 	 * push sample data
 	 */
-	retCode = queueA.push (Message::upointer_type (new Message (defQIDa, defMID)));
+	retCode = queueA.push (queueA.newMessage<Message> (defMID));
 	slistener.clear_notifications ();
 
 	/*

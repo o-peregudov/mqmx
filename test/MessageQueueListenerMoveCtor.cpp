@@ -30,7 +30,7 @@ int main (int argc, const char ** argv)
 	/*
 	 * push sample data and move queue
 	 */
-	retCode = queueA.push (Message::upointer_type (new Message (defQID, defMID)));
+	retCode = queueA.push (queueA.newMessage<Message> (defMID));
 	MessageQueue queueB (std::move (queueA));
 
 	msg = queueA.pop ();
