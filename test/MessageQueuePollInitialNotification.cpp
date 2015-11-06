@@ -13,8 +13,7 @@ struct test_fixture : fixtures::poll
 	size_t nqueues_signaled = 0;
 	for (size_t ix = 0; ix < NQUEUES; ix += STRIDE)
 	{
-	    mq[ix]->push (MessageQueue::message_ptr_type (
-			      new Message (mq[ix]->getQID (), 0)));
+	    mq[ix]->push (Message::upointer_type (new Message (mq[ix]->getQID (), 0)));
 	    ++nqueues_signaled;
 	}
 	auto mqlist = sut.poll (std::begin (mq), std::end (mq));

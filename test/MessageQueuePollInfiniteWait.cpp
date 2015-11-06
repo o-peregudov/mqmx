@@ -13,8 +13,7 @@ struct test_fixture : fixtures::poll
 	const size_t idx = NQUEUES - 1;
 	std::thread thr ([&] {
 		std::this_thread::sleep_for (std::chrono::milliseconds (50));
-		mq[idx]->push (MessageQueue::message_ptr_type (
-				   new Message (mq[idx]->getQID (), 0)));
+		mq[idx]->push (Message::upointer_type (new Message (mq[idx]->getQID (), 0)));
 	    });
 	auto mqlist = sut.poll (std::begin (mq), std::end (mq),
 				WaitTimeProvider::WAIT_INFINITELY);

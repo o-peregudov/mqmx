@@ -20,7 +20,7 @@ int main (int argc, const char ** argv)
 	 * default constructor
 	 */
 	MessageQueue queueA (defQIDa);
-	MessageQueue::message_ptr_type msg (queueA.pop ());
+	Message::upointer_type msg (queueA.pop ());
 	assert ((msg.get () == nullptr) &&
 		("Initially queue is empty"));
 
@@ -40,8 +40,7 @@ int main (int argc, const char ** argv)
 	/*
 	 * push sample data
 	 */
-	retCode = queueA.push (
-	    MessageQueue::message_ptr_type (new Message (defQIDa, defMID)));
+	retCode = queueA.push (Message::upointer_type (new Message (defQIDa, defMID)));
 	slistener.clear_notifications ();
 
 	/*

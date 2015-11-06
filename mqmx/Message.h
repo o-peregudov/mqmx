@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mqmx/Types.h>
+#include <memory>
 
 namespace mqmx
 {
@@ -10,6 +11,8 @@ namespace mqmx
         const message_id_type _mid;
 
     public:
+	typedef std::unique_ptr<Message> upointer_type;
+
         static const queue_id_type UndefinedQID = static_cast<queue_id_type> (-1);
 
         Message (const queue_id_type queue_id,

@@ -11,15 +11,14 @@ int main (int argc, const char ** argv)
      * default constructor
      */
     MessageQueue queue (defQID);
-    MessageQueue::message_ptr_type msg (queue.pop ());
+    Message::upointer_type msg (queue.pop ());
     assert ((msg.get () == nullptr) &&
             ("Initially queue is empty!"));
 
     /*
      * push operation
      */
-    status_code retCode = queue.push (
-        MessageQueue::message_ptr_type (new Message (defQID, defMID)));
+    status_code retCode = queue.push (Message::upointer_type (new Message (defQID, defMID)));
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed!"));
 
@@ -43,8 +42,7 @@ int main (int argc, const char ** argv)
      */
     for (size_t ix = 0; ix < 10; ++ix)
     {
-        retCode = queue.push (
-            MessageQueue::message_ptr_type (new Message (defQID, defMID + ix)));
+        retCode = queue.push (Message::upointer_type (new Message (defQID, defMID + ix)));
         assert ((retCode == ExitStatus::Success) &&
                 ("Push should succeed!"));
     }

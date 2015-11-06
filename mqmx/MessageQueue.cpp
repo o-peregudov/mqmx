@@ -67,7 +67,7 @@ namespace mqmx
         return _id;
     }
 
-    status_code MessageQueue::push (message_ptr_type && msg)
+    status_code MessageQueue::push (Message::upointer_type && msg)
     {
         if (msg.get () == nullptr)
         {
@@ -90,9 +90,9 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    MessageQueue::message_ptr_type MessageQueue::pop ()
+    Message::upointer_type MessageQueue::pop ()
     {
-        message_ptr_type msg;
+	Message::upointer_type msg;
         lock_type guard (_mutex);
         if ((_id != Message::UndefinedQID) && !_queue.empty ())
         {

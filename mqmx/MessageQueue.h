@@ -14,11 +14,10 @@ namespace mqmx
         MessageQueue & operator = (const MessageQueue &) = delete;
 
     public:
-        typedef std::unique_ptr<Message>     message_ptr_type;
-        typedef std::mutex                   mutex_type;
-        typedef std::unique_lock<mutex_type> lock_type;
-        typedef std::deque<message_ptr_type> container_type;
-        typedef size_t                       notification_flags_type;
+        typedef std::mutex                         mutex_type;
+        typedef std::unique_lock<mutex_type>       lock_type;
+        typedef std::deque<Message::upointer_type> container_type;
+        typedef size_t                             notification_flags_type;
 
         enum NotificationFlag
         {
@@ -44,8 +43,8 @@ namespace mqmx
 
         queue_id_type getQID () const;
 
-        status_code push (message_ptr_type && msg);
-        message_ptr_type pop ();
+        status_code push (Message::upointer_type && msg);
+	Message::upointer_type pop ();
 
     public:
         status_code setListener (Listener &);

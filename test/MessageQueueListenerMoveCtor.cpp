@@ -19,7 +19,7 @@ int main (int argc, const char ** argv)
 	 * default constructor
 	 */
 	MessageQueue queueA (defQID);
-	MessageQueue::message_ptr_type msg (queueA.pop ());
+	Message::upointer_type msg (queueA.pop ());
 	assert ((msg.get () == nullptr) &&
 		("Initially queue is empty"));
 
@@ -30,8 +30,7 @@ int main (int argc, const char ** argv)
 	/*
 	 * push sample data and move queue
 	 */
-	retCode = queueA.push (
-	    MessageQueue::message_ptr_type (new Message (defQID, defMID)));
+	retCode = queueA.push (Message::upointer_type (new Message (defQID, defMID)));
 	MessageQueue queueB (std::move (queueA));
 
 	msg = queueA.pop ();
