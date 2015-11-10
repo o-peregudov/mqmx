@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdarg>
+#include <cstring>
 
 namespace mqmx
 {
