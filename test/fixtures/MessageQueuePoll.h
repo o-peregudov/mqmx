@@ -1,30 +1,21 @@
 #pragma once
+
 #include <mqmx/MessageQueuePoll.h>
 
 namespace fixtures
 {
-    struct poll
+    struct MessageQueuePoll
     {
 	static const size_t NQUEUES = 10;
-	mqmx::MessageQueue * mq [NQUEUES];
+	std::vector<mqmx::MessageQueue::upointer_type> mq;
 
-	poll ()
+	MessageQueuePoll ()
 	    : mq ()
 	{
 	    for (size_t ix = 0; ix < NQUEUES; ++ix)
 	    {
-		mq[ix] = new mqmx::MessageQueue (ix);
-	    }
-	}
-
-	~poll ()
-	{
-	    for (size_t ix = 0; ix < NQUEUES; ++ix)
-	    {
-		delete mq[ix];
-		mq[ix] = nullptr;
+		mq.emplace_back (new mqmx::MessageQueue (ix));
 	    }
 	}
     };
 } /* namespace fixtures */
-

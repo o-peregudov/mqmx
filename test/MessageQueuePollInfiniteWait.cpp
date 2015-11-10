@@ -1,9 +1,9 @@
-#include "test/fixtures/poll.h"
+#include "test/fixtures/MessageQueuePoll.h"
 
 #include <cassert>
 #include <thread>
 
-struct test_fixture : fixtures::poll
+struct test_fixture : fixtures::MessageQueuePoll
 {
     mqmx::MessageQueuePoll sut;
 

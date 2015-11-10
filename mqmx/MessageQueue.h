@@ -13,6 +13,7 @@ namespace mqmx
         MessageQueue & operator = (const MessageQueue &) = delete;
 
     public:
+	typedef std::unique_ptr<MessageQueue>      upointer_type;
         typedef std::mutex                         mutex_type;
         typedef std::unique_lock<mutex_type>       lock_type;
         typedef std::deque<Message::upointer_type> container_type;
