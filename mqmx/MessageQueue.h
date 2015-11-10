@@ -13,7 +13,7 @@ namespace mqmx
         MessageQueue & operator = (const MessageQueue &) = delete;
 
     public:
-	typedef std::unique_ptr<MessageQueue>      upointer_type;
+        typedef std::unique_ptr<MessageQueue>      upointer_type;
         typedef std::mutex                         mutex_type;
         typedef std::unique_lock<mutex_type>       lock_type;
         typedef std::deque<Message::upointer_type> container_type;
@@ -31,7 +31,7 @@ namespace mqmx
             virtual ~Listener () { }
             virtual void notify (const queue_id_type,
                                  MessageQueue *,
-                                 const notification_flags_type) noexcept = 0;
+                                 const notification_flags_type) = 0;
         };
 
     public:
@@ -39,20 +39,26 @@ namespace mqmx
         ~MessageQueue ();
 
         MessageQueue (MessageQueue &&);
-	MessageQueue & operator = (MessageQueue &&);
+        MessageQueue & operator = (MessageQueue &&);
 
         queue_id_type getQID () const;
 
         status_code push (Message::upointer_type && msg);
-	Message::upointer_type pop ();
+        Message::upointer_type pop ();
 
-	template <typename MessageType, typename... ParametersTypes>
-	Message::upointer_type newMessage (ParametersTypes&&... args) const
-	{
-	    return Message::upointer_type (
-		new MessageType (getQID (), std::forward<ParametersTypes> (args)...));
-	}
-	
+        template <typename MessageType, typename... ParametersTypes>
+        Message::upointer_type newMessage (ParametersTypes&&... args) const
+        {
+            return Message::upointer_type (
+                new MessageType (getQID (), std::forward<ParametersTypes> (args)...));
+        }
+
+        template <typename MessageType, typename... ParametersTypes>
+        status_code enqueue (ParametersTypes&&... args)
+        {
+            return push (newMessage<MessageType> (std::forward<ParametersTypes> (args)...));
+        }
+
     public:
         status_code setListener (Listener &);
         void clearListener ();

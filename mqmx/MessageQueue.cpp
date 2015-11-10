@@ -23,35 +23,39 @@ namespace mqmx
         std::swap (_listener, o._listener);
         if (_listener)
         {
-            _listener->notify (_id, &o, NotificationFlag::Detached);
+            auto cplistener (_listener);
             _listener = nullptr;
+
+            cplistener->notify (_id, &o, NotificationFlag::Detached);
         }
     }
 
     MessageQueue & MessageQueue::operator = (MessageQueue && o)
     {
-	if (this != &o)
-	{
-	    std::lock (_mutex, o._mutex);
-	    lock_type guard_this (_mutex, std::adopt_lock_t ());
-	    lock_type guard_o (o._mutex, std::adopt_lock_t ());
-	    if (_listener)
-	    {
-		_listener->notify (_id, this, NotificationFlag::Detached);
-		_listener = nullptr;
-	    }
-	    _queue.clear ();
-	    _id = Message::UndefinedQID;
-	    std::swap (_queue, o._queue);
-	    std::swap (_id, o._id);
-	    std::swap (_listener, o._listener);
-	    if (_listener)
-	    {
-		_listener->notify (_id, &o, NotificationFlag::Detached);
-		_listener = nullptr;
-	    }
-	}
-	return *this;
+        if (this != &o)
+        {
+            std::lock (_mutex, o._mutex);
+            lock_type guard_this (_mutex, std::adopt_lock_t ());
+            lock_type guard_o (o._mutex, std::adopt_lock_t ());
+            if (_listener)
+            {
+                _listener->notify (_id, this, NotificationFlag::Detached);
+                _listener = nullptr;
+            }
+            _queue.clear ();
+            _id = Message::UndefinedQID;
+            std::swap (_queue, o._queue);
+            std::swap (_id, o._id);
+            std::swap (_listener, o._listener);
+            if (_listener)
+            {
+                auto cplistener (_listener);
+                _listener = nullptr;
+
+                cplistener->notify (_id, &o, NotificationFlag::Detached);
+            }
+        }
+        return *this;
     }
 
     MessageQueue::~MessageQueue ()
@@ -92,7 +96,7 @@ namespace mqmx
 
     Message::upointer_type MessageQueue::pop ()
     {
-	Message::upointer_type msg;
+        Message::upointer_type msg;
         lock_type guard (_mutex);
         if ((_id != Message::UndefinedQID) && !_queue.empty ())
         {

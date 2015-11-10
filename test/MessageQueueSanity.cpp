@@ -18,7 +18,7 @@ int main (int argc, const char ** argv)
     /*
      * push operation
      */
-    status_code retCode = queue.push (queue.newMessage<Message> (defMID));
+    status_code retCode = queue.enqueue<Message> (defMID);
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed!"));
 
@@ -27,22 +27,22 @@ int main (int argc, const char ** argv)
      */
     msg = queue.pop ();
     assert ((msg.get () != nullptr) &&
-	    ("Should not be empty!"));
+            ("Should not be empty!"));
     assert ((msg->getQID () == defQID) &&
-	    ("QID should match!"));
+            ("QID should match!"));
     assert ((msg->getMID () == defMID) &&
-	    ("MID should match!"));
+            ("MID should match!"));
 
     msg = queue.pop ();
     assert ((msg.get () == nullptr) &&
-	    ("Should be empty!"));
+            ("Should be empty!"));
 
     /*
      * FIFO message ordering
      */
     for (size_t ix = 0; ix < 10; ++ix)
     {
-        retCode = queue.push (queue.newMessage<Message> (defMID + ix));
+        retCode = queue.enqueue<Message> (defMID + ix);
         assert ((retCode == ExitStatus::Success) &&
                 ("Push should succeed!"));
     }
