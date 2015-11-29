@@ -3,10 +3,10 @@
 namespace mqmx
 {
     MessageQueuePoll::MessageQueuePoll ()
-        : _poll_mutex ()
-        , _notifications_mutex ()
-        , _notifications_condition ()
-        , _notifications ()
+        : m_poll_mutex ()
+        , m_notifications_mutex ()
+        , m_notifications_condition ()
+        , m_notifications ()
     {
     }
 
@@ -27,10 +27,10 @@ namespace mqmx
                         (std::get<1> (a) <  std::get<1> (b)));
             };
 
-            MessageQueue::lock_type notifications_guard (_notifications_mutex);
+            lock_type notifications_guard (m_notifications_mutex);
 	    notifications_list_type::iterator iter = std::upper_bound (
-		_notifications.begin (), _notifications.end (), elem, compare);
-	    if (iter != _notifications.begin ())
+		m_notifications.begin (), m_notifications.end (), elem, compare);
+	    if (iter != m_notifications.begin ())
 	    {
 		notifications_list_type::iterator prev = iter;
 		--prev;
@@ -38,12 +38,12 @@ namespace mqmx
 		if ((std::get<0> (*prev) == qid) && (std::get<1> (*prev) == mq))
 		{
 		    std::get<2> (*prev) |= flag;
-		    _notifications_condition.notify_one ();
+		    m_notifications_condition.notify_one ();
 		    return; /* queue already has some notification(s) */
 		}
 	    }
-	    _notifications.insert (iter, elem);
-	    _notifications_condition.notify_one ();
+	    m_notifications.insert (iter, elem);
+	    m_notifications_condition.notify_one ();
 	}
 	catch (...)
 	{ }

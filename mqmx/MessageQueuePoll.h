@@ -28,10 +28,10 @@ namespace mqmx
         typedef std::vector<notification_rec_type>        notifications_list_type;
 
     private:
-        mutex_type              _poll_mutex;
-        mutable mutex_type      _notifications_mutex;
-        condvar_type            _notifications_condition;
-        notifications_list_type _notifications;
+        mutex_type              m_poll_mutex;
+        mutable mutex_type      m_notifications_mutex;
+        condvar_type            m_notifications_condition;
+        notifications_list_type m_notifications;
 
         virtual void notify (const queue_id_type,
                              MessageQueue *,
@@ -50,13 +50,13 @@ namespace mqmx
                                       const WaitTimeProvider & wtp = WaitTimeProvider (),
                                       const RefClockProvider & rcp = WaitTimeProvider ())
         {
-            lock_type poll_guard (_poll_mutex); /* to block re-entrance */
+            lock_type poll_guard (m_poll_mutex); /* to block re-entrance */
             {
                 /*
                  * initialize list of notifications
                  */
-                lock_type notifications_guard (_notifications_mutex);
-                _notifications.clear ();
+                lock_type notifications_guard (m_notifications_mutex);
+                m_notifications.clear ();
             }
 
             /*
@@ -72,18 +72,18 @@ namespace mqmx
             /*
              * wait for notifications
              */
-            lock_type notifications_guard (_notifications_mutex);
+            lock_type notifications_guard (m_notifications_mutex);
             const auto abs_time = wtp.getTimepoint (rcp);
-            if (_notifications.empty ())
+            if (m_notifications.empty ())
             {
-                const auto pred = [&]{ return !_notifications.empty (); };
+                const auto pred = [&]{ return !m_notifications.empty (); };
                 if (wtp.waitInfinitely ())
                 {
-                    _notifications_condition.wait (notifications_guard, pred);
+                    m_notifications_condition.wait (notifications_guard, pred);
                 }
                 else if (abs_time.time_since_epoch ().count () != 0)
                 {
-                    _notifications_condition.wait_until (
+                    m_notifications_condition.wait_until (
                         notifications_guard, abs_time, pred);
                 }
             }
@@ -96,7 +96,7 @@ namespace mqmx
                            {
                                mq->clearListener ();
                            });
-            return _notifications;
+            return m_notifications;
         }
     };
 } /* namespace mqmx */

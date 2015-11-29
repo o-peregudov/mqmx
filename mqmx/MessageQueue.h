@@ -43,7 +43,7 @@ namespace mqmx
 
         queue_id_type getQID () const;
 
-        status_code push (Message::upointer_type && msg);
+        status_code push (Message::upointer_type &&);
         Message::upointer_type pop ();
 
         template <typename MessageType, typename... ParametersTypes>
@@ -64,9 +64,9 @@ namespace mqmx
         void clearListener ();
 
     private:
-        queue_id_type  _id;
-        mutex_type     _mutex;
-        container_type _queue;
-        Listener *     _listener;
+        queue_id_type  m_id;
+        mutex_type     m_mutex;
+        container_type m_queue;
+        Listener *     m_listener;
     };
 } /* namespace mqmx */

@@ -4,29 +4,29 @@
 namespace mqmx
 {
     MessageQueue::MessageQueue (const queue_id_type ID)
-        : _id (ID)
-        , _mutex ()
-        , _queue ()
-        , _listener (nullptr)
+        : m_id (ID)
+        , m_mutex ()
+        , m_queue ()
+        , m_listener (nullptr)
     {
     }
 
     MessageQueue::MessageQueue (MessageQueue && o)
-        : _id (Message::UndefinedQID)
-        , _mutex ()
-        , _queue ()
-        , _listener (nullptr)
+        : m_id (Message::UndefinedQID)
+        , m_mutex ()
+        , m_queue ()
+        , m_listener (nullptr)
     {
-        lock_type guard (o._mutex);
-        std::swap (_queue, o._queue);
-        std::swap (_id, o._id);
-        std::swap (_listener, o._listener);
-        if (_listener)
+        lock_type guard (o.m_mutex);
+        std::swap (m_queue, o.m_queue);
+        std::swap (m_id, o.m_id);
+        std::swap (m_listener, o.m_listener);
+        if (m_listener)
         {
-            auto cplistener (_listener);
-            _listener = nullptr;
+            auto cplistener (m_listener);
+            m_listener = nullptr;
 
-            cplistener->notify (_id, &o, NotificationFlag::Detached);
+            cplistener->notify (m_id, &o, NotificationFlag::Detached);
         }
     }
 
@@ -34,25 +34,25 @@ namespace mqmx
     {
         if (this != &o)
         {
-            std::lock (_mutex, o._mutex);
-            lock_type guard_this (_mutex, std::adopt_lock_t ());
-            lock_type guard_o (o._mutex, std::adopt_lock_t ());
-            if (_listener)
+            std::lock (m_mutex, o.m_mutex);
+            lock_type guard_this (m_mutex, std::adopt_lock_t ());
+            lock_type guard_o (o.m_mutex, std::adopt_lock_t ());
+            if (m_listener)
             {
-                _listener->notify (_id, this, NotificationFlag::Detached);
-                _listener = nullptr;
+                m_listener->notify (m_id, this, NotificationFlag::Detached);
+                m_listener = nullptr;
             }
-            _queue.clear ();
-            _id = Message::UndefinedQID;
-            std::swap (_queue, o._queue);
-            std::swap (_id, o._id);
-            std::swap (_listener, o._listener);
-            if (_listener)
+            m_queue.clear ();
+            m_id = Message::UndefinedQID;
+            std::swap (m_queue, o.m_queue);
+            std::swap (m_id, o.m_id);
+            std::swap (m_listener, o.m_listener);
+            if (m_listener)
             {
-                auto cplistener (_listener);
-                _listener = nullptr;
+                auto cplistener (m_listener);
+                m_listener = nullptr;
 
-                cplistener->notify (_id, &o, NotificationFlag::Detached);
+                cplistener->notify (m_id, &o, NotificationFlag::Detached);
             }
         }
         return *this;
@@ -60,15 +60,15 @@ namespace mqmx
 
     MessageQueue::~MessageQueue ()
     {
-        if (_listener)
+        if (m_listener)
         {
-            _listener->notify (_id, nullptr, NotificationFlag::Closed);
+            m_listener->notify (m_id, nullptr, NotificationFlag::Closed);
         }
     }
 
     queue_id_type MessageQueue::getQID () const
     {
-        return _id;
+        return m_id;
     }
 
     status_code MessageQueue::push (Message::upointer_type && msg)
@@ -78,18 +78,18 @@ namespace mqmx
             return ExitStatus::InvalidArgument;
         }
 
-        lock_type guard (_mutex);
-        if ((_id == Message::UndefinedQID) ||
-            (_id != msg->getQID ()))
+        lock_type guard (m_mutex);
+        if ((m_id == Message::UndefinedQID) ||
+            (m_id != msg->getQID ()))
         {
             return ExitStatus::NotSupported;
         }
 
-        _queue.push_back (std::move (msg));
-        if (_listener && (_queue.size () == 1))
+        m_queue.push_back (std::move (msg));
+        if (m_listener && (m_queue.size () == 1))
         {
             /* only first message will be reported */
-            _listener->notify (_id, this, NotificationFlag::NewData);
+            m_listener->notify (m_id, this, NotificationFlag::NewData);
         }
         return ExitStatus::Success;
     }
@@ -97,34 +97,34 @@ namespace mqmx
     Message::upointer_type MessageQueue::pop ()
     {
         Message::upointer_type msg;
-        lock_type guard (_mutex);
-        if ((_id != Message::UndefinedQID) && !_queue.empty ())
+        lock_type guard (m_mutex);
+        if ((m_id != Message::UndefinedQID) && !m_queue.empty ())
         {
-            msg = std::move (_queue.front ());
-            _queue.pop_front ();
+            msg = std::move (m_queue.front ());
+            m_queue.pop_front ();
         }
         return std::move (msg);
     }
 
     status_code MessageQueue::setListener (Listener & l)
     {
-        lock_type guard (_mutex);
-        if (_listener)
+        lock_type guard (m_mutex);
+        if (m_listener)
         {
             return ExitStatus::AlreadyExist;
         }
 
-        _listener = &l;
-        if (!_queue.empty ())
+        m_listener = &l;
+        if (!m_queue.empty ())
         {
-            _listener->notify (_id, this, NotificationFlag::NewData);
+            m_listener->notify (m_id, this, NotificationFlag::NewData);
         }
         return ExitStatus::Success;
     }
 
     void MessageQueue::clearListener ()
     {
-        lock_type guard (_mutex);
-        _listener = nullptr;
+        lock_type guard (m_mutex);
+        m_listener = nullptr;
     }
 } /* namespace mqmx */
