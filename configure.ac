@@ -107,6 +107,13 @@ if test x$ac_pthread_lib_found = xyes; then
   LIBS="$PTHREAD_LIBS $LIBS"
 fi
 
+AX_OPENMP([ac_openmp_supported=yes],
+          [ac_openmp_supported=no])
+if test x$ac_openmp_supported = xyes; then
+  CFLAGS="$CFLAGS $OPENMP_CFLAGS"
+  CXXFLAGS="$CXXFLAGS $OPENMP_CFLAGS"
+fi
+
 AC_CONFIG_FILES([
     Makefile
     mqmx/Makefile
