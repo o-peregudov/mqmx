@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <deque>
+#include <type_traits>
 
 #include <mqmx/Message.h>
 
@@ -49,6 +50,8 @@ namespace mqmx
         template <typename MessageType, typename... ParametersTypes>
         Message::upointer_type newMessage (ParametersTypes&&... args) const
         {
+            static_assert (std::is_base_of<Message, MessageType>::value,
+			   "Invalid MessageType - should be derived from mqmx::Message");
             return Message::upointer_type (
                 new MessageType (getQID (), std::forward<ParametersTypes> (args)...));
         }
@@ -56,6 +59,8 @@ namespace mqmx
         template <typename MessageType, typename... ParametersTypes>
         status_code enqueue (ParametersTypes&&... args)
         {
+            static_assert (std::is_base_of<Message, MessageType>::value,
+			   "Invalid MessageType - should be derived from mqmx::Message");
             return push (newMessage<MessageType> (std::forward<ParametersTypes> (args)...));
         }
 
