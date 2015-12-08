@@ -70,11 +70,7 @@
 #         compiler:		$LTCC
 #         compiler flags:		$LTCFLAGS
 #         linker:		$LD (gnu? $with_gnu_ld)
-<<<<<<< HEAD
-#         $progname:	(GNU libtool) 2.4.2 Debian-2.4.2-1.1
-=======
 #         $progname:	(GNU libtool) 2.4.2 Debian-2.4.2-1.11
->>>>>>> 512fc2f58a84f6f814fed36639ac6a73b475c135
 #         automake:	$automake_version
 #         autoconf:	$autoconf_version
 #
@@ -84,11 +80,7 @@
 
 PROGRAM=libtool
 PACKAGE=libtool
-<<<<<<< HEAD
-VERSION="2.4.2 Debian-2.4.2-1.1"
-=======
 VERSION="2.4.2 Debian-2.4.2-1.11"
->>>>>>> 512fc2f58a84f6f814fed36639ac6a73b475c135
 TIMESTAMP=""
 package_revision=1.3337
 

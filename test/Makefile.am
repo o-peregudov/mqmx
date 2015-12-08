@@ -26,16 +26,4 @@ check_PROGRAMS =				\
 	MessageQueuePollRelTimeout		\
 	MessageQueuePollAbsTimeout
 
-<<<<<<< HEAD
-MessageQueueSanity_SOURCES = MessageQueueSanity.cpp
-MessageQueueListener_SOURCES = MessageQueueListener.cpp
-MessageQueueListenerMoveCtor_SOURCES = MessageQueueListenerMoveCtor.cpp
-MessageQueueListenerMoveAssignment_SOURCES = MessageQueueListenerMoveAssignment.cpp
-MessageQueuePollSanity_SOURCES = MessageQueuePollSanity.cpp
-MessageQueuePollInitialNotification_SOURCES = MessageQueuePollInitialNotification.cpp
-MessageQueuePollInfiniteWait_SOURCES = MessageQueuePollInfiniteWait.cpp
-MessageQueuePollRelTimeout_SOURCES = MessageQueuePollRelTimeout.cpp
-MessageQueuePollAbsTimeout_SOURCES = MessageQueuePollAbsTimeout.cpp
-=======
 AM_DEFAULT_SOURCE_EXT = .cpp
->>>>>>> 512fc2f58a84f6f814fed36639ac6a73b475c135
