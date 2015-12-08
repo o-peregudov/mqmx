@@ -118,69 +118,14 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-<<<<<<< HEAD
-am_MessageQueueListener_OBJECTS = MessageQueueListener.$(OBJEXT)
-MessageQueueListener_OBJECTS = $(am_MessageQueueListener_OBJECTS)
-=======
 MessageQueueListener_SOURCES = MessageQueueListener.cpp
 MessageQueueListener_OBJECTS = MessageQueueListener.$(OBJEXT)
->>>>>>> 12cc51255404be90707647a72ce9b2a28e938ea1
 MessageQueueListener_LDADD = $(LDADD)
 MessageQueueListener_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-<<<<<<< HEAD
-am_MessageQueueListenerMoveAssignment_OBJECTS =  \
-	MessageQueueListenerMoveAssignment.$(OBJEXT)
-MessageQueueListenerMoveAssignment_OBJECTS =  \
-	$(am_MessageQueueListenerMoveAssignment_OBJECTS)
-MessageQueueListenerMoveAssignment_LDADD = $(LDADD)
-MessageQueueListenerMoveAssignment_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la
-am_MessageQueueListenerMoveCtor_OBJECTS =  \
-	MessageQueueListenerMoveCtor.$(OBJEXT)
-MessageQueueListenerMoveCtor_OBJECTS =  \
-	$(am_MessageQueueListenerMoveCtor_OBJECTS)
-MessageQueueListenerMoveCtor_LDADD = $(LDADD)
-MessageQueueListenerMoveCtor_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la
-am_MessageQueuePollAbsTimeout_OBJECTS =  \
-	MessageQueuePollAbsTimeout.$(OBJEXT)
-MessageQueuePollAbsTimeout_OBJECTS =  \
-	$(am_MessageQueuePollAbsTimeout_OBJECTS)
-MessageQueuePollAbsTimeout_LDADD = $(LDADD)
-MessageQueuePollAbsTimeout_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la
-am_MessageQueuePollInfiniteWait_OBJECTS =  \
-	MessageQueuePollInfiniteWait.$(OBJEXT)
-MessageQueuePollInfiniteWait_OBJECTS =  \
-	$(am_MessageQueuePollInfiniteWait_OBJECTS)
-MessageQueuePollInfiniteWait_LDADD = $(LDADD)
-MessageQueuePollInfiniteWait_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la
-am_MessageQueuePollInitialNotification_OBJECTS =  \
-	MessageQueuePollInitialNotification.$(OBJEXT)
-MessageQueuePollInitialNotification_OBJECTS =  \
-	$(am_MessageQueuePollInitialNotification_OBJECTS)
-MessageQueuePollInitialNotification_LDADD = $(LDADD)
-MessageQueuePollInitialNotification_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la
-am_MessageQueuePollRelTimeout_OBJECTS =  \
-	MessageQueuePollRelTimeout.$(OBJEXT)
-MessageQueuePollRelTimeout_OBJECTS =  \
-	$(am_MessageQueuePollRelTimeout_OBJECTS)
-MessageQueuePollRelTimeout_LDADD = $(LDADD)
-MessageQueuePollRelTimeout_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la
-am_MessageQueuePollSanity_OBJECTS = MessageQueuePollSanity.$(OBJEXT)
-MessageQueuePollSanity_OBJECTS = $(am_MessageQueuePollSanity_OBJECTS)
-MessageQueuePollSanity_LDADD = $(LDADD)
-MessageQueuePollSanity_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
-am_MessageQueueSanity_OBJECTS = MessageQueueSanity.$(OBJEXT)
-MessageQueueSanity_OBJECTS = $(am_MessageQueueSanity_OBJECTS)
-=======
 MessageQueueListenerMoveAssignment_SOURCES =  \
 	MessageQueueListenerMoveAssignment.cpp
 MessageQueueListenerMoveAssignment_OBJECTS =  \
@@ -227,7 +172,6 @@ MessageQueuePollSanity_LDADD = $(LDADD)
 MessageQueuePollSanity_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
 MessageQueueSanity_SOURCES = MessageQueueSanity.cpp
 MessageQueueSanity_OBJECTS = MessageQueueSanity.$(OBJEXT)
->>>>>>> 12cc51255404be90707647a72ce9b2a28e938ea1
 MessageQueueSanity_LDADD = $(LDADD)
 MessageQueueSanity_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
 AM_V_P = $(am__v_P_@AM_V@)
@@ -264,26 +208,6 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-<<<<<<< HEAD
-SOURCES = $(MessageQueueListener_SOURCES) \
-	$(MessageQueueListenerMoveAssignment_SOURCES) \
-	$(MessageQueueListenerMoveCtor_SOURCES) \
-	$(MessageQueuePollAbsTimeout_SOURCES) \
-	$(MessageQueuePollInfiniteWait_SOURCES) \
-	$(MessageQueuePollInitialNotification_SOURCES) \
-	$(MessageQueuePollRelTimeout_SOURCES) \
-	$(MessageQueuePollSanity_SOURCES) \
-	$(MessageQueueSanity_SOURCES)
-DIST_SOURCES = $(MessageQueueListener_SOURCES) \
-	$(MessageQueueListenerMoveAssignment_SOURCES) \
-	$(MessageQueueListenerMoveCtor_SOURCES) \
-	$(MessageQueuePollAbsTimeout_SOURCES) \
-	$(MessageQueuePollInfiniteWait_SOURCES) \
-	$(MessageQueuePollInitialNotification_SOURCES) \
-	$(MessageQueuePollRelTimeout_SOURCES) \
-	$(MessageQueuePollSanity_SOURCES) \
-	$(MessageQueueSanity_SOURCES)
-=======
 SOURCES = MessageQueueListener.cpp \
 	MessageQueueListenerMoveAssignment.cpp \
 	MessageQueueListenerMoveCtor.cpp \
@@ -300,7 +224,6 @@ DIST_SOURCES = MessageQueueListener.cpp \
 	MessageQueuePollInitialNotification.cpp \
 	MessageQueuePollRelTimeout.cpp MessageQueuePollSanity.cpp \
 	MessageQueueSanity.cpp
->>>>>>> 12cc51255404be90707647a72ce9b2a28e938ea1
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -651,6 +574,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -663,19 +587,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 LDADD = $(top_builddir)/mqmx/libmqmx.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
-<<<<<<< HEAD
-MessageQueueSanity_SOURCES = MessageQueueSanity.cpp
-MessageQueueListener_SOURCES = MessageQueueListener.cpp
-MessageQueueListenerMoveCtor_SOURCES = MessageQueueListenerMoveCtor.cpp
-MessageQueueListenerMoveAssignment_SOURCES = MessageQueueListenerMoveAssignment.cpp
-MessageQueuePollSanity_SOURCES = MessageQueuePollSanity.cpp
-MessageQueuePollInitialNotification_SOURCES = MessageQueuePollInitialNotification.cpp
-MessageQueuePollInfiniteWait_SOURCES = MessageQueuePollInfiniteWait.cpp
-MessageQueuePollRelTimeout_SOURCES = MessageQueuePollRelTimeout.cpp
-MessageQueuePollAbsTimeout_SOURCES = MessageQueuePollAbsTimeout.cpp
-=======
 AM_DEFAULT_SOURCE_EXT = .cpp
->>>>>>> 12cc51255404be90707647a72ce9b2a28e938ea1
 all: all-am
 
 .SUFFIXES:
