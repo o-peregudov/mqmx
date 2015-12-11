@@ -83,32 +83,59 @@ if test x$ac_openmp_supported = xyes; then
 fi
 
 dnl
-dnl Check for GTest framework
+dnl Check for Google Test/Mock frameworks
 dnl
+HAVE_LIBGTEST=0
+HAVE_LIBGMOCK=0
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADER(gtest/gtest.h, [ac_gtest_h_found=yes], [ac_gtest_h_found=no])
 if test $ac_gtest_h_found = yes; then
-    save_LIBS="$LIBS"
+  save_LIBS="$LIBS"
+  LIBS="$LIBS -lgtest -lgtest_main"
+  AC_CACHE_CHECK(for gtest library, ac_cv_libgtest_works,
+    AC_LINK_IFELSE([AC_LANG_SOURCE([[
+      #include <gtest/gtest.h>
+      int main (int argc, char ** argv)
+      {
+        ::testing::InitGoogleTest(&argc, argv);
+        return 0;
+      }
+    ]])],[ac_cv_libgtest_works=yes],[ac_cv_libgtest_works=no]))
+  LIBS="$save_LIBS"
+  if test $ac_cv_libgtest_works = yes; then
     LIBS="$LIBS -lgtest -lgtest_main"
-    AC_CACHE_CHECK(for gtest library, ac_cv_libgtest_works,
+    HAVE_LIBGTEST=1
+  else
+    AC_MSG_FAILURE([failed to link with libgtest])
+  fi
+
+  AC_CHECK_HEADER(gmock/gmock.h,
+    [ac_gmock_h_found=yes], [ac_gmock_h_found=no],
+    [#include <gtest/gtest.h>])
+  if test $ac_gmock_h_found = yes; then
+    save_LIBS="$LIBS"
+    LIBS="$LIBS -lgmock -lgmock_main"
+    AC_CACHE_CHECK(for gmock library, ac_cv_libgmock_works,
       AC_LINK_IFELSE([AC_LANG_SOURCE([[
-        #include <gtest/gtest.h>
+        #include <gmock/gmock.h>
         int main (int argc, char ** argv)
         {
-          ::testing::InitGoogleTest(&argc, argv);
+          ::testing::InitGoogleMock(&argc, argv);
           return 0;
         }
-      ]])],[ac_cv_libgtest_works=yes],[ac_cv_libgtest_works=no]))
+      ]])],[ac_cv_libgmock_works=yes],[ac_cv_libgmock_works=no]))
     LIBS="$save_LIBS"
-    if test $ac_cv_libgtest_works = yes; then
-      LIBS="$LIBS -lgtest -lgtest_main"
-      HAVE_LIBGTEST=1
-    else
-      AC_MSG_FAILURE([failed to link with libgtest])
+    if test $ac_cv_libgmock_works = yes; then
+      LIBS="$LIBS -lgmock -lgmock_main"
+      HAVE_LIBGMOCK=1
+dnl    else
+dnl      AC_MSG_FAILURE([failed to link with libgmock])
     fi
+  fi
 fi
 AC_LANG_POP([C++])
-AC_SUBST(HAVE_GTEST_LIB)
+AC_SUBST(HAVE_LIBGTEST)
+AC_SUBST(HAVE_LIBGMOCK)
 
 AC_CONFIG_FILES([
     Makefile
