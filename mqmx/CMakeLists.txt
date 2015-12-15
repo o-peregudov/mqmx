@@ -2,6 +2,7 @@ SET (MQMX_SOURCES
   WaitTimeProvider.cpp
   MessageQueue.cpp
   MessageQueuePoll.cpp
+  MessageQueuePool.cpp
 )
 
 SET (MQMX_HEADERS
@@ -10,6 +11,7 @@ SET (MQMX_HEADERS
   Message.h
   MessageQueue.h
   MessageQueuePoll.h
+  MessageQueuePool.h
 )
 
 ADD_LIBRARY (${PROJECT_NAME} STATIC
