@@ -90,17 +90,33 @@ namespace mqmx
 	m_auxThread.join ();
     }
 
-    queue_id_type MessageQueuePool::getNextQID () const
+    MessageQueue::upointer_type MessageQueuePool::addQueue (const message_handler_func_type & handler)
     {
-	lock_type guard (m_pollMutex);
-	auto it = --(m_mqHandler.end ());
-	return (it->first + 1);
+	MessageQueue::upointer_type newMQ;
+	if (handler)
+	{
+	    lock_type guard (m_pollMutex);
+	    m_mqControl.enqueue<Message> (POLL_RESTART_MESSAGE_ID);
+	    m_pollCondition.wait (guard, [this]{ return m_restartFlag.load (); });
+
+	    auto it = --(m_mqHandler.end ());
+	    newMQ.reset (new MessageQueue (it->first + 1));
+
+	    auto ires = m_mqHandler.insert (std::make_pair (newMQ->getQID (), handler));
+	    if (ires.second)
+	    {
+		m_mqs.push_back (newMQ.get ());
+	    }
+
+	    m_restartFlag = false;
+	    m_pollCondition.notify_one ();
+	}
+	return newMQ;
     }
 
-    status_code MessageQueuePool::addQueue (MessageQueue * mq,
-					    const message_handler_func_type & handler)
+    status_code MessageQueuePool::removeQueue (MessageQueue * mq)
     {
-	if ((mq == nullptr) && !handler)
+	if (mq == nullptr)
 	{
 	    return ExitStatus::InvalidArgument;
 	}
@@ -109,15 +125,26 @@ namespace mqmx
 	m_mqControl.enqueue<Message> (POLL_RESTART_MESSAGE_ID);
 	m_pollCondition.wait (guard, [this]{ return m_restartFlag.load (); });
 
-	auto ires = m_mqHandler.insert (std::make_pair (mq->getQID (), handler));
-	if (ires.second)
+	bool found = false;
+	for (size_t ix = 0; ix < m_mqs.size (); ++ix)
 	{
-	    m_mqs.push_back (mq);
+	    if (m_mqs[ix] == mq)
+	    {
+		found = true;
+		std::swap (m_mqs[ix], m_mqs.back ());
+		m_mqs.pop_back ();
+		break;
+	    }
+	}
+
+	if (found)
+	{
+	    m_mqHandler.erase (mq->getQID ());
 	}
 
 	m_restartFlag = false;
 	m_pollCondition.notify_one ();
 
-	return (ires.second ? ExitStatus::Success : ExitStatus::AlreadyExist);
+	return (found ? ExitStatus::Success : ExitStatus::NotFound);
     }
 } /* namespace mqmx */

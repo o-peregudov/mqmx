@@ -41,7 +41,7 @@ namespace mqmx
 	MessageQueuePool ();
 	~MessageQueuePool ();
 
-	queue_id_type getNextQID () const;
-	status_code addQueue (MessageQueue *, const message_handler_func_type &);
+	MessageQueue::upointer_type addQueue (const message_handler_func_type &);
+	status_code removeQueue (MessageQueue *);
     };
 } /* namespace mqmx */
