@@ -114,7 +114,7 @@ namespace mqmx
 	return newMQ;
     }
 
-    status_code MessageQueuePool::removeQueue (MessageQueue * mq)
+    status_code MessageQueuePool::removeQueue (const MessageQueue * const mq)
     {
 	if (mq == nullptr)
 	{

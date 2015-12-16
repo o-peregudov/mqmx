@@ -42,6 +42,6 @@ namespace mqmx
 	~MessageQueuePool ();
 
 	MessageQueue::upointer_type addQueue (const message_handler_func_type &);
-	status_code removeQueue (MessageQueue *);
+	status_code removeQueue (const MessageQueue * const);
     };
 } /* namespace mqmx */
