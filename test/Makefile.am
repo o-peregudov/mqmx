@@ -1,11 +1,17 @@
 ACLOCAL_AMFLAGS = -I m4
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+
+AM_CPPFLAGS =	-I$(top_builddir)	\
+		-I$(top_srcdir)
+
 LDADD = $(top_builddir)/mqmx/libmqmx.la
 
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 
-TESTS =						\
-	MessageQueueSanity			\
+noinst_HEADERS =	  			\
+	stubs/listener.h			\
+	fixtures/MessageQueuePoll.h
+
+TESTS =	MessageQueueSanity			\
 	MessageQueueListener			\
 	MessageQueueListenerMoveCtor		\
 	MessageQueueListenerMoveAssignment	\
