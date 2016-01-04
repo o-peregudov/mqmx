@@ -6,45 +6,52 @@ namespace mqmx
     {
 	if (msg->getMID () == TERMINATE_MESSAGE_ID)
 	{
-	    m_terminateFlag = true;
+	    return ExitStatus::Finished;
 	}
-	else if (msg->getMID () == POLL_RESTART_MESSAGE_ID)
+	if (msg->getMID () == POLL_RESTART_MESSAGE_ID)
 	{
-	    m_restartFlag = true;
+	    return ExitStatus::RestartNeeded;
 	}
 	return ExitStatus::Success;
     }
 
-    void MessageQueuePool::handleNotifications (const MessageQueuePoll::notification_rec_type & rec)
+    bool MessageQueuePool::handleNotifications (const size_t nQueuesSignaled,
+						const size_t idxCurrentQueue,
+						const MessageQueuePoll::notification_rec_type & rec)
     {
 	if (std::get<2> (rec) & MessageQueue::NotificationFlag::Detached)
 	{
-	    if (std::get<0> (rec) == m_mqControl.getQID ())
-	    {
-		m_terminateFlag = true;
-		return;
-	    }
+	    /* TODO: this is quite advanced functionality and it is to be implemented */
 	}
 
 	if (std::get<2> (rec) & MessageQueue::NotificationFlag::NewData)
 	{
 	    Message::upointer_type msg = std::get<1> (rec)->pop ();
-	    if (std::get<0> (rec) == m_mqControl.getQID ())
-	    {
-		controlQueueHandler (std::move (msg));
-		return;
-	    }
-
 	    const auto it = m_mqHandler.find (std::get<0> (rec));
 	    if (it->second)
 	    {
 		const status_code retCode = (it->second)(std::move (msg));
-		if (retCode != ExitStatus::Success)
+		if (std::get<0> (rec) == m_mqControl.getQID ())
 		{
-		    /* print warning about not success */
-		}
-	    }
-	}
+		    if (retCode == ExitStatus::Finished)
+		    {
+			m_terminateFlag = true;
+			return false;
+		    }
+		    if (retCode == ExitStatus::RestartNeeded)
+		    {
+			m_restartFlag = true;
+                        return false;
+                    }
+                }
+                if (retCode != ExitStatus::Success)
+                {
+                    /* TODO: print warning about not success */
+                }
+            }
+        }
+
+        return true;
     }
 
     void MessageQueuePool::threadLoop ()
@@ -55,9 +62,11 @@ namespace mqmx
 	    const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
 					  WaitTimeProvider::WAIT_INFINITELY);
 
-	    for (const auto & elem : mqlist)
+	    const size_t nQueuesSignaled = mqlist.size ();
+	    for (size_t ix = 0; ix < nQueuesSignaled; ++ix)
 	    {
-		handleNotifications (elem);
+		if (!handleNotifications (nQueuesSignaled, ix, mqlist[ix]))
+		    break;
 	    }
 
 	    if (m_restartFlag)

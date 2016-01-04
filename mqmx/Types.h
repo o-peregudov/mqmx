@@ -13,6 +13,7 @@ namespace mqmx
 	InvalidArgument,
 	NotSupported,
 	NotFound,
+	RestartNeeded,
     };
 
     typedef int    status_code;

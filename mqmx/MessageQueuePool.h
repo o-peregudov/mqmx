@@ -25,16 +25,18 @@ namespace mqmx
 	const message_id_type POLL_RESTART_MESSAGE_ID = 0x01;
 
 	MessageQueue                m_mqControl;
-	handlers_map_type           m_mqHandler;
-	std::vector<MessageQueue *> m_mqs;
-	bool                        m_terminateFlag;
-	std::atomic<bool>           m_restartFlag;
-	mutable mutex_type          m_pollMutex;
-	condvar_type                m_pollCondition;
-	BBC_pkg::oam_thread_type    m_auxThread;
+        handlers_map_type           m_mqHandler;
+        std::vector<MessageQueue *> m_mqs;
+        bool                        m_terminateFlag;
+        std::atomic<bool>           m_restartFlag;
+        mutable mutex_type          m_pollMutex;
+        condvar_type                m_pollCondition;
+        BBC_pkg::oam_thread_type    m_auxThread;
 
 	status_code controlQueueHandler (Message::upointer_type &&);
-	void handleNotifications (const MessageQueuePoll::notification_rec_type &);
+        bool handleNotifications (const size_t nQueuesSignaled, /* total number of mqs signaled */
+                                  const size_t idxCurrentQueue, /* current number of signaled mq */
+                                  const MessageQueuePoll::notification_rec_type &);
 	void threadLoop ();
 
     public:
