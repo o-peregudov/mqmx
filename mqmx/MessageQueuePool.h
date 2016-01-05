@@ -34,9 +34,9 @@ namespace mqmx
         BBC_pkg::oam_thread_type    m_auxThread;
 
 	status_code controlQueueHandler (Message::upointer_type &&);
-        bool handleNotifications (const size_t nQueuesSignaled, /* total number of mqs signaled */
-                                  const size_t idxCurrentQueue, /* current number of signaled mq */
-                                  const MessageQueuePoll::notification_rec_type &);
+        status_code handleNotifications (const size_t nQueuesSignaled, /* total number of mqs signaled */
+					 const size_t idxCurrentQueue, /* current number of signaled mq */
+					 const MessageQueuePoll::notification_rec_type &);
 	void threadLoop ();
 
     public:

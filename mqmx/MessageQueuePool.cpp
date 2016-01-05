@@ -6,24 +6,22 @@ namespace mqmx
     {
 	if (msg->getMID () == TERMINATE_MESSAGE_ID)
 	{
-	    return ExitStatus::Finished;
+	    m_terminateFlag = true;
+	    return ExitStatus::RestartNeeded;
 	}
 	if (msg->getMID () == POLL_RESTART_MESSAGE_ID)
 	{
+	    m_restartFlag = true;
 	    return ExitStatus::RestartNeeded;
 	}
 	return ExitStatus::Success;
     }
 
-    bool MessageQueuePool::handleNotifications (const size_t nQueuesSignaled,
-						const size_t idxCurrentQueue,
-						const MessageQueuePoll::notification_rec_type & rec)
+    status_code MessageQueuePool::handleNotifications (
+	const size_t nQueuesSignaled,
+	const size_t idxCurrentQueue,
+	const MessageQueuePoll::notification_rec_type & rec)
     {
-	if (std::get<2> (rec) & MessageQueue::NotificationFlag::Detached)
-	{
-	    /* TODO: this is quite advanced functionality and it is to be implemented */
-	}
-
 	if (std::get<2> (rec) & MessageQueue::NotificationFlag::NewData)
 	{
 	    Message::upointer_type msg = std::get<1> (rec)->pop ();
@@ -31,27 +29,14 @@ namespace mqmx
 	    if (it->second)
 	    {
 		const status_code retCode = (it->second)(std::move (msg));
-		if (std::get<0> (rec) == m_mqControl.getQID ())
+		if (retCode != ExitStatus::Success)
 		{
-		    if (retCode == ExitStatus::Finished)
-		    {
-			m_terminateFlag = true;
-			return false;
-		    }
-		    if (retCode == ExitStatus::RestartNeeded)
-		    {
-			m_restartFlag = true;
-                        return false;
-                    }
-                }
-                if (retCode != ExitStatus::Success)
-                {
-                    /* TODO: print warning about not success */
-                }
+		    /* TODO: print diagnostic message here */
+		}
+		return retCode;
             }
         }
-
-        return true;
+        return ExitStatus::Success;
     }
 
     void MessageQueuePool::threadLoop ()
@@ -65,8 +50,11 @@ namespace mqmx
 	    const size_t nQueuesSignaled = mqlist.size ();
 	    for (size_t ix = 0; ix < nQueuesSignaled; ++ix)
 	    {
-		if (!handleNotifications (nQueuesSignaled, ix, mqlist[ix]))
+		const status_code retCode = handleNotifications (nQueuesSignaled, ix, mqlist[ix]);
+		if (retCode == ExitStatus::RestartNeeded)
+		{
 		    break;
+		}
 	    }
 
 	    if (m_restartFlag)
