@@ -18,8 +18,6 @@ namespace mqmx
     }
 
     status_code MessageQueuePool::handleNotifications (
-	const size_t nQueuesSignaled,
-	const size_t idxCurrentQueue,
 	const MessageQueuePoll::notification_rec_type & rec)
     {
 	if (std::get<2> (rec) & MessageQueue::NotificationFlag::NewData)
@@ -46,11 +44,9 @@ namespace mqmx
 	    MessageQueuePoll mqp;
 	    const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
 					  WaitTimeProvider::WAIT_INFINITELY);
-
-	    const size_t nQueuesSignaled = mqlist.size ();
-	    for (size_t ix = 0; ix < nQueuesSignaled; ++ix)
+	    for (auto & elem : mqlist)
 	    {
-		const status_code retCode = handleNotifications (nQueuesSignaled, ix, mqlist[ix]);
+		const status_code retCode = handleNotifications (elem);
 		if (retCode == ExitStatus::RestartNeeded)
 		{
 		    break;
