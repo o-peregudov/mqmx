@@ -14,6 +14,10 @@ namespace mqmx
 	    m_restartFlag = true;
 	    return ExitStatus::RestartNeeded;
 	}
+	if (msg->getMID () == POLL_PAUSE_MESSAGE_ID)
+	{
+	    m_pauseFlag = true;
+	}
 	return ExitStatus::Success;
     }
 
@@ -53,7 +57,13 @@ namespace mqmx
 		}
 	    }
 
-	    if (m_restartFlag)
+	    if (m_pauseFlag)
+	    {
+		lock_type guard (m_pollMutex);
+		m_pollCondition.notify_one ();
+		m_pollCondition.wait (guard, [this]{ return !m_pauseFlag; });
+	    }
+	    else if (m_restartFlag)
 	    {
 		lock_type guard (m_pollMutex);
 		m_pollCondition.notify_one ();
@@ -62,23 +72,47 @@ namespace mqmx
 	}
     }
 
+    void MessageQueuePool::resumePoll ()
+    {
+	lock_type guard (m_pollMutex);
+	m_pauseFlag = false;
+	m_pollCondition.notify_one ();
+    }
+
+    bool MessageQueuePool::isIdle ()
+    {
+	if (m_pauseFlag)
+	{
+	    MessageQueuePoll mqp;
+	    const bool result = mqp.poll (std::begin (m_mqs), std::end (m_mqs)).empty ();
+	    resumePoll ();
+	    return result;
+	}
+	return false;
+    }
+
     MessageQueuePool::MessageQueuePool ()
 	: m_mqControl (CONTROL_MESSAGE_QUEUE_ID)
 	, m_mqHandler ()
 	, m_mqs ()
 	, m_terminateFlag (false)
 	, m_restartFlag (false)
-	, m_pollMutex ()
-	, m_pollCondition ()
-	, m_auxThread ([this]{ threadLoop (); })
+	, m_pauseFlag (false)
+        , m_pollMutex ()
+        , m_pollCondition ()
+        , m_auxThread ([this]{ threadLoop (); })
     {
-	const message_handler_func_type handler = std::bind (
-	    &MessageQueuePool::controlQueueHandler, this, std::placeholders::_1);
-	m_mqHandler.insert (std::make_pair (m_mqControl.getQID (), handler));
+        const message_handler_func_type handler = std::bind (
+            &MessageQueuePool::controlQueueHandler, this, std::placeholders::_1);
+        m_mqHandler.insert (std::make_pair (m_mqControl.getQID (), handler));
     }
 
     MessageQueuePool::~MessageQueuePool ()
     {
+        if (m_pauseFlag)
+        {
+            resumePoll ();
+	}
 	m_mqControl.enqueue<Message> (TERMINATE_MESSAGE_ID);
 	m_auxThread.join ();
     }
