@@ -72,6 +72,13 @@ namespace mqmx
 	}
     }
 
+    void MessageQueuePool::pausePoll ()
+    {
+	lock_type guard (m_pollMutex);
+	m_mqControl.enqueue<Message> (POLL_PAUSE_MESSAGE_ID);
+	m_pollCondition.wait (guard, [this]{ return m_pauseFlag.load (); });
+    }
+
     void MessageQueuePool::resumePoll ()
     {
 	lock_type guard (m_pollMutex);
@@ -84,9 +91,7 @@ namespace mqmx
 	if (m_pauseFlag)
 	{
 	    MessageQueuePoll mqp;
-	    const bool result = mqp.poll (std::begin (m_mqs), std::end (m_mqs)).empty ();
-	    resumePoll ();
-	    return result;
+	    return mqp.poll (std::begin (m_mqs), std::end (m_mqs)).empty ();
 	}
 	return false;
     }

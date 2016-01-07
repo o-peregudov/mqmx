@@ -39,8 +39,10 @@ namespace mqmx
         status_code handleNotifications (const MessageQueuePoll::notification_rec_type &);
         void threadLoop ();
 
-        bool isIdle ();
+    protected:
+        void pausePoll ();
         void resumePoll ();
+        bool isIdle ();
 
     public:
 	MessageQueuePool ();
