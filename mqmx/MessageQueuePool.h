@@ -47,13 +47,7 @@ namespace mqmx
         MessageQueuePool ();
         ~MessageQueuePool ();
 
-        bool isPollIdle ()
-        {
-            pausePoll ();
-            const bool idleStatus = isIdle ();
-            resumePoll ();
-            return idleStatus;
-        }
+        bool isPollIdle ();
 
 	MessageQueue::upointer_type addQueue (const message_handler_func_type &);
 	status_code removeQueue (const MessageQueue * const);

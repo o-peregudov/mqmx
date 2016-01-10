@@ -96,6 +96,14 @@ namespace mqmx
 	return false;
     }
 
+    bool MessageQueuePool::isPollIdle ()
+    {
+	pausePoll ();
+	const bool idleStatus = isIdle ();
+	resumePoll ();
+	return idleStatus;
+    }
+
     MessageQueuePool::MessageQueuePool ()
 	: m_mqControl (CONTROL_MESSAGE_QUEUE_ID)
 	, m_mqHandler ()
