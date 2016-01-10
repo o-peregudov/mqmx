@@ -128,10 +128,14 @@ if test $ac_gtest_h_found = yes; then
     if test $ac_cv_libgmock_works = yes; then
       LIBS="$LIBS -lgmock -lgmock_main"
       HAVE_LIBGMOCK=1
-dnl    else
-dnl      AC_MSG_FAILURE([failed to link with libgmock])
+    else
+      AC_MSG_FAILURE([failed to link with libgmock])
     fi
+  else
+    AC_MSG_FAILURE([gmock.h is mandatory])
   fi
+else
+  AC_MSG_FAILURE([gtest.h is mandatory])
 fi
 AC_LANG_POP([C++])
 AC_SUBST(HAVE_LIBGTEST)
