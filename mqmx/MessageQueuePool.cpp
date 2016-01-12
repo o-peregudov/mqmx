@@ -24,10 +24,10 @@ namespace mqmx
     status_code MessageQueuePool::handleNotifications (
 	const MessageQueuePoll::notification_rec_type & rec)
     {
-	if (std::get<2> (rec) & MessageQueue::NotificationFlag::NewData)
+	if (rec.getFlags () & MessageQueue::NotificationFlag::NewData)
 	{
-	    Message::upointer_type msg = std::get<1> (rec)->pop ();
-	    const auto it = m_mqHandler.find (std::get<0> (rec));
+	    Message::upointer_type msg = rec.getMQ ()->pop ();
+	    const auto it = m_mqHandler.find (rec.getQID ());
 	    if (it->second)
 	    {
 		const status_code retCode = (it->second)(std::move (msg));

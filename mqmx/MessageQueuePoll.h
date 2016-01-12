@@ -19,13 +19,63 @@ namespace mqmx
         MessageQueuePoll & operator = (const MessageQueuePoll &) = delete;
 
     public:
-        typedef MessageQueue::mutex_type                  mutex_type;
-        typedef MessageQueue::lock_type                   lock_type;
-        typedef BBC_pkg::oam_condvar_type                 condvar_type;
-        typedef std::tuple<queue_id_type, MessageQueue *,
-                           MessageQueue::notification_flags_type>
-                                                          notification_rec_type;
-        typedef std::vector<notification_rec_type>        notifications_list_type;
+        typedef MessageQueue::mutex_type  mutex_type;
+        typedef MessageQueue::lock_type   lock_type;
+        typedef BBC_pkg::oam_condvar_type condvar_type;
+
+        class notification_rec_type
+            : std::tuple<queue_id_type, MessageQueue *, MessageQueue::notification_flags_type>
+        {
+            typedef std::tuple<queue_id_type,
+                               MessageQueue *,
+                               MessageQueue::notification_flags_type> base;
+
+        public:
+            notification_rec_type (queue_id_type qid,
+                                   MessageQueue * mq,
+                                   MessageQueue::notification_flags_type flags)
+                : base (qid, mq, flags)
+            { }
+
+            notification_rec_type () = default;
+            notification_rec_type (const notification_rec_type &) = default;
+            notification_rec_type & operator = (const notification_rec_type &) = default;
+
+            notification_rec_type (notification_rec_type &&) = default;
+            notification_rec_type & operator = (notification_rec_type &&) = default;
+
+            queue_id_type & getQID ()
+            {
+                return std::get<0> (*this);
+            }
+
+            MessageQueue * & getMQ ()
+            {
+                return std::get<1> (*this);
+            }
+
+            MessageQueue::notification_flags_type & getFlags ()
+            {
+                return std::get<2> (*this);
+            }
+
+            queue_id_type const & getQID () const
+            {
+                return std::get<0> (*this);
+            }
+
+            MessageQueue * const & getMQ () const
+            {
+                return std::get<1> (*this);
+            }
+
+            MessageQueue::notification_flags_type const & getFlags () const
+            {
+                return std::get<2> (*this);
+            }
+        };
+
+        typedef std::vector<notification_rec_type> notifications_list_type;
 
     private:
         mutex_type              m_poll_mutex;

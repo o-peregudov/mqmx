@@ -23,29 +23,29 @@ namespace mqmx
             const notification_rec_type elem (qid, mq, flag);
             const auto compare = [](const notification_rec_type & a,
                                     const notification_rec_type & b) {
-                return ((std::get<0> (a) <= std::get<0> (b)) &&
-                        (std::get<1> (a) <  std::get<1> (b)));
+                return ((a.getQID () <= b.getQID ()) &&
+                        (a.getMQ () < b.getMQ ()));
             };
 
             lock_type notifications_guard (m_notifications_mutex);
-	    notifications_list_type::iterator iter = std::upper_bound (
-		m_notifications.begin (), m_notifications.end (), elem, compare);
-	    if (iter != m_notifications.begin ())
-	    {
-		notifications_list_type::iterator prev = iter;
-		--prev;
+            notifications_list_type::iterator iter = std::upper_bound (
+                m_notifications.begin (), m_notifications.end (), elem, compare);
+            if (iter != m_notifications.begin ())
+            {
+                notifications_list_type::iterator prev = iter;
+                --prev;
 
-		if ((std::get<0> (*prev) == qid) && (std::get<1> (*prev) == mq))
-		{
-		    std::get<2> (*prev) |= flag;
-		    m_notifications_condition.notify_one ();
-		    return; /* queue already has some notification(s) */
-		}
-	    }
-	    m_notifications.insert (iter, elem);
-	    m_notifications_condition.notify_one ();
-	}
-	catch (...)
-	{ }
+                if ((prev->getQID () == qid) && (prev->getMQ () == mq))
+                {
+                    prev->getFlags () |= flag;
+                    m_notifications_condition.notify_one ();
+                    return; /* queue already has some notification(s) */
+                }
+            }
+            m_notifications.insert (iter, elem);
+            m_notifications_condition.notify_one ();
+        }
+        catch (...)
+        { }
     }
 } /* namespace mqmx */
