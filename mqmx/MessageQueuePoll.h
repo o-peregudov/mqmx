@@ -13,6 +13,16 @@
 
 namespace mqmx
 {
+    /**
+     * \brief Class for polling several message queues for notifications.
+     *
+     * Class itself is lightweight, and the main implementation is done in
+     * templated method - poll. Example use of this class is the following:
+     *
+     *    mqmx::MessageQueuePoll mqp;
+     *    const auto signaled_queues = mqp.poll (std::begin (mq2poll), std::end (mq2poll), timeout);
+     *
+     */
     class MessageQueuePoll final : MessageQueue::Listener
     {
         MessageQueuePoll (const MessageQueuePoll &) = delete;
@@ -24,7 +34,7 @@ namespace mqmx
         typedef BBC_pkg::oam_condvar_type condvar_type;
 
         class notification_rec_type
-            : std::tuple<queue_id_type, MessageQueue *, MessageQueue::notification_flags_type>
+            : private std::tuple<queue_id_type, MessageQueue *, MessageQueue::notification_flags_type>
         {
             typedef std::tuple<queue_id_type,
                                MessageQueue *,
@@ -120,7 +130,7 @@ namespace mqmx
                            });
 
             /*
-             * wait for notifications
+             * wait for notifications if none was reported so far
              */
             lock_type notifications_guard (m_notifications_mutex);
             const auto abs_time = wtp.getTimepoint (rcp);
