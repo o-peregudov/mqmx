@@ -102,7 +102,7 @@ namespace mqmx
         virtual ~MessageQueuePoll ();
 
         /*
-         * NOTE: iterators should represent a sequence of pointers to message_queue
+         * NOTE: iterators should represent a sequence of pointers to MessageQueue
          */
         template <typename ForwardIt,
                   typename RefClockProvider = WaitTimeProvider>
