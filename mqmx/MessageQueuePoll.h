@@ -97,6 +97,26 @@ namespace mqmx
                              MessageQueue *,
                              const MessageQueue::notification_flags_type) override;
 
+        template <typename RefClockProvider>
+        void waitForNotifications (const WaitTimeProvider & wtp, const RefClockProvider & rcp)
+        {
+            lock_type notifications_guard (m_notifications_mutex);
+            const auto abs_time = wtp.getTimepoint (rcp);
+            if (m_notifications.empty ())
+            {
+                const auto pred = [&]{ return !m_notifications.empty (); };
+                if (wtp.waitInfinitely ())
+                {
+                    m_notifications_condition.wait (notifications_guard, pred);
+                }
+                else if (abs_time.time_since_epoch ().count () != 0)
+                {
+                    m_notifications_condition.wait_until (
+                        notifications_guard, abs_time, pred);
+                }
+            }
+        }
+
     public:
         MessageQueuePoll ();
         virtual ~MessageQueuePoll ();
@@ -119,38 +139,13 @@ namespace mqmx
                 m_notifications.clear ();
             }
 
-            /*
-             * set listeners for each message queue
-             */
             std::for_each (ibegin, iend,
                            [&](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
                                const status_code ret_code = mq->setListener (*this);
                                assert (ret_code == ExitStatus::Success);
                            });
-
-            /*
-             * wait for notifications if none was reported so far
-             */
-            lock_type notifications_guard (m_notifications_mutex);
-            const auto abs_time = wtp.getTimepoint (rcp);
-            if (m_notifications.empty ())
-            {
-                const auto pred = [&]{ return !m_notifications.empty (); };
-                if (wtp.waitInfinitely ())
-                {
-                    m_notifications_condition.wait (notifications_guard, pred);
-                }
-                else if (abs_time.time_since_epoch ().count () != 0)
-                {
-                    m_notifications_condition.wait_until (
-                        notifications_guard, abs_time, pred);
-                }
-            }
-
-            /*
-             * remove listeners from each message queue
-             */
+            waitForNotifications (wtp, rcp);
             std::for_each (ibegin, iend,
                            [&](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
