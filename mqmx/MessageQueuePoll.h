@@ -88,7 +88,6 @@ namespace mqmx
         typedef std::vector<notification_rec_type> notifications_list_type;
 
     private:
-        mutex_type              m_poll_mutex;
         mutable mutex_type      m_notifications_mutex;
         condvar_type            m_notifications_condition;
         notifications_list_type m_notifications;
@@ -130,7 +129,6 @@ namespace mqmx
                                       const WaitTimeProvider & wtp = WaitTimeProvider (),
                                       const RefClockProvider & rcp = WaitTimeProvider ())
         {
-            lock_type poll_guard (m_poll_mutex); /* to block re-entrance */
             {
                 /*
                  * initialize list of notifications

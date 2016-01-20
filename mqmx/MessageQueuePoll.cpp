@@ -3,8 +3,7 @@
 namespace mqmx
 {
     MessageQueuePoll::MessageQueuePoll ()
-        : m_poll_mutex ()
-        , m_notifications_mutex ()
+        : m_notifications_mutex ()
         , m_notifications_condition ()
         , m_notifications ()
     {
