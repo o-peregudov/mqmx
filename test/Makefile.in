@@ -88,19 +88,20 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = MessageQueueSanity$(EXEEXT) MessageQueueListener$(EXEEXT) \
+TESTS = MessageQueueSanityChecks$(EXEEXT) \
+	MessageQueueListener$(EXEEXT) \
 	MessageQueueListenerMoveCtor$(EXEEXT) \
 	MessageQueueListenerMoveAssignment$(EXEEXT) \
-	MessageQueuePollSanity$(EXEEXT) \
+	MessageQueuePollSanityChecks$(EXEEXT) \
 	MessageQueuePollInitialNotification$(EXEEXT) \
 	MessageQueuePollInfiniteWait$(EXEEXT) \
 	MessageQueuePollRelTimeout$(EXEEXT) \
 	MessageQueuePollAbsTimeout$(EXEEXT)
-check_PROGRAMS = MessageQueueSanity$(EXEEXT) \
+check_PROGRAMS = MessageQueueSanityChecks$(EXEEXT) \
 	MessageQueueListener$(EXEEXT) \
 	MessageQueueListenerMoveCtor$(EXEEXT) \
 	MessageQueueListenerMoveAssignment$(EXEEXT) \
-	MessageQueuePollSanity$(EXEEXT) \
+	MessageQueuePollSanityChecks$(EXEEXT) \
 	MessageQueuePollInitialNotification$(EXEEXT) \
 	MessageQueuePollInfiniteWait$(EXEEXT) \
 	MessageQueuePollRelTimeout$(EXEEXT) \
@@ -168,14 +169,18 @@ MessageQueuePollRelTimeout_OBJECTS =  \
 MessageQueuePollRelTimeout_LDADD = $(LDADD)
 MessageQueuePollRelTimeout_DEPENDENCIES =  \
 	$(top_builddir)/mqmx/libmqmx.la
-MessageQueuePollSanity_SOURCES = MessageQueuePollSanity.cpp
-MessageQueuePollSanity_OBJECTS = MessageQueuePollSanity.$(OBJEXT)
-MessageQueuePollSanity_LDADD = $(LDADD)
-MessageQueuePollSanity_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
-MessageQueueSanity_SOURCES = MessageQueueSanity.cpp
-MessageQueueSanity_OBJECTS = MessageQueueSanity.$(OBJEXT)
-MessageQueueSanity_LDADD = $(LDADD)
-MessageQueueSanity_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
+MessageQueuePollSanityChecks_SOURCES =  \
+	MessageQueuePollSanityChecks.cpp
+MessageQueuePollSanityChecks_OBJECTS =  \
+	MessageQueuePollSanityChecks.$(OBJEXT)
+MessageQueuePollSanityChecks_LDADD = $(LDADD)
+MessageQueuePollSanityChecks_DEPENDENCIES =  \
+	$(top_builddir)/mqmx/libmqmx.la
+MessageQueueSanityChecks_SOURCES = MessageQueueSanityChecks.cpp
+MessageQueueSanityChecks_OBJECTS = MessageQueueSanityChecks.$(OBJEXT)
+MessageQueueSanityChecks_LDADD = $(LDADD)
+MessageQueueSanityChecks_DEPENDENCIES =  \
+	$(top_builddir)/mqmx/libmqmx.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -216,16 +221,16 @@ SOURCES = MessageQueueListener.cpp \
 	MessageQueuePollAbsTimeout.cpp \
 	MessageQueuePollInfiniteWait.cpp \
 	MessageQueuePollInitialNotification.cpp \
-	MessageQueuePollRelTimeout.cpp MessageQueuePollSanity.cpp \
-	MessageQueueSanity.cpp
+	MessageQueuePollRelTimeout.cpp \
+	MessageQueuePollSanityChecks.cpp MessageQueueSanityChecks.cpp
 DIST_SOURCES = MessageQueueListener.cpp \
 	MessageQueueListenerMoveAssignment.cpp \
 	MessageQueueListenerMoveCtor.cpp \
 	MessageQueuePollAbsTimeout.cpp \
 	MessageQueuePollInfiniteWait.cpp \
 	MessageQueuePollInitialNotification.cpp \
-	MessageQueuePollRelTimeout.cpp MessageQueuePollSanity.cpp \
-	MessageQueueSanity.cpp
+	MessageQueuePollRelTimeout.cpp \
+	MessageQueuePollSanityChecks.cpp MessageQueueSanityChecks.cpp
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -672,13 +677,13 @@ MessageQueuePollRelTimeout$(EXEEXT): $(MessageQueuePollRelTimeout_OBJECTS) $(Mes
 	@rm -f MessageQueuePollRelTimeout$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollRelTimeout_OBJECTS) $(MessageQueuePollRelTimeout_LDADD) $(LIBS)
 
-MessageQueuePollSanity$(EXEEXT): $(MessageQueuePollSanity_OBJECTS) $(MessageQueuePollSanity_DEPENDENCIES) $(EXTRA_MessageQueuePollSanity_DEPENDENCIES) 
-	@rm -f MessageQueuePollSanity$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollSanity_OBJECTS) $(MessageQueuePollSanity_LDADD) $(LIBS)
+MessageQueuePollSanityChecks$(EXEEXT): $(MessageQueuePollSanityChecks_OBJECTS) $(MessageQueuePollSanityChecks_DEPENDENCIES) $(EXTRA_MessageQueuePollSanityChecks_DEPENDENCIES) 
+	@rm -f MessageQueuePollSanityChecks$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollSanityChecks_OBJECTS) $(MessageQueuePollSanityChecks_LDADD) $(LIBS)
 
-MessageQueueSanity$(EXEEXT): $(MessageQueueSanity_OBJECTS) $(MessageQueueSanity_DEPENDENCIES) $(EXTRA_MessageQueueSanity_DEPENDENCIES) 
-	@rm -f MessageQueueSanity$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueueSanity_OBJECTS) $(MessageQueueSanity_LDADD) $(LIBS)
+MessageQueueSanityChecks$(EXEEXT): $(MessageQueueSanityChecks_OBJECTS) $(MessageQueueSanityChecks_DEPENDENCIES) $(EXTRA_MessageQueueSanityChecks_DEPENDENCIES) 
+	@rm -f MessageQueueSanityChecks$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueueSanityChecks_OBJECTS) $(MessageQueueSanityChecks_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -693,8 +698,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollInfiniteWait.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollInitialNotification.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollRelTimeout.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollSanity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueSanity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollSanityChecks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueSanityChecks.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -919,9 +924,9 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-MessageQueueSanity.log: MessageQueueSanity$(EXEEXT)
-	@p='MessageQueueSanity$(EXEEXT)'; \
-	b='MessageQueueSanity'; \
+MessageQueueSanityChecks.log: MessageQueueSanityChecks$(EXEEXT)
+	@p='MessageQueueSanityChecks$(EXEEXT)'; \
+	b='MessageQueueSanityChecks'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -947,9 +952,9 @@ MessageQueueListenerMoveAssignment.log: MessageQueueListenerMoveAssignment$(EXEE
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MessageQueuePollSanity.log: MessageQueuePollSanity$(EXEEXT)
-	@p='MessageQueuePollSanity$(EXEEXT)'; \
-	b='MessageQueuePollSanity'; \
+MessageQueuePollSanityChecks.log: MessageQueuePollSanityChecks$(EXEEXT)
+	@p='MessageQueuePollSanityChecks$(EXEEXT)'; \
+	b='MessageQueuePollSanityChecks'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

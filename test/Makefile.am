@@ -11,22 +11,22 @@ noinst_HEADERS =	  			\
 	stubs/listener.h			\
 	fixtures/MessageQueuePoll.h
 
-TESTS =	MessageQueueSanity			\
+TESTS =	MessageQueueSanityChecks		\
 	MessageQueueListener			\
 	MessageQueueListenerMoveCtor		\
 	MessageQueueListenerMoveAssignment	\
-	MessageQueuePollSanity			\
+	MessageQueuePollSanityChecks		\
 	MessageQueuePollInitialNotification	\
 	MessageQueuePollInfiniteWait		\
 	MessageQueuePollRelTimeout		\
 	MessageQueuePollAbsTimeout
 
 check_PROGRAMS =				\
-	MessageQueueSanity			\
+	MessageQueueSanityChecks		\
 	MessageQueueListener			\
 	MessageQueueListenerMoveCtor		\
 	MessageQueueListenerMoveAssignment	\
-	MessageQueuePollSanity			\
+	MessageQueuePollSanityChecks		\
 	MessageQueuePollInitialNotification	\
 	MessageQueuePollInfiniteWait		\
 	MessageQueuePollRelTimeout		\

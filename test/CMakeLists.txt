@@ -1,17 +1,17 @@
 ############################################################
 
-ADD_EXECUTABLE (MessageQueueSanity
-  MessageQueueSanity.cpp
+ADD_EXECUTABLE (MessageQueueSanityChecks
+  MessageQueueSanityChecks.cpp
 )
 
-TARGET_LINK_LIBRARIES (MessageQueueSanity
+TARGET_LINK_LIBRARIES (MessageQueueSanityChecks
   ${CMAKE_THREAD_LIBS_INIT}
   mqmx
 )
 
-ADD_TEST (NAME MessageQueue/Sanity
+ADD_TEST (NAME MessageQueue/SanityChecks
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueueSanity
+  COMMAND MessageQueueSanityChecks
 )
 
 ############################################################
@@ -64,18 +64,18 @@ ADD_TEST (NAME MessageQueue/Listener/Move-assignment
 
 ############################################################
 
-ADD_EXECUTABLE (MessageQueuePollSanity
-  MessageQueuePollSanity.cpp
+ADD_EXECUTABLE (MessageQueuePollSanityChecks
+  MessageQueuePollSanityChecks.cpp
 )
 
-TARGET_LINK_LIBRARIES (MessageQueuePollSanity
+TARGET_LINK_LIBRARIES (MessageQueuePollSanityChecks
   ${CMAKE_THREAD_LIBS_INIT}
   mqmx
 )
 
-ADD_TEST (NAME MessageQueue/Poll/Sanity
+ADD_TEST (NAME MessageQueue/Poll/SanityChecks
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePollSanity
+  COMMAND MessageQueuePollSanityChecks
 )
 
 ############################################################
