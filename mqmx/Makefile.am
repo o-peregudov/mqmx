@@ -19,3 +19,5 @@ libmqmx_la_SOURCES =		\
 	MessageQueue.cpp	\
 	MessageQueuePoll.cpp	\
 	MessageQueuePool.cpp
+
+@CODE_COVERAGE_RULES@

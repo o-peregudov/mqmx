@@ -33,3 +33,5 @@ check_PROGRAMS =				\
 	MessageQueuePollAbsTimeout
 
 AM_DEFAULT_SOURCE_EXT = .cpp
+
+@CODE_COVERAGE_RULES@

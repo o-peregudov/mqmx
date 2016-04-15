@@ -1,3 +1,6 @@
+#if defined (NDEBUG)
+#  undef NDEBUG
+#endif
 #include <mqmx/MessageQueue.h>
 #include <cassert>
 
@@ -16,9 +19,26 @@ int main (int argc, const char ** argv)
             ("Initially queue is empty!"));
 
     /*
+     * push operation sanity - empty message
+     */
+    status_code retCode = queue.push (nullptr);
+    assert ((retCode == ExitStatus::InvalidArgument) &&
+            ("Push should fail!"));
+
+    /*
+     * push operation sanity - message from other queue
+     */
+    {
+	MessageQueue queue2 (defQID + 1);
+	retCode = queue.push (queue2.newMessage<Message> (defQID));
+	assert ((retCode == ExitStatus::NotSupported) &&
+		("Push should fail!"));
+    }
+
+    /*
      * push operation
      */
-    status_code retCode = queue.enqueue<Message> (defMID);
+    retCode = queue.enqueue<Message> (defMID);
     assert ((retCode == ExitStatus::Success) &&
             ("Push should succeed!"));
 

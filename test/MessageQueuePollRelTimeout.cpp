@@ -1,3 +1,6 @@
+#if defined (NDEBUG)
+#  undef NDEBUG
+#endif
 #include "test/fixtures/MessageQueuePoll.h"
 
 #include <cassert>

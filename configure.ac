@@ -1,16 +1,16 @@
 AC_INIT([mqmx], [0.0.0], [oleg.peregudov@nokia.com])
 
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
+
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AM_SILENT_RULES([yes])
 
+AM_PROG_AR
 AC_PROG_CC
 AC_PROG_CXX
-
-AM_PROG_AR
-AM_PROG_CC_C_O
-
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_MACRO_DIR([m4])
+AC_PROG_INSTALL
 
 LT_INIT([shared])
 
@@ -24,6 +24,31 @@ AC_SUBST(MQMX_LT_VERSION)
 AC_SUBST(MQMX_CURRENT)
 AC_SUBST(MQMX_REVISION)
 AC_SUBST(MQMX_AGE)
+
+dnl
+dnl gcov/lcov stuff
+dnl
+AX_CODE_COVERAGE
+if test $CODE_COVERAGE_ENABLED = yes; then
+  CFLAGS="$CODE_COVERAGE_CFLAGS"
+  CXXFLAGS="$CODE_COVERAGE_CFLAGS"
+  CPPFLAGS="$CODE_COVERAGE_CPPFLAGS"
+  LIBS="$CODE_COVERAGE_LDFLAGS"
+fi
+
+dnl
+dnl Check for supported C++ standard
+dnl
+HAVE_CXX11=0
+HAVE_CXX14=0
+AX_CXX_COMPILE_STDCXX([14], [noext], [optional])
+if test $HAVE_CXX14 -ne 1; then
+  AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
+else
+  HAVE_CXX11=1
+fi
+AC_SUBST(HAVE_CXX11)
+AC_SUBST(HAVE_CXX14)
 
 dnl
 dnl check if compiler can be pedantic
@@ -62,11 +87,8 @@ if test x$ac_report_all_warnings_supported = xyes; then
 fi
 
 dnl
-dnl check if compiler supports -std=c++14 or -std=c++11
+dnl check for POSIX thread
 dnl
-AX_CXX_COMPILE_STDCXX(14, noext, optional)
-AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
-
 AX_PTHREAD([ac_pthread_lib_found=yes],
            [ac_pthread_lib_found=no])
 if test x$ac_pthread_lib_found = xyes; then
@@ -75,6 +97,9 @@ if test x$ac_pthread_lib_found = xyes; then
   LIBS="$PTHREAD_LIBS $LIBS"
 fi
 
+dnl
+dnl check for OpenMP
+dnl
 AX_OPENMP([ac_openmp_supported=yes],
           [ac_openmp_supported=no])
 if test x$ac_openmp_supported = xyes; then

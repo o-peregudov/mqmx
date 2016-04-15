@@ -1,6 +1,5 @@
-SUBDIRS = mqmx test
-
 ACLOCAL_AMFLAGS = -I m4
+nodist_doc_DATA = README
 
 EXTRA_DIST =	CMakeLists.txt		\
 		mqmx/CMakeLists.txt	\
@@ -8,4 +7,9 @@ EXTRA_DIST =	CMakeLists.txt		\
 		Common/CMakeLists.txt	\
 		Common/OAMThreading.hpp
 
-nodist_doc_DATA = README
+SUBDIRS = mqmx test
+
+@CODE_COVERAGE_RULES@
+
+clean-local:
+	-find . -name "*.gcda" -o -name "*.gcov" -o -name "*.gcno" -delete

@@ -141,7 +141,7 @@ namespace mqmx
                            [&](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
                                const status_code ret_code = mq->setListener (*this);
-                               assert (ret_code == ExitStatus::Success);
+                               assert (ret_code == ExitStatus::Success), ret_code;
                            });
             waitForNotifications (wtp, rcp);
             std::for_each (ibegin, iend,

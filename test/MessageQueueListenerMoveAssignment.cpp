@@ -1,3 +1,6 @@
+#if defined (NDEBUG)
+#  undef NDEBUG
+#endif
 #include "test/stubs/listener.h"
 
 #include <cassert>
