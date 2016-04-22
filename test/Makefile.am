@@ -8,6 +8,7 @@ LDADD = $(top_builddir)/mqmx/libmqmx.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 
 noinst_HEADERS =	  			\
+	mocks/MessageQueueListener.h		\
 	stubs/listener.h			\
 	fixtures/MessageQueuePoll.h
 
