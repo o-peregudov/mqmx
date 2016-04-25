@@ -13,7 +13,7 @@ TEST (message_queue, default_listener_behavior)
         .Times (1);
     {
         mqmx::MessageQueue queue (defQID);
-        mqmx::Message::upointer_type msg (queue.pop ());
+        mqmx::Message::upointer_type msg;
 
         status_code retCode = queue.setListener (mock);
         ASSERT_EQ (ExitStatus::Success, retCode);

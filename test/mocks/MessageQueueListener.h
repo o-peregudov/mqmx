@@ -7,6 +7,9 @@ namespace mocks
 {
     struct ListenerMock : mqmx::MessageQueue::Listener
     {
+	ListenerMock ();
+	virtual ~ListenerMock ();
+
         MOCK_METHOD3 (notify, void (mqmx::queue_id_type,
                                     mqmx::MessageQueue *,
                                     const mqmx::MessageQueue::notification_flags_type));

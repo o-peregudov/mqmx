@@ -1,70 +1,33 @@
-#if defined (NDEBUG)
-#  undef NDEBUG
-#endif
-#include "test/stubs/listener.h"
+#include "test/mocks/MessageQueueListener.h"
 
-#include <cassert>
-
-int main (int argc, const char ** argv)
+TEST (message_queue, move_ctor)
 {
     using namespace mqmx;
+    using namespace ::testing;
     const queue_id_type defQID = 10;
     const message_id_type defMID = 10;
 
-    /*
-     * listener should have longer lifetime than message_queue
-     * to check "Closed" notification from MQ
-     */
-    stubs::listener slistener;
+    mocks::ListenerMock mock;
+    mqmx::MessageQueue queue (defQID);
+    mqmx::Message::upointer_type msg;
 
-    {
-        /*
-         * default constructor
-         */
-        MessageQueue queueA (defQID);
-        Message::upointer_type msg (queueA.pop ());
-        assert ((msg.get () == nullptr) &&
-                ("Initially queue is empty"));
+    status_code retCode = queue.setListener (mock);
+    ASSERT_EQ (ExitStatus::Success, retCode);
 
-        status_code retCode = queueA.setListener (slistener);
-        assert ((retCode == ExitStatus::Success) &&
-                ("Listener should be registered"));
+    EXPECT_CALL (mock, notify (defQID, &queue, MessageQueue::NotificationFlag::NewData))
+	.Times (1);
+    retCode = queue.enqueue<mqmx::Message> (defMID);
+    ASSERT_EQ (ExitStatus::Success, retCode);
 
-        /*
-         * push sample data and move queue
-         */
-        retCode = queueA.enqueue<Message> (defMID);
-        MessageQueue queueB (std::move (queueA));
+    EXPECT_CALL (mock, notify (defQID, &queue, MessageQueue::NotificationFlag::Detached))
+	.Times (1);
+    MessageQueue queueB (std::move (queue));
 
-        msg = queueA.pop ();
-        assert ((msg.get () == nullptr) &&
-                ("Original queue should be moved out"));
+    msg = queue.pop (); /* message should be moved to the new queue */
+    ASSERT_EQ (nullptr, msg.get ());
 
-        msg = queueB.pop ();
-        assert ((msg.get () != nullptr) &&
-                ("New queue should not be empty"));
-        assert ((msg->getQID () == defQID) &&
-                ("QID should match"));
-        assert ((msg->getMID () == defMID) &&
-                ("MID should match"));
-
-        assert ((slistener.get_notifications ().size () == 1) &&
-                ("Single notification should be delivered"));
-        assert (((std::get<2> (slistener.get_notifications ().front ()) &
-                  MessageQueue::NotificationFlag::Detached) != 0) &&
-                ("'Detached' notification flag should be delivered"));
-        assert ((std::get<1> (slistener.get_notifications ().front ()) == &queueA) &&
-                ("'Detached' notification flag should be delivered for original queue"));
-    }
-
-    /*
-     * MQ destructor should deliver "Closed" notification
-     */
-    assert ((slistener.get_notifications ().size () == 1) &&
-            ("No extra notifications should be delivered"));
-    assert (((std::get<2> (slistener.get_notifications ().front ()) &
-              MessageQueue::NotificationFlag::Closed) == 0) &&
-             ("No 'Closed' flag should be reported, because queue is 'Detached'"));
-
-    return 0;
+    msg = queueB.pop (); /* message should be moved from original queue */
+    ASSERT_NE (nullptr, msg.get ());
+    ASSERT_EQ (defQID, msg->getQID ());
+    ASSERT_EQ (defMID, msg->getMID ());
 }
