@@ -90,8 +90,6 @@ build_triplet = @build@
 host_triplet = @host@
 TESTS = MessageQueueSanityChecks$(EXEEXT) \
 	MessageQueueListener$(EXEEXT) \
-	MessageQueueListenerMoveCtor$(EXEEXT) \
-	MessageQueueListenerMoveAssignment$(EXEEXT) \
 	MessageQueuePollSanityChecks$(EXEEXT) \
 	MessageQueuePollInitialNotification$(EXEEXT) \
 	MessageQueuePollInfiniteWait$(EXEEXT) \
@@ -99,8 +97,6 @@ TESTS = MessageQueueSanityChecks$(EXEEXT) \
 	MessageQueuePollAbsTimeout$(EXEEXT)
 check_PROGRAMS = MessageQueueSanityChecks$(EXEEXT) \
 	MessageQueueListener$(EXEEXT) \
-	MessageQueueListenerMoveCtor$(EXEEXT) \
-	MessageQueueListenerMoveAssignment$(EXEEXT) \
 	MessageQueuePollSanityChecks$(EXEEXT) \
 	MessageQueuePollInitialNotification$(EXEEXT) \
 	MessageQueuePollInfiniteWait$(EXEEXT) \
@@ -141,20 +137,6 @@ MessageQueueListener_OBJECTS = MessageQueueListener.$(OBJEXT)
 MessageQueueListener_LDADD = $(LDADD)
 MessageQueueListener_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
 	libmqmx_mocks.la
-MessageQueueListenerMoveAssignment_SOURCES =  \
-	MessageQueueListenerMoveAssignment.cpp
-MessageQueueListenerMoveAssignment_OBJECTS =  \
-	MessageQueueListenerMoveAssignment.$(OBJEXT)
-MessageQueueListenerMoveAssignment_LDADD = $(LDADD)
-MessageQueueListenerMoveAssignment_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
-MessageQueueListenerMoveCtor_SOURCES =  \
-	MessageQueueListenerMoveCtor.cpp
-MessageQueueListenerMoveCtor_OBJECTS =  \
-	MessageQueueListenerMoveCtor.$(OBJEXT)
-MessageQueueListenerMoveCtor_LDADD = $(LDADD)
-MessageQueueListenerMoveCtor_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 MessageQueuePollAbsTimeout_SOURCES = MessageQueuePollAbsTimeout.cpp
 MessageQueuePollAbsTimeout_OBJECTS =  \
 	MessageQueuePollAbsTimeout.$(OBJEXT)
@@ -246,16 +228,12 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueueListener.cpp \
-	MessageQueueListenerMoveAssignment.cpp \
-	MessageQueueListenerMoveCtor.cpp \
 	MessageQueuePollAbsTimeout.cpp \
 	MessageQueuePollInfiniteWait.cpp \
 	MessageQueuePollInitialNotification.cpp \
 	MessageQueuePollRelTimeout.cpp \
 	MessageQueuePollSanityChecks.cpp MessageQueueSanityChecks.cpp
 DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueueListener.cpp \
-	MessageQueueListenerMoveAssignment.cpp \
-	MessageQueueListenerMoveCtor.cpp \
 	MessageQueuePollAbsTimeout.cpp \
 	MessageQueuePollInfiniteWait.cpp \
 	MessageQueuePollInitialNotification.cpp \
@@ -672,7 +650,6 @@ libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -module -rpath /nowhere
 LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 noinst_HEADERS = \
-	stubs/listener.h			\
 	fixtures/MessageQueuePoll.h
 
 AM_DEFAULT_SOURCE_EXT = .cpp
@@ -745,14 +722,6 @@ MessageQueueListener$(EXEEXT): $(MessageQueueListener_OBJECTS) $(MessageQueueLis
 	@rm -f MessageQueueListener$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueueListener_OBJECTS) $(MessageQueueListener_LDADD) $(LIBS)
 
-MessageQueueListenerMoveAssignment$(EXEEXT): $(MessageQueueListenerMoveAssignment_OBJECTS) $(MessageQueueListenerMoveAssignment_DEPENDENCIES) $(EXTRA_MessageQueueListenerMoveAssignment_DEPENDENCIES) 
-	@rm -f MessageQueueListenerMoveAssignment$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueueListenerMoveAssignment_OBJECTS) $(MessageQueueListenerMoveAssignment_LDADD) $(LIBS)
-
-MessageQueueListenerMoveCtor$(EXEEXT): $(MessageQueueListenerMoveCtor_OBJECTS) $(MessageQueueListenerMoveCtor_DEPENDENCIES) $(EXTRA_MessageQueueListenerMoveCtor_DEPENDENCIES) 
-	@rm -f MessageQueueListenerMoveCtor$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueueListenerMoveCtor_OBJECTS) $(MessageQueueListenerMoveCtor_LDADD) $(LIBS)
-
 MessageQueuePollAbsTimeout$(EXEEXT): $(MessageQueuePollAbsTimeout_OBJECTS) $(MessageQueuePollAbsTimeout_DEPENDENCIES) $(EXTRA_MessageQueuePollAbsTimeout_DEPENDENCIES) 
 	@rm -f MessageQueuePollAbsTimeout$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollAbsTimeout_OBJECTS) $(MessageQueuePollAbsTimeout_LDADD) $(LIBS)
@@ -786,8 +755,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueListener.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueListenerMoveAssignment.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueListenerMoveCtor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollAbsTimeout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollInfiniteWait.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollInitialNotification.Po@am__quote@
@@ -1030,20 +997,6 @@ MessageQueueSanityChecks.log: MessageQueueSanityChecks$(EXEEXT)
 MessageQueueListener.log: MessageQueueListener$(EXEEXT)
 	@p='MessageQueueListener$(EXEEXT)'; \
 	b='MessageQueueListener'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MessageQueueListenerMoveCtor.log: MessageQueueListenerMoveCtor$(EXEEXT)
-	@p='MessageQueueListenerMoveCtor$(EXEEXT)'; \
-	b='MessageQueueListenerMoveCtor'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MessageQueueListenerMoveAssignment.log: MessageQueueListenerMoveAssignment$(EXEEXT)
-	@p='MessageQueueListenerMoveAssignment$(EXEEXT)'; \
-	b='MessageQueueListenerMoveAssignment'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
