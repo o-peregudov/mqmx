@@ -20,7 +20,6 @@ AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir
 TESTS =	MessageQueueSanityChecks		\
 	MessageQueueListener			\
 	MessageQueuePollSanityChecks		\
-	MessageQueuePollInfiniteWait		\
 	MessageQueuePollRelTimeout		\
 	MessageQueuePollAbsTimeout
 
@@ -28,7 +27,6 @@ check_PROGRAMS =				\
 	MessageQueueSanityChecks		\
 	MessageQueueListener			\
 	MessageQueuePollSanityChecks		\
-	MessageQueuePollInfiniteWait		\
 	MessageQueuePollRelTimeout		\
 	MessageQueuePollAbsTimeout
 
