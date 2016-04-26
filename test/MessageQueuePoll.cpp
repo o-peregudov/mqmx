@@ -3,7 +3,7 @@
 #include <thread>
 
 struct MQPollFixture : ::testing::Test
-                     , fixtures::MessageQueuePoll
+                     , fixtures::MessageQueuePollFixture
 {
     mqmx::MessageQueuePoll sut;
 };

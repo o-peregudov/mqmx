@@ -19,16 +19,12 @@ AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir
 
 TESTS =	MessageQueueSanityChecks		\
 	MessageQueueListener			\
-	MessageQueuePollSanityChecks		\
-	MessageQueuePollRelTimeout		\
-	MessageQueuePollAbsTimeout
+	MessageQueuePoll
 
 check_PROGRAMS =				\
 	MessageQueueSanityChecks		\
 	MessageQueueListener			\
-	MessageQueuePollSanityChecks		\
-	MessageQueuePollRelTimeout		\
-	MessageQueuePollAbsTimeout
+	MessageQueuePoll
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 

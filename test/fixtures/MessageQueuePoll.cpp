@@ -2,7 +2,7 @@
 
 namespace fixtures
 {
-    MessageQueuePoll::MessageQueuePoll ()
+    MessageQueuePollFixture::MessageQueuePollFixture ()
 	: mq ()
     {
 	for (size_t ix = 0; ix < NQUEUES; ++ix)
