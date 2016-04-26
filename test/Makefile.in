@@ -90,14 +90,12 @@ host_triplet = @host@
 TESTS = MessageQueueSanityChecks$(EXEEXT) \
 	MessageQueueListener$(EXEEXT) \
 	MessageQueuePollSanityChecks$(EXEEXT) \
-	MessageQueuePollInitialNotification$(EXEEXT) \
 	MessageQueuePollInfiniteWait$(EXEEXT) \
 	MessageQueuePollRelTimeout$(EXEEXT) \
 	MessageQueuePollAbsTimeout$(EXEEXT)
 check_PROGRAMS = MessageQueueSanityChecks$(EXEEXT) \
 	MessageQueueListener$(EXEEXT) \
 	MessageQueuePollSanityChecks$(EXEEXT) \
-	MessageQueuePollInitialNotification$(EXEEXT) \
 	MessageQueuePollInfiniteWait$(EXEEXT) \
 	MessageQueuePollRelTimeout$(EXEEXT) \
 	MessageQueuePollAbsTimeout$(EXEEXT)
@@ -148,13 +146,6 @@ MessageQueuePollInfiniteWait_OBJECTS =  \
 	MessageQueuePollInfiniteWait.$(OBJEXT)
 MessageQueuePollInfiniteWait_LDADD = $(LDADD)
 MessageQueuePollInfiniteWait_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
-MessageQueuePollInitialNotification_SOURCES =  \
-	MessageQueuePollInitialNotification.cpp
-MessageQueuePollInitialNotification_OBJECTS =  \
-	MessageQueuePollInitialNotification.$(OBJEXT)
-MessageQueuePollInitialNotification_LDADD = $(LDADD)
-MessageQueuePollInitialNotification_DEPENDENCIES =  \
 	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 MessageQueuePollRelTimeout_SOURCES = MessageQueuePollRelTimeout.cpp
 MessageQueuePollRelTimeout_OBJECTS =  \
@@ -229,13 +220,11 @@ am__v_CCLD_1 =
 SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueueListener.cpp \
 	MessageQueuePollAbsTimeout.cpp \
 	MessageQueuePollInfiniteWait.cpp \
-	MessageQueuePollInitialNotification.cpp \
 	MessageQueuePollRelTimeout.cpp \
 	MessageQueuePollSanityChecks.cpp MessageQueueSanityChecks.cpp
 DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueueListener.cpp \
 	MessageQueuePollAbsTimeout.cpp \
 	MessageQueuePollInfiniteWait.cpp \
-	MessageQueuePollInitialNotification.cpp \
 	MessageQueuePollRelTimeout.cpp \
 	MessageQueuePollSanityChecks.cpp MessageQueueSanityChecks.cpp
 am__can_run_installinfo = \
@@ -735,10 +724,6 @@ MessageQueuePollInfiniteWait$(EXEEXT): $(MessageQueuePollInfiniteWait_OBJECTS) $
 	@rm -f MessageQueuePollInfiniteWait$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollInfiniteWait_OBJECTS) $(MessageQueuePollInfiniteWait_LDADD) $(LIBS)
 
-MessageQueuePollInitialNotification$(EXEEXT): $(MessageQueuePollInitialNotification_OBJECTS) $(MessageQueuePollInitialNotification_DEPENDENCIES) $(EXTRA_MessageQueuePollInitialNotification_DEPENDENCIES) 
-	@rm -f MessageQueuePollInitialNotification$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollInitialNotification_OBJECTS) $(MessageQueuePollInitialNotification_LDADD) $(LIBS)
-
 MessageQueuePollRelTimeout$(EXEEXT): $(MessageQueuePollRelTimeout_OBJECTS) $(MessageQueuePollRelTimeout_DEPENDENCIES) $(EXTRA_MessageQueuePollRelTimeout_DEPENDENCIES) 
 	@rm -f MessageQueuePollRelTimeout$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePollRelTimeout_OBJECTS) $(MessageQueuePollRelTimeout_LDADD) $(LIBS)
@@ -764,7 +749,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueListener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollAbsTimeout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollInfiniteWait.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollInitialNotification.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollRelTimeout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollSanityChecks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueSanityChecks.Po@am__quote@
@@ -1013,13 +997,6 @@ MessageQueueListener.log: MessageQueueListener$(EXEEXT)
 MessageQueuePollSanityChecks.log: MessageQueuePollSanityChecks$(EXEEXT)
 	@p='MessageQueuePollSanityChecks$(EXEEXT)'; \
 	b='MessageQueuePollSanityChecks'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MessageQueuePollInitialNotification.log: MessageQueuePollInitialNotification$(EXEEXT)
-	@p='MessageQueuePollInitialNotification$(EXEEXT)'; \
-	b='MessageQueuePollInitialNotification'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -1,23 +1,29 @@
-#include <mqmx/MessageQueuePoll.h>
 #include "test/fixtures/MessageQueuePoll.h"
+#include <gmock/gmock.h>
 
-#include <cassert>
-
-struct test_fixture : fixtures::MessageQueuePoll
+struct MQPollFixture : ::testing::Test
+		     , fixtures::MessageQueuePoll
 {
     mqmx::MessageQueuePoll sut;
-
-    void sanity_test ()
-    {
-	auto mqlist = sut.poll (std::begin (mq), std::end (mq));
-	assert ((mqlist.empty () == true) &&
-		("No events should be reported"));
-    }
 };
 
-int main (int argc, const char ** argv)
+TEST_F (MQPollFixture, sanity_checks)
 {
-    test_fixture fixture;
-    fixture.sanity_test ();
-    return 0;
+    auto mqlist = sut.poll (std::begin (mq), std::end (mq));
+    ASSERT_TRUE (mqlist.empty ());
+}
+
+TEST_F (MQPollFixture, initial_notification)
+{
+    using namespace mqmx;
+    const size_t STRIDE = 3;
+    size_t nqueues_signaled = 0;
+    for (size_t ix = 0; ix < NQUEUES; ix += STRIDE)
+    {
+	mq[ix]->push (mq[ix]->newMessage<Message> (0));
+	++nqueues_signaled;
+    }
+
+    auto mqlist = sut.poll (std::begin (mq), std::end (mq));
+    ASSERT_EQ (nqueues_signaled, mqlist.size ());
 }
