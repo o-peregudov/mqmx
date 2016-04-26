@@ -13,7 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -114,15 +113,15 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_code_coverage.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS) \
-	$(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 libmqmx_mocks_la_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
 am__dirstamp = $(am__leading_dot)dirstamp
-am_libmqmx_mocks_la_OBJECTS = mocks/MessageQueueListener.lo
+am_libmqmx_mocks_la_OBJECTS = mocks/MessageQueueListener.lo \
+	fixtures/MessageQueuePoll.lo
 libmqmx_mocks_la_OBJECTS = $(am_libmqmx_mocks_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -244,7 +243,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-HEADERS = $(noinst_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -643,15 +641,14 @@ AM_CPPFLAGS = -I$(top_builddir)	\
 check_LTLIBRARIES = libmqmx_mocks.la
 libmqmx_mocks_la_SOURCES = \
 	mocks/MessageQueueListener.h		\
-	mocks/MessageQueueListener.cpp
+	mocks/MessageQueueListener.cpp		\
+	fixtures/MessageQueuePoll.h		\
+	fixtures/MessageQueuePoll.cpp
 
 libmqmx_mocks_la_LIBADD = $(top_builddir)/mqmx/libmqmx.la
 libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -module -rpath /nowhere
 LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
-noinst_HEADERS = \
-	fixtures/MessageQueuePoll.h
-
 AM_DEFAULT_SOURCE_EXT = .cpp
 all: all-am
 
@@ -705,6 +702,14 @@ mocks/$(DEPDIR)/$(am__dirstamp):
 	@: > mocks/$(DEPDIR)/$(am__dirstamp)
 mocks/MessageQueueListener.lo: mocks/$(am__dirstamp) \
 	mocks/$(DEPDIR)/$(am__dirstamp)
+fixtures/$(am__dirstamp):
+	@$(MKDIR_P) fixtures
+	@: > fixtures/$(am__dirstamp)
+fixtures/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) fixtures/$(DEPDIR)
+	@: > fixtures/$(DEPDIR)/$(am__dirstamp)
+fixtures/MessageQueuePoll.lo: fixtures/$(am__dirstamp) \
+	fixtures/$(DEPDIR)/$(am__dirstamp)
 
 libmqmx_mocks.la: $(libmqmx_mocks_la_OBJECTS) $(libmqmx_mocks_la_DEPENDENCIES) $(EXTRA_libmqmx_mocks_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libmqmx_mocks_la_LINK)  $(libmqmx_mocks_la_OBJECTS) $(libmqmx_mocks_la_LIBADD) $(LIBS)
@@ -748,6 +753,8 @@ MessageQueueSanityChecks$(EXEEXT): $(MessageQueueSanityChecks_OBJECTS) $(Message
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f fixtures/*.$(OBJEXT)
+	-rm -f fixtures/*.lo
 	-rm -f mocks/*.$(OBJEXT)
 	-rm -f mocks/*.lo
 
@@ -761,6 +768,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollRelTimeout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePollSanityChecks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueSanityChecks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/MessageQueuePoll.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mocks/$(DEPDIR)/MessageQueueListener.Plo@am__quote@
 
 .cpp.o:
@@ -792,6 +800,7 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf fixtures/.libs fixtures/_libs
 	-rm -rf mocks/.libs mocks/_libs
 
 ID: $(am__tagged_files)
@@ -1085,7 +1094,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_LTLIBRARIES) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile $(HEADERS)
+all-am: Makefile
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -1116,6 +1125,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f fixtures/$(DEPDIR)/$(am__dirstamp)
+	-rm -f fixtures/$(am__dirstamp)
 	-rm -f mocks/$(DEPDIR)/$(am__dirstamp)
 	-rm -f mocks/$(am__dirstamp)
 
@@ -1128,7 +1139,7 @@ clean-am: clean-checkLTLIBRARIES clean-checkPROGRAMS clean-generic \
 	clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) mocks/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) fixtures/$(DEPDIR) mocks/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1174,7 +1185,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) mocks/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) fixtures/$(DEPDIR) mocks/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

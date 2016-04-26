@@ -1,6 +1,4 @@
-#if defined (NDEBUG)
-#  undef NDEBUG
-#endif
+#include <mqmx/MessageQueuePoll.h>
 #include "test/fixtures/MessageQueuePoll.h"
 
 #include <cassert>
