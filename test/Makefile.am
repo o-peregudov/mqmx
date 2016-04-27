@@ -17,14 +17,16 @@ LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 
-TESTS =	MessageQueueSanityChecks		\
-	MessageQueueListener			\
-	MessageQueuePoll
+TESTS =	MessageQueueSanityChecks	\
+	MessageQueueListener		\
+	MessageQueuePoll		\
+	MessageQueuePool
 
-check_PROGRAMS =				\
-	MessageQueueSanityChecks		\
-	MessageQueueListener			\
-	MessageQueuePoll
+check_PROGRAMS =			\
+	MessageQueueSanityChecks	\
+	MessageQueueListener		\
+	MessageQueuePoll		\
+	MessageQueuePool
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
