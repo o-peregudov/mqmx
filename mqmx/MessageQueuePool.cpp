@@ -118,9 +118,10 @@ namespace mqmx
         m_auxThread.join ();
     }
 
-    MessageQueue::upointer_type MessageQueuePool::addQueue (const message_handler_func_type & handler)
+    MessageQueuePool::mq_upointer_type MessageQueuePool::allocateQueue (
+        const message_handler_func_type & handler)
     {
-        MessageQueue::upointer_type newMQ;
+        mq_upointer_type newMQ;
         if (handler)
         {
             lock_type guard (m_pollMutex);
@@ -128,7 +129,7 @@ namespace mqmx
             m_pollCondition.wait (guard, [this]{ return m_pauseFlag; });
 
             auto it = --(m_mqHandler.end ());
-            newMQ.reset (new MessageQueue (it->first + 1));
+            newMQ = mq_upointer_type (new MessageQueue (it->first + 1), mq_deleter (this));
 
             auto ires = m_mqHandler.insert (std::make_pair (newMQ->getQID (), handler));
             if (ires.second)

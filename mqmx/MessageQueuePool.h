@@ -11,10 +11,34 @@ namespace mqmx
     class MessageQueuePool
     {
     public:
+	struct mq_deleter
+	{
+	    MessageQueuePool * _pool;
+
+	    mq_deleter (MessageQueuePool * pool = nullptr)
+		: _pool (pool)
+	    { }
+
+	    mq_deleter (const mq_deleter & o) = default;
+	    mq_deleter & operator = (const mq_deleter & o) = default;
+
+	    mq_deleter (mq_deleter && o) = default;
+	    mq_deleter & operator = (mq_deleter && o) = default;
+
+	    void operator () (mqmx::MessageQueue * mq) const
+	    {
+		if (_pool)
+		    _pool->removeQueue (mq);
+	    }
+	};
+
+	friend class mq_deleter;
+
         typedef std::function<status_code(Message::upointer_type &&)> message_handler_func_type;
         typedef std::mutex                                            mutex_type;
         typedef std::unique_lock<mutex_type>                          lock_type;
         typedef BBC_pkg::oam_condvar_type                             condvar_type;
+	typedef std::unique_ptr<MessageQueue, mq_deleter>             mq_upointer_type;
 
     private:
         typedef std::map<queue_id_type, message_handler_func_type>    handlers_map_type;
@@ -36,13 +60,14 @@ namespace mqmx
         status_code handleNotifications (const MessageQueuePoll::notification_rec_type &);
         void threadLoop ();
 
+	status_code removeQueue (const MessageQueue * const);
+
     public:
         MessageQueuePool ();
         ~MessageQueuePool ();
 
         bool isPollIdle ();
 
-	MessageQueue::upointer_type addQueue (const message_handler_func_type &);
-	status_code removeQueue (const MessageQueue * const);
+	mq_upointer_type allocateQueue (const message_handler_func_type &);
     };
 } /* namespace mqmx */

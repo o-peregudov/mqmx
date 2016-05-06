@@ -21314,8 +21314,8 @@ PAPER_SIZE=$DOXYGEN_PAPER_SIZE
 esac
 
 # Rules:
-if test $DX_FLAG_html -eq 1; then
-    DX_SNIPPET_html="## ------------------------------- ##
+if test $DX_FLAG_html -eq 1; then :
+  DX_SNIPPET_html="## ------------------------------- ##
 ## Rules specific for HTML output. ##
 ## ------------------------------- ##
 
@@ -21324,17 +21324,17 @@ DX_CLEAN_HTML = \$(DX_DOCDIR)/html\\
 
 "
 else
-    DX_SNIPPET_html=""
+  DX_SNIPPET_html=""
 fi
-if test $DX_FLAG_chi -eq 1; then
-    DX_SNIPPET_chi="
+if test $DX_FLAG_chi -eq 1; then :
+  DX_SNIPPET_chi="
 DX_CLEAN_CHI = \$(DX_DOCDIR)/\$(PACKAGE).chi\\
                \$(DX_DOCDIR)/\$(PACKAGE).chi"
 else
-    DX_SNIPPET_chi=""
+  DX_SNIPPET_chi=""
 fi
-if test $DX_FLAG_chm -eq 1; then
-    DX_SNIPPET_chm="## ------------------------------ ##
+if test $DX_FLAG_chm -eq 1; then :
+  DX_SNIPPET_chm="## ------------------------------ ##
 ## Rules specific for CHM output. ##
 ## ------------------------------ ##
 
@@ -21344,10 +21344,10 @@ ${DX_SNIPPET_chi}
 
 "
 else
-    DX_SNIPPET_chm=""
+  DX_SNIPPET_chm=""
 fi
-if test $DX_FLAG_man -eq 1; then
-    DX_SNIPPET_man="## ------------------------------ ##
+if test $DX_FLAG_man -eq 1; then :
+  DX_SNIPPET_man="## ------------------------------ ##
 ## Rules specific for MAN output. ##
 ## ------------------------------ ##
 
@@ -21356,10 +21356,10 @@ DX_CLEAN_MAN = \$(DX_DOCDIR)/man\\
 
 "
 else
-    DX_SNIPPET_man=""
+  DX_SNIPPET_man=""
 fi
-if test $DX_FLAG_rtf -eq 1; then
-    DX_SNIPPET_rtf="## ------------------------------ ##
+if test $DX_FLAG_rtf -eq 1; then :
+  DX_SNIPPET_rtf="## ------------------------------ ##
 ## Rules specific for RTF output. ##
 ## ------------------------------ ##
 
@@ -21368,10 +21368,10 @@ DX_CLEAN_RTF = \$(DX_DOCDIR)/rtf\\
 
 "
 else
-    DX_SNIPPET_rtf=""
+  DX_SNIPPET_rtf=""
 fi
-if test $DX_FLAG_xml -eq 1; then
-    DX_SNIPPET_xml="## ------------------------------ ##
+if test $DX_FLAG_xml -eq 1; then :
+  DX_SNIPPET_xml="## ------------------------------ ##
 ## Rules specific for XML output. ##
 ## ------------------------------ ##
 
@@ -21380,10 +21380,10 @@ DX_CLEAN_XML = \$(DX_DOCDIR)/xml\\
 
 "
 else
-    DX_SNIPPET_xml=""
+  DX_SNIPPET_xml=""
 fi
-if test $DX_FLAG_ps -eq 1; then
-    DX_SNIPPET_ps="## ----------------------------- ##
+if test $DX_FLAG_ps -eq 1; then :
+  DX_SNIPPET_ps="## ----------------------------- ##
 ## Rules specific for PS output. ##
 ## ----------------------------- ##
 
@@ -21411,10 +21411,10 @@ doxygen-ps: \$(DX_CLEAN_PS)
 
 "
 else
-    DX_SNIPPET_ps=""
+  DX_SNIPPET_ps=""
 fi
-if test $DX_FLAG_pdf -eq 1; then
-    DX_SNIPPET_pdf="## ------------------------------ ##
+if test $DX_FLAG_pdf -eq 1; then :
+  DX_SNIPPET_pdf="## ------------------------------ ##
 ## Rules specific for PDF output. ##
 ## ------------------------------ ##
 
@@ -21442,10 +21442,10 @@ doxygen-pdf: \$(DX_CLEAN_PDF)
 
 "
 else
-    DX_SNIPPET_pdf=""
+  DX_SNIPPET_pdf=""
 fi
-if test $DX_FLAG_ps -eq 1 -o $DX_FLAG_pdf -eq 1; then
-    DX_SNIPPET_latex="## ------------------------------------------------- ##
+if test $DX_FLAG_ps -eq 1 -o $DX_FLAG_pdf -eq 1; then :
+  DX_SNIPPET_latex="## ------------------------------------------------- ##
 ## Rules specific for LaTeX (shared for PS and PDF). ##
 ## ------------------------------------------------- ##
 
@@ -21458,11 +21458,11 @@ DX_CLEAN_LATEX = \$(DX_DOCDIR)/latex\\
 
 "
 else
-    DX_SNIPPET_latex=""
+  DX_SNIPPET_latex=""
 fi
 
-if test $DX_FLAG_doc -eq 1; then
-    DX_SNIPPET_doc="## --------------------------------- ##
+if test $DX_FLAG_doc -eq 1; then :
+  DX_SNIPPET_doc="## --------------------------------- ##
 ## Format-independent Doxygen rules. ##
 ## --------------------------------- ##
 
@@ -21492,6 +21492,7 @@ doxygen-doc: doxygen-run \$(DX_PS_GOAL) \$(DX_PDF_GOAL)
 	\$(A""M_V_at)echo Timestamp >\$@
 
 DX_CLEANFILES = \\
+	\$(DX_DOCDIR)/doxygen_sqlite3.db \\
 	\$(DX_DOCDIR)/\$(PACKAGE).tag \\
 	-r \\
 	\$(DX_CLEAN_HTML) \\
@@ -21504,7 +21505,7 @@ DX_CLEANFILES = \\
 	\$(DX_CLEAN_PDF) \\
 	\$(DX_CLEAN_LATEX)"
 else
-    DX_SNIPPET_doc=""
+  DX_SNIPPET_doc=""
 fi
 DX_RULES="${DX_SNIPPET_doc}"
 
