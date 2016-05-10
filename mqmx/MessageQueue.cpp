@@ -91,7 +91,7 @@ namespace mqmx
             /* only first message will be reported */
             m_listener->notify (m_id, this, NotificationFlag::NewData);
         }
-        return ExitStatus::Success;
+	return ExitStatus::Success;
     }
 
     Message::upointer_type MessageQueue::pop ()

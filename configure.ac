@@ -25,6 +25,17 @@ AC_SUBST(MQMX_CURRENT)
 AC_SUBST(MQMX_REVISION)
 AC_SUBST(MQMX_AGE)
 
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test x$PKG_CONFIG != xno ; then
+  if $PKG_CONFIG --atleast-pkgconfig-version 0.7 ; then
+    :
+  else
+    AC_MSG_FAILURE([pkg-config too old; version 0.7 or better required.])
+  fi
+else
+  AC_MSG_FAILURE([pkg-config is required. Please install and run configure once again.])
+fi
+
 dnl
 dnl gcov/lcov stuff
 dnl
@@ -105,6 +116,25 @@ AX_OPENMP([ac_openmp_supported=yes],
 if test x$ac_openmp_supported = xyes; then
   CFLAGS="$CFLAGS $OPENMP_CFLAGS"
   CXXFLAGS="$CXXFLAGS $OPENMP_CFLAGS"
+fi
+
+dnl
+dnl check for libcrs
+dnl
+PKG_CHECK_MODULES([LIBCRS], [crs >= 2.0],
+                  [ac_cv_libcrs_present=yes],
+		  [ac_cv_libcrs_present=no])
+if test $ac_cv_libcrs_present = yes; then
+  CFLAGS="$CFLAGS $LIBCRS_CFLAGS"
+  CXXFLAGS="$CXXFLAGS $LIBCRS_CFLAGS"
+  LDFLAGS="$LDFLAGS $LIBCRS_LDFLAGS"
+  LIBS="$LIBS $LIBCRS_LIBS"
+
+  AC_SUBST([LIBCRS_CFLAGS])
+  AC_SUBST([LIBCRS_LDFLAGS])
+  AC_SUBST([LIBCRS_LIBS])
+else
+  AC_MSG_FAILURE([Can't find suitable version of libcrs installed. Please install one (https://github.com/o-peregudov/libcrs.git) and run configure once again])
 fi
 
 dnl

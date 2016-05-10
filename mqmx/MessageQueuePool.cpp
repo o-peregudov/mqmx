@@ -1,76 +1,146 @@
 #include "mqmx/MessageQueuePool.h"
+#include <algorithm>
 
 namespace mqmx
 {
+    const queue_id_type   MessageQueuePool::CONTROL_MESSAGE_QUEUE_ID = 0x00;
+    const message_id_type MessageQueuePool::TERMINATE_MESSAGE_ID = 0x00;
+    const message_id_type MessageQueuePool::POLL_PAUSE_MESSAGE_ID = 0x01;
+    const message_id_type MessageQueuePool::ADD_QUEUE_MESSAGE_ID = 0x02;
+    const message_id_type MessageQueuePool::REMOVE_QUEUE_MESSAGE_ID = 0x03;
+
+    struct MessageQueuePool::add_queue_message : Message
+    {
+        MessageQueue * mq;
+        semaphore_type * sem;
+
+        add_queue_message (const queue_id_type queue_id,
+                           MessageQueue * q, semaphore_type * s)
+            : Message (queue_id, MessageQueuePool::ADD_QUEUE_MESSAGE_ID)
+            , mq (q)
+            , sem (s)
+        { }
+    };
+
+    struct MessageQueuePool::remove_queue_message : Message
+    {
+        const MessageQueue * mq;
+        MessageQueuePool::semaphore_type * sem;
+
+        remove_queue_message (const queue_id_type queue_id,
+                              const MessageQueue * q, semaphore_type * s)
+            : Message (queue_id, MessageQueuePool::REMOVE_QUEUE_MESSAGE_ID)
+            , mq (q)
+            , sem (s)
+        { }
+    };
+
     status_code MessageQueuePool::controlQueueHandler (Message::upointer_type && msg)
     {
         if (msg->getMID () == TERMINATE_MESSAGE_ID)
         {
-            m_terminateFlag = true;
+            return ExitStatus::HaltRequested;
         }
-        else if (msg->getMID () == POLL_PAUSE_MESSAGE_ID)
+
+        if (msg->getMID () == POLL_PAUSE_MESSAGE_ID)
         {
             lock_type guard (m_pollMutex);
             m_pauseFlag = true;
-        }
-        else
-        {
+            m_pollCondition.notify_one ();
             return ExitStatus::Success;
         }
-        return ExitStatus::RestartNeeded;
+
+        if (msg->getMID () == ADD_QUEUE_MESSAGE_ID)
+        {
+            add_queue_message * aqmsg = static_cast<add_queue_message *> (msg.get ());
+            auto it = std::begin (m_mqs);
+            while ((++it != std::end (m_mqs)) && ((*it)->getQID () < aqmsg->mq->getQID ()));
+            assert ((it == std::end (m_mqs)) || (aqmsg->mq->getQID () < (*it)->getQID ()));
+            m_mqs.insert (it, aqmsg->mq);
+            aqmsg->sem->post ();
+            return ExitStatus::Success;
+        }
+
+        if (msg->getMID () == REMOVE_QUEUE_MESSAGE_ID)
+        {
+            remove_queue_message * rqmsg = static_cast<remove_queue_message *> (msg.get ());
+            auto it = std::find (std::begin (m_mqs), std::end (m_mqs), rqmsg->mq);
+            if (it != std::end (m_mqs))
+            {
+                m_mqs.erase (it);
+            }
+            rqmsg->sem->post ();
+            return ExitStatus::RestartNeeded;
+        }
+
+        return ExitStatus::Success;
     }
 
     status_code MessageQueuePool::handleNotifications (
         const MessageQueuePoll::notification_rec_type & rec)
     {
-        if (rec.getFlags () & MessageQueue::NotificationFlag::NewData)
+        if (rec.getFlags () & (MessageQueue::NotificationFlag::Closed|
+                               MessageQueue::NotificationFlag::Detached))
         {
+            /* pointer to message queue is no longer valid */
+        }
+        else if (rec.getFlags () & MessageQueue::NotificationFlag::NewData)
+        {
+            assert (rec.getMQ () != nullptr);
+            assert (rec.getQID () < m_mqHandler.size ());
+
             Message::upointer_type msg = rec.getMQ ()->pop ();
-            const auto it = m_mqHandler.find (rec.getQID ());
-            if (it->second)
+            const status_code retCode = (m_mqHandler[rec.getQID ()])(std::move (msg));
+            if (retCode != ExitStatus::Success)
             {
-                const status_code retCode = (it->second)(std::move (msg));
-                if (retCode != ExitStatus::Success)
-                {
-                    /* TODO: print diagnostic message here */
-                }
-                return retCode;
+                /* TODO: print diagnostic message here */
             }
+            return retCode;
         }
         return ExitStatus::Success;
     }
 
     void MessageQueuePool::threadLoop ()
     {
-        m_mqs.push_back (&m_mqControl);
         for (;;)
         {
             MessageQueuePoll mqp;
             const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
                                           WaitTimeProvider::WAIT_INFINITELY);
-#pragma omp parallel
+            size_t starti = 0;
+            if (mqlist.front ().getQID () == m_mqControl.getQID ())
             {
-#pragma omp for
-                for (size_t i = 0; i < mqlist.size (); ++i)
+                const status_code retCode = handleNotifications (mqlist.front ());
+                if (retCode == ExitStatus::HaltRequested)
                 {
-                    const status_code retCode = handleNotifications (mqlist[i]);
-                    if (retCode == ExitStatus::RestartNeeded)
-                    {
-#pragma omp cancel for
-                    }
+                    break;
                 }
+
+                if (retCode == ExitStatus::RestartNeeded)
+                {
+                    continue;
+                }
+
+                lock_type guard (m_pollMutex);
+                if (m_pauseFlag)
+                {
+                    m_pollCondition.wait (guard, [this]{ return !m_pauseFlag; });
+                    continue;
+                }
+
+                ++starti;
             }
 
-            if (m_terminateFlag)
+            for (size_t i = starti; i < mqlist.size (); ++i)
             {
-                break;
-            }
-
-            lock_type guard (m_pollMutex);
-            if (m_pauseFlag)
-            {
-                m_pollCondition.notify_one ();
-                m_pollCondition.wait (guard, [this]{ return !m_pauseFlag; });
+                try
+                {
+                    handleNotifications (mqlist[i]);
+                }
+                catch (...)
+                {
+                    /* TODO: consider to add '#pragma omp cancel for' */
+                }
             }
         }
     }
@@ -78,6 +148,11 @@ namespace mqmx
     bool MessageQueuePool::isPollIdle ()
     {
         lock_type guard (m_pollMutex);
+        if (m_pauseFlag)
+        {
+            return false;
+        }
+
         m_mqControl.enqueue<Message> (POLL_PAUSE_MESSAGE_ID);
         m_pollCondition.wait (guard, [this]{ return m_pauseFlag; });
 
@@ -89,31 +164,28 @@ namespace mqmx
         return idleStatus;
     }
 
-    MessageQueuePool::MessageQueuePool ()
+    MessageQueuePool::MessageQueuePool (const size_t capacity)
         : m_mqControl (CONTROL_MESSAGE_QUEUE_ID)
         , m_mqHandler ()
         , m_mqs ()
-        , m_terminateFlag (false)
         , m_pauseFlag (false)
         , m_pollMutex ()
         , m_pollCondition ()
-        , m_auxThread ([this]{ threadLoop (); })
+        , m_auxThread ()
     {
-        const message_handler_func_type handler = std::bind (
+        m_mqHandler.resize (capacity + 1);
+        m_mqHandler[m_mqControl.getQID ()] = std::bind (
             &MessageQueuePool::controlQueueHandler, this, std::placeholders::_1);
-        m_mqHandler.insert (std::make_pair (m_mqControl.getQID (), handler));
+
+        m_mqs.reserve (capacity + 1);
+        m_mqs.emplace_back (&m_mqControl);
+
+        std::thread auxiliary_thread ([this]{ threadLoop (); });
+        m_auxThread.swap (auxiliary_thread);
     }
 
     MessageQueuePool::~MessageQueuePool ()
     {
-        {
-            lock_type guard (m_pollMutex);
-            if (m_pauseFlag)
-            {
-                m_pauseFlag = false;
-                m_pollCondition.notify_one ();
-            }
-        }
         m_mqControl.enqueue<Message> (TERMINATE_MESSAGE_ID);
         m_auxThread.join ();
     }
@@ -121,26 +193,28 @@ namespace mqmx
     MessageQueuePool::mq_upointer_type MessageQueuePool::allocateQueue (
         const message_handler_func_type & handler)
     {
-        mq_upointer_type newMQ;
-        if (handler)
+        if (!handler)
         {
-            lock_type guard (m_pollMutex);
-            m_mqControl.enqueue<Message> (POLL_PAUSE_MESSAGE_ID);
-            m_pollCondition.wait (guard, [this]{ return m_pauseFlag; });
-
-            auto it = --(m_mqHandler.end ());
-            newMQ = mq_upointer_type (new MessageQueue (it->first + 1), mq_deleter (this));
-
-            auto ires = m_mqHandler.insert (std::make_pair (newMQ->getQID (), handler));
-            if (ires.second)
-            {
-                m_mqs.push_back (newMQ.get ());
-            }
-
-            m_pauseFlag = false;
-            m_pollCondition.notify_one ();
+            return mq_upointer_type ();
         }
-        return newMQ;
+
+        lock_type guard (m_pollMutex);
+        auto it = std::begin (m_mqHandler);
+        while ((++it != std::end (m_mqHandler)) && *it);
+        const queue_id_type qid = std::distance (std::begin (m_mqHandler), it);
+        assert (qid < m_mqHandler.size ());
+
+        mq_upointer_type mq (new MessageQueue (qid), mq_deleter (this));
+        m_mqHandler[qid] = handler;
+        guard.unlock ();
+
+        semaphore_type sem;
+        if (m_mqControl.enqueue<add_queue_message> (mq.get (), &sem) == ExitStatus::Success)
+        {
+            sem.wait ();
+            return mq;
+        }
+        return mq_upointer_type ();
     }
 
     status_code MessageQueuePool::removeQueue (const MessageQueue * const mq)
@@ -151,29 +225,16 @@ namespace mqmx
         }
 
         lock_type guard (m_pollMutex);
-        m_mqControl.enqueue<Message> (POLL_PAUSE_MESSAGE_ID);
-        m_pollCondition.wait (guard, [this]{ return m_pauseFlag; });
-
-        bool found = false;
-        for (size_t ix = 0; ix < m_mqs.size (); ++ix)
+        if (!(mq->getQID () < m_mqHandler.size ()) || !m_mqHandler[mq->getQID ()])
         {
-            if (m_mqs[ix] == mq)
-            {
-                found = true;
-                std::swap (m_mqs[ix], m_mqs.back ());
-                m_mqs.pop_back ();
-                break;
-            }
+            return ExitStatus::NotFound;
         }
+        guard.unlock ();
 
-        if (found)
-        {
-            m_mqHandler.erase (mq->getQID ());
-        }
+        semaphore_type sem;
+        m_mqControl.enqueue<remove_queue_message> (mq, &sem);
+        sem.wait ();
 
-        m_pauseFlag = false;
-        m_pollCondition.notify_one ();
-
-        return (found ? ExitStatus::Success : ExitStatus::NotFound);
+        return ExitStatus::Success;
     }
 } /* namespace mqmx */

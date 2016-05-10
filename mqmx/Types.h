@@ -14,6 +14,8 @@ namespace mqmx
 	NotSupported,
 	NotFound,
 	RestartNeeded,
+	HaltRequested,
+	NotAllowed,
     };
 
     typedef int    status_code;
