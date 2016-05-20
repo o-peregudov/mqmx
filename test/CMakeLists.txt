@@ -1,3 +1,33 @@
+SET (${PROJECT_NAME}_MOCKS_AND_STUBS_HEADERS
+  mocks/MessageQueueListener.h
+  fixtures/MessageQueuePoll.h
+)
+
+SET (${PROJECT_NAME}_MOCKS_AND_STUBS_SOURCES
+  mocks/MessageQueueListener.cpp
+  fixtures/MessageQueuePoll.cpp
+)
+
+SET (MOCKS_AND_STUBS_LA
+  ${PROJECT_NAME}MocksAndStubs
+)
+
+INCLUDE_DIRECTORIES (
+  ${CMAKE_SOURCE_DIR}/test
+)
+
+ADD_LIBRARY (${MOCKS_AND_STUBS_LA} STATIC
+  ${${PROJECT_NAME}_MOCKS_AND_STUBS_HEADERS}
+  ${${PROJECT_NAME}_MOCKS_AND_STUBS_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES (${MOCKS_AND_STUBS_LA}
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${GMOCK_MAIN_LIBRARY}
+  ${LIBCRS_LDFLAGS}
+  mqmx
+)
+
 ############################################################
 
 ADD_EXECUTABLE (MessageQueueSanityChecks
@@ -6,6 +36,9 @@ ADD_EXECUTABLE (MessageQueueSanityChecks
 
 TARGET_LINK_LIBRARIES (MessageQueueSanityChecks
   ${CMAKE_THREAD_LIBS_INIT}
+  ${MOCKS_AND_STUBS_LA}
+  ${GMOCK_MAIN_LIBRARY}
+  ${LIBCRS_LDFLAGS}
   mqmx
 )
 
@@ -22,6 +55,9 @@ ADD_EXECUTABLE (MessageQueueListener
 
 TARGET_LINK_LIBRARIES (MessageQueueListener
   ${CMAKE_THREAD_LIBS_INIT}
+  ${MOCKS_AND_STUBS_LA}
+  ${GMOCK_MAIN_LIBRARY}
+  ${LIBCRS_LDFLAGS}
   mqmx
 )
 
@@ -32,112 +68,38 @@ ADD_TEST (NAME MessageQueue/Listener
 
 ############################################################
 
-ADD_EXECUTABLE (MessageQueueListenerMoveCtor
-  MessageQueueListenerMoveCtor.cpp
+ADD_EXECUTABLE (MessageQueuePoll
+  MessageQueuePoll.cpp
 )
 
-TARGET_LINK_LIBRARIES (MessageQueueListenerMoveCtor
+TARGET_LINK_LIBRARIES (MessageQueuePoll
   ${CMAKE_THREAD_LIBS_INIT}
+  ${MOCKS_AND_STUBS_LA}
+  ${GMOCK_MAIN_LIBRARY}
+  ${LIBCRS_LDFLAGS}
   mqmx
 )
 
-ADD_TEST (NAME MessageQueue/Listener/Move-ctor
+ADD_TEST (NAME MessageQueue/Poll
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueueListenerMoveCtor
+  COMMAND MessageQueuePoll
 )
 
 ############################################################
 
-ADD_EXECUTABLE (MessageQueueListenerMoveAssignment
-  MessageQueueListenerMoveAssignment.cpp
+ADD_EXECUTABLE (MessageQueuePool
+  MessageQueuePool.cpp
 )
 
-TARGET_LINK_LIBRARIES (MessageQueueListenerMoveAssignment
+TARGET_LINK_LIBRARIES (MessageQueuePool
   ${CMAKE_THREAD_LIBS_INIT}
+  ${MOCKS_AND_STUBS_LA}
+  ${GMOCK_MAIN_LIBRARY}
+  ${LIBCRS_LDFLAGS}
   mqmx
 )
 
-ADD_TEST (NAME MessageQueue/Listener/Move-assignment
+ADD_TEST (NAME MessageQueue/Pool
   WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueueListenerMoveAssignment
-)
-
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePollSanityChecks
-  MessageQueuePollSanityChecks.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePollSanityChecks
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Poll/SanityChecks
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePollSanityChecks
-)
-
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePollInitialNotification
-  MessageQueuePollInitialNotification.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePollInitialNotification
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Poll/Initial-notification
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePollInitialNotification
-)
-
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePollInfiniteWait
-  MessageQueuePollInfiniteWait.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePollInfiniteWait
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Poll/Infinite-wait
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePollInfiniteWait
-)
-
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePollRelTimeout
-  MessageQueuePollRelTimeout.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePollRelTimeout
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Poll/Rel.-timeout
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePollRelTimeout
-)
-
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePollAbsTimeout
-  MessageQueuePollAbsTimeout.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePollAbsTimeout
-  ${CMAKE_THREAD_LIBS_INIT}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Poll/Abs.-timeout
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePollAbsTimeout
+  COMMAND MessageQueuePool
 )

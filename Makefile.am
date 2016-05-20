@@ -2,6 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 nodist_doc_DATA = README
 
 EXTRA_DIST =	CMakeLists.txt		\
+		FindGMock.cmake		\
 		mqmx/CMakeLists.txt	\
 		test/CMakeLists.txt	\
 		Common/CMakeLists.txt	\
