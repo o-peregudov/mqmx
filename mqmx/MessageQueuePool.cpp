@@ -44,10 +44,7 @@ namespace mqmx
 
         if (msg->getMID () == POLL_PAUSE_MESSAGE_ID)
         {
-            lock_type guard (m_pollMutex);
-            m_pauseFlag = true;
-            m_pollCondition.notify_one ();
-            return ExitStatus::Success;
+            return ExitStatus::PauseRequested;
         }
 
         if (msg->getMID () == ADD_QUEUE_MESSAGE_ID)
@@ -121,10 +118,10 @@ namespace mqmx
                     continue;
                 }
 
-                lock_type guard (m_pollMutex);
-                if (m_pauseFlag)
+                if (retCode == ExitStatus::PauseRequested)
                 {
-                    m_pollCondition.wait (guard, [this]{ return !m_pauseFlag; });
+                    m_pauseSemaphore.post ();
+                    m_resumeSemaphore.wait ();
                     continue;
                 }
 
@@ -147,20 +144,13 @@ namespace mqmx
 
     bool MessageQueuePool::isPollIdle ()
     {
-        lock_type guard (m_pollMutex);
-        if (m_pauseFlag)
-        {
-            return false;
-        }
-
         m_mqControl.enqueue<Message> (POLL_PAUSE_MESSAGE_ID);
-        m_pollCondition.wait (guard, [this]{ return m_pauseFlag; });
+        m_pauseSemaphore.wait ();
 
         MessageQueuePoll mqp;
         const bool idleStatus = mqp.poll (std::begin (m_mqs), std::end (m_mqs)).empty ();
 
-        m_pauseFlag = false;
-        m_pollCondition.notify_one ();
+        m_resumeSemaphore.post ();
         return idleStatus;
     }
 
@@ -168,9 +158,8 @@ namespace mqmx
         : m_mqControl (CONTROL_MESSAGE_QUEUE_ID)
         , m_mqHandler ()
         , m_mqs ()
-        , m_pauseFlag (false)
-        , m_pollMutex ()
-        , m_pollCondition ()
+        , m_pauseSemaphore ()
+        , m_resumeSemaphore ()
         , m_auxThread ()
     {
         m_mqHandler.resize (capacity + 1);
@@ -198,7 +187,6 @@ namespace mqmx
             return mq_upointer_type ();
         }
 
-        lock_type guard (m_pollMutex);
         auto it = std::begin (m_mqHandler);
         while ((++it != std::end (m_mqHandler)) && *it);
         const queue_id_type qid = std::distance (std::begin (m_mqHandler), it);
@@ -206,7 +194,6 @@ namespace mqmx
 
         mq_upointer_type mq (new MessageQueue (qid), mq_deleter (this));
         m_mqHandler[qid] = handler;
-        guard.unlock ();
 
         semaphore_type sem;
         if (m_mqControl.enqueue<add_queue_message> (mq.get (), &sem) == ExitStatus::Success)
@@ -224,12 +211,10 @@ namespace mqmx
             return ExitStatus::InvalidArgument;
         }
 
-        lock_type guard (m_pollMutex);
         if (!(mq->getQID () < m_mqHandler.size ()) || !m_mqHandler[mq->getQID ()])
         {
             return ExitStatus::NotFound;
         }
-        guard.unlock ();
 
         semaphore_type sem;
         m_mqControl.enqueue<remove_queue_message> (mq, &sem);

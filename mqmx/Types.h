@@ -15,6 +15,7 @@ namespace mqmx
 	NotFound,
 	RestartNeeded,
 	HaltRequested,
+	PauseRequested,
 	NotAllowed,
     };
 

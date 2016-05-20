@@ -63,9 +63,8 @@ namespace mqmx
         MessageQueue                m_mqControl;
         handlers_map_type           m_mqHandler;
         std::vector<MessageQueue *> m_mqs;
-        bool                        m_pauseFlag;
-        mutable mutex_type          m_pollMutex;
-        condvar_type                m_pollCondition;
+        semaphore_type              m_pauseSemaphore;
+        semaphore_type              m_resumeSemaphore;
         BBC_pkg::oam_thread_type    m_auxThread;
 
         status_code removeQueue (const MessageQueue * const);
