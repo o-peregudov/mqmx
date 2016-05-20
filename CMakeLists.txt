@@ -94,13 +94,10 @@ ENDIF ()
 #
 # check for libcrs
 #
-PKG_CHECK_MODULES (LIBCRS REQUIRED crs)
+PKG_CHECK_MODULES (LIBCRS REQUIRED crs>=2.0)
 IF (LIBCRS_FOUND)
   SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LIBCRS_CFLAGS}")
   SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBCRS_CFLAGS}")
-  # SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBCRS_LDFLAGS}")
-  # SET (CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} ${LIBCRS_LDFLAGS}")
-  # SET (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LIBCRS_LDFLAGS}")
 ELSE ()
   MESSAGE (FATAL_ERROR "Can't find suitable version of libcrs installed. Please install one (https://github.com/o-peregudov/libcrs.git) and run cmake configuration once again")
 ENDIF ()
