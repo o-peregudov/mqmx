@@ -61,12 +61,12 @@ namespace mqmx
         static const message_id_type ADD_QUEUE_MESSAGE_ID;
         static const message_id_type REMOVE_QUEUE_MESSAGE_ID;
 
-        message_queue                m_mqControl;
-        handlers_map_type            m_mqHandler;
-        std::vector<message_queue *> m_mqs;
-        semaphore_type               m_pauseSemaphore;
-        semaphore_type               m_resumeSemaphore;
-        thread_type                  m_auxThread;
+        message_queue                _mqControl;
+        handlers_map_type            _mqHandler;
+        std::vector<message_queue *> _mqs;
+        semaphore_type               _pauseSemaphore;
+        semaphore_type               _resumeSemaphore;
+        thread_type                  _auxThread;
 
         status_code remove_queue (const message_queue * const);
         status_code control_queue_handler (message::upointer_type &&);
