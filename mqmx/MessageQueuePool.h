@@ -38,7 +38,7 @@ namespace mqmx
 
         friend class mq_deleter;
 
-        typedef std::function<status_code(Message::upointer_type &&)> message_handler_func_type;
+        typedef std::function<status_code(message::upointer_type &&)> message_handler_func_type;
         typedef CrossClass::mutex_type                                mutex_type;
         typedef CrossClass::lock_type                                 lock_type;
         typedef CrossClass::condvar_type                              condvar_type;
@@ -68,7 +68,7 @@ namespace mqmx
         BBC_pkg::oam_thread_type     m_auxThread;
 
         status_code removeQueue (const message_queue * const);
-        status_code controlQueueHandler (Message::upointer_type &&);
+        status_code controlQueueHandler (message::upointer_type &&);
         status_code handleNotifications (const MessageQueuePoll::notification_rec_type &);
         void threadLoop ();
 

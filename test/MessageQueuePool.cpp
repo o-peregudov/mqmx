@@ -10,7 +10,7 @@ TEST (message_queue_pool, sanity_checks)
     auto mq = sut.allocateQueue (mqmx::MessageQueuePool::message_handler_func_type ());
     ASSERT_EQ (nullptr, mq.get ());
 
-    mq = sut.allocateQueue ([](mqmx::Message::upointer_type && msg)->mqmx::status_code
+    mq = sut.allocateQueue ([](mqmx::message::upointer_type && msg)->mqmx::status_code
                             {
                                 return mqmx::ExitStatus::Success;
                             });
@@ -27,7 +27,7 @@ TEST (message_queue_pool, counter_test)
     size_t counter_b = 0;
     size_t counter_c = 0;
     auto mqa = sut.allocateQueue (
-	[&](mqmx::Message::upointer_type && msg)
+	[&](mqmx::message::upointer_type && msg)
 	{
 	    if (++counter_a == NMSGS)
 	    {
@@ -36,7 +36,7 @@ TEST (message_queue_pool, counter_test)
 	    return mqmx::ExitStatus::Success;
 	});
     auto mqb = sut.allocateQueue (
-    	[&](mqmx::Message::upointer_type && msg)
+    	[&](mqmx::message::upointer_type && msg)
     	{
     	    if (++counter_b == NMSGS)
     	    {
@@ -45,7 +45,7 @@ TEST (message_queue_pool, counter_test)
     	    return mqmx::ExitStatus::Success;
     	});
     auto mqc = sut.allocateQueue (
-	[&](mqmx::Message::upointer_type && msg)
+	[&](mqmx::message::upointer_type && msg)
 	{
 	    if (++counter_c == NMSGS)
 	    {
@@ -57,19 +57,19 @@ TEST (message_queue_pool, counter_test)
 	std::thread threada ([&](){
 		for (size_t i = NMSGS; 0 < i; --i)
 		{
-		    mqa->enqueue<mqmx::Message> (i);
+		    mqa->enqueue<mqmx::message> (i);
 		}
 	    });
 	std::thread threadb ([&](){
 		for (size_t i = NMSGS; 0 < i; --i)
 		{
-		    mqb->enqueue<mqmx::Message> (i);
+		    mqb->enqueue<mqmx::message> (i);
 		}
 	    });
 	std::thread threadc ([&](){
 		for (size_t i = NMSGS; 0 < i; --i)
 		{
-		    mqc->enqueue<mqmx::Message> (i);
+		    mqc->enqueue<mqmx::message> (i);
 		}
 	    });
 	threada.join ();

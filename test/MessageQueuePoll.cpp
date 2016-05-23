@@ -21,7 +21,7 @@ TEST_F (MQPollFixture, initial_notification)
     size_t nqueues_signaled = 0;
     for (size_t ix = 0; ix < NQUEUES; ix += STRIDE)
     {
-        mq[ix]->enqueue<Message> (0);
+        mq[ix]->enqueue<message> (0);
         ++nqueues_signaled;
     }
 
@@ -37,7 +37,7 @@ TEST_F (MQPollFixture, infinite_wait)
 
     std::thread thr ([&] {
             std::this_thread::sleep_for (std::chrono::milliseconds (50));
-            mq[idx]->enqueue<Message> (defMID);
+            mq[idx]->enqueue<message> (defMID);
         });
 
     auto mqlist = sut.poll (std::begin (mq), std::end (mq),

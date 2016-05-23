@@ -4,7 +4,7 @@
 #include <deque>
 #include <type_traits>
 
-#include <mqmx/Message.h>
+#include <mqmx/message.h>
 
 namespace mqmx
 {
@@ -17,7 +17,7 @@ namespace mqmx
         typedef std::unique_ptr<message_queue>     upointer_type;
         typedef std::mutex                         mutex_type;
         typedef std::unique_lock<mutex_type>       lock_type;
-        typedef std::deque<Message::upointer_type> container_type;
+        typedef std::deque<message::upointer_type> container_type;
         typedef size_t                             notification_flags_type;
 
         enum notification_flag
@@ -36,7 +36,7 @@ namespace mqmx
         };
 
     public:
-        message_queue (const queue_id_type = Message::UndefinedQID);
+        message_queue (const queue_id_type = message::UndefinedQID);
         ~message_queue ();
 
         message_queue (message_queue &&);
@@ -44,22 +44,22 @@ namespace mqmx
 
         queue_id_type get_qid () const;
 
-        status_code push (Message::upointer_type &&);
-        Message::upointer_type pop ();
+        status_code push (message::upointer_type &&);
+        message::upointer_type pop ();
 
         template <typename MessageType, typename... ParametersTypes>
-        Message::upointer_type new_message (ParametersTypes&&... args) const
+        message::upointer_type new_message (ParametersTypes&&... args) const
         {
-            static_assert (std::is_base_of<Message, MessageType>::value,
+            static_assert (std::is_base_of<message, MessageType>::value,
 			   "Invalid MessageType - should be derived from mqmx::Message");
-            return Message::upointer_type (
+            return message::upointer_type (
                 new MessageType (get_qid (), std::forward<ParametersTypes> (args)...));
         }
 
         template <typename MessageType, typename... ParametersTypes>
         status_code enqueue (ParametersTypes&&... args)
         {
-            static_assert (std::is_base_of<Message, MessageType>::value,
+            static_assert (std::is_base_of<message, MessageType>::value,
 			   "Invalid MessageType - should be derived from mqmx::Message");
             return push (new_message<MessageType> (std::forward<ParametersTypes> (args)...));
         }

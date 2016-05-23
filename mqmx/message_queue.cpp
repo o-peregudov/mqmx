@@ -12,7 +12,7 @@ namespace mqmx
     }
 
     message_queue::message_queue (message_queue && o)
-        : _id (Message::UndefinedQID)
+        : _id (message::UndefinedQID)
         , _mutex ()
         , _queue ()
         , _listener (nullptr)
@@ -43,7 +43,7 @@ namespace mqmx
                 _listener = nullptr;
             }
             _queue.clear ();
-            _id = Message::UndefinedQID;
+            _id = message::UndefinedQID;
             std::swap (_queue, o._queue);
             std::swap (_id, o._id);
             std::swap (_listener, o._listener);
@@ -71,7 +71,7 @@ namespace mqmx
         return _id;
     }
 
-    status_code message_queue::push (Message::upointer_type && msg)
+    status_code message_queue::push (message::upointer_type && msg)
     {
         if (msg.get () == nullptr)
         {
@@ -79,8 +79,8 @@ namespace mqmx
         }
 
         lock_type guard (_mutex);
-        if ((_id == Message::UndefinedQID) ||
-            (_id != msg->getQID ()))
+        if ((_id == message::UndefinedQID) ||
+            (_id != msg->get_qid ()))
         {
             return ExitStatus::NotSupported;
         }
@@ -94,11 +94,11 @@ namespace mqmx
 	return ExitStatus::Success;
     }
 
-    Message::upointer_type message_queue::pop ()
+    message::upointer_type message_queue::pop ()
     {
-        Message::upointer_type msg;
+        message::upointer_type msg;
         lock_type guard (_mutex);
-        if ((_id != Message::UndefinedQID) && !_queue.empty ())
+        if ((_id != message::UndefinedQID) && !_queue.empty ())
         {
             msg = std::move (_queue.front ());
             _queue.pop_front ();

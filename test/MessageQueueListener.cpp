@@ -13,7 +13,7 @@ TEST (message_queue, NewData_and_Closed_notifications)
         .Times (1);
     {
         mqmx::message_queue queue (defQID);
-        mqmx::Message::upointer_type msg;
+        mqmx::message::upointer_type msg;
 
         status_code retCode = queue.set_listener (mock);
         ASSERT_EQ (ExitStatus::Success, retCode);
@@ -25,7 +25,7 @@ TEST (message_queue, NewData_and_Closed_notifications)
         EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::NewData))
             .Times (1);
 
-        retCode = queue.enqueue<mqmx::Message> (defMID);
+        retCode = queue.enqueue<mqmx::message> (defMID);
         ASSERT_EQ (ExitStatus::Success, retCode);
     }
 }
@@ -39,14 +39,14 @@ TEST (message_queue, Detached_because_of_move_ctor)
 
     mocks::ListenerMock mock;
     mqmx::message_queue queue (defQID);
-    mqmx::Message::upointer_type msg;
+    mqmx::message::upointer_type msg;
 
     status_code retCode = queue.set_listener (mock);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
     EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::NewData))
 	.Times (1);
-    retCode = queue.enqueue<mqmx::Message> (defMID);
+    retCode = queue.enqueue<mqmx::message> (defMID);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
     EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::Detached))
@@ -58,8 +58,8 @@ TEST (message_queue, Detached_because_of_move_ctor)
 
     msg = queueB.pop (); /* message should be moved from the original queue */
     ASSERT_NE (nullptr, msg.get ());
-    ASSERT_EQ (defQID, msg->getQID ());
-    ASSERT_EQ (defMID, msg->getMID ());
+    ASSERT_EQ (defQID, msg->get_qid ());
+    ASSERT_EQ (defMID, msg->get_mid ());
 }
 
 TEST (message_queue, Detached_because_of_move_assignment)
@@ -76,7 +76,7 @@ TEST (message_queue, Detached_because_of_move_assignment)
     message_queue queueA (defQIDa);
     message_queue queueB (defQIDb);
 
-    mqmx::Message::upointer_type msg;
+    mqmx::message::upointer_type msg;
     status_code retCode = ExitStatus::Success;
 
     retCode = queueA.set_listener (mock);
@@ -89,8 +89,8 @@ TEST (message_queue, Detached_because_of_move_assignment)
 	.Times (1);
     EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::NewData))
 	.Times (1);
-    retCode = queueA.enqueue<mqmx::Message> (defMIDa);
-    retCode = queueB.enqueue<mqmx::Message> (defMIDb);
+    retCode = queueA.enqueue<mqmx::message> (defMIDa);
+    retCode = queueB.enqueue<mqmx::message> (defMIDb);
 
     EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::Detached))
 	.Times (1);
@@ -103,6 +103,6 @@ TEST (message_queue, Detached_because_of_move_assignment)
 
     msg = queueB.pop (); /* message should be moved from the original queue */
     ASSERT_NE (nullptr, msg.get ());
-    ASSERT_EQ (defQIDa, msg->getQID ());
-    ASSERT_EQ (defMIDa, msg->getMID ());
+    ASSERT_EQ (defQIDa, msg->get_qid ());
+    ASSERT_EQ (defMIDa, msg->get_mid ());
 }

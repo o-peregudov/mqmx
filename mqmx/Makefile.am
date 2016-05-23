@@ -6,8 +6,8 @@ libmqmx_la_LDFLAGS = -no-undefined -version-info $(MQMX_LT_VERSION)
 
 pkginclude_HEADERS =		\
 	types.h			\
+	message.h		\
 	WaitTimeProvider.h	\
-	Message.h		\
 	message_queue.h		\
 	MessageQueuePoll.h      \
 	MessageQueuePool.h

@@ -8,7 +8,7 @@ TEST (message_queue, sanity_checks)
     const message_id_type defMID = 10;
 
     message_queue queue (defQID);
-    Message::upointer_type msg (queue.pop ());
+    message::upointer_type msg (queue.pop ());
     ASSERT_EQ (nullptr, msg.get ());
 
     status_code retCode = queue.push (nullptr);
@@ -16,11 +16,11 @@ TEST (message_queue, sanity_checks)
 
     {
 	message_queue queue2 (defQID + 1);
-	retCode = queue.push (queue2.new_message<Message> (defQID));
+	retCode = queue.push (queue2.new_message<message> (defQID));
 	ASSERT_EQ (ExitStatus::NotSupported, retCode);
     }
 
-    retCode = queue.enqueue<Message> (defMID);
+    retCode = queue.enqueue<message> (defMID);
     ASSERT_EQ (ExitStatus::Success, retCode);
 }
 
@@ -33,17 +33,17 @@ TEST (message_queue, fifo_ordering)
     message_queue queue (defQID);
     for (size_t ix = 0; ix < 10; ++ix)
     {
-	status_code retCode = queue.enqueue<Message> (defMID + ix);
+	status_code retCode = queue.enqueue<message> (defMID + ix);
 	ASSERT_EQ (ExitStatus::Success, retCode);
     }
 
-    Message::upointer_type msg;
+    message::upointer_type msg;
     for (size_t ix = 0; ix < 10; ++ix)
     {
         msg = queue.pop ();
 	ASSERT_NE (nullptr, msg.get ());
-	ASSERT_EQ (defQID, msg->getQID ());
-	ASSERT_EQ ((defMID + ix), msg->getMID ());
+	ASSERT_EQ (defQID, msg->get_qid ());
+	ASSERT_EQ ((defMID + ix), msg->get_mid ());
     }
 
     msg = queue.pop ();
