@@ -7,7 +7,7 @@ libmqmx_la_LDFLAGS = -no-undefined -version-info $(MQMX_LT_VERSION)
 pkginclude_HEADERS =		\
 	types.h			\
 	message.h		\
-	WaitTimeProvider.h	\
+	wait_time_provider.h	\
 	message_queue.h		\
 	message_queue_poll.h    \
 	MessageQueuePool.h
@@ -15,7 +15,7 @@ pkginclude_HEADERS =		\
 nodist_pkginclude_HEADERS =
 
 libmqmx_la_SOURCES =		\
-	WaitTimeProvider.cpp	\
+	wait_time_provider.cpp	\
 	message_queue.cpp	\
 	message_queue_poll.cpp	\
 	MessageQueuePool.cpp

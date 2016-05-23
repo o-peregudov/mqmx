@@ -41,7 +41,7 @@ TEST_F (MQPollFixture, infinite_wait)
         });
 
     auto mqlist = sut.poll (std::begin (mq), std::end (mq),
-                            WaitTimeProvider::WAIT_INFINITELY);
+                            wait_time_provider::WAIT_INFINITELY);
     if (thr.joinable ())
     {
         thr.join ();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mqmx/message_queue.h>
-#include <mqmx/WaitTimeProvider.h>
+#include <mqmx/wait_time_provider.h>
 
 #include <algorithm>
 #include <iterator>
@@ -96,14 +96,14 @@ namespace mqmx
                              const message_queue::notification_flags_type) override;
 
         template <typename RefClockProvider>
-        void wait_for_notifications (const WaitTimeProvider & wtp, const RefClockProvider & rcp)
+        void wait_for_notifications (const wait_time_provider & wtp, const RefClockProvider & rcp)
         {
             lock_type notifications_guard (_notifications_mutex);
-            const auto abs_time = wtp.getTimepoint (rcp);
+            const auto abs_time = wtp.get_timepoint (rcp);
             if (_notifications.empty ())
             {
                 const auto pred = [&]{ return !_notifications.empty (); };
-                if (wtp.waitInfinitely ())
+                if (wtp.wait_infinitely ())
                 {
                     _notifications_condition.wait (notifications_guard, pred);
                 }
@@ -122,11 +122,11 @@ namespace mqmx
         /*
          * NOTE: iterators should represent a sequence of pointers to MessageQueue
          */
-        template <typename ForwardIt,
-                  typename RefClockProvider = WaitTimeProvider>
-        notifications_list_type poll (const ForwardIt ibegin, const ForwardIt iend,
-                                      const WaitTimeProvider & wtp = WaitTimeProvider (),
-                                      const RefClockProvider & rcp = WaitTimeProvider ())
+        template <typename forward_it,
+                  typename reference_clock_provider = wait_time_provider>
+        notifications_list_type poll (const forward_it ibegin, const forward_it iend,
+                                      const wait_time_provider & wtp = wait_time_provider (),
+                                      const reference_clock_provider & rcp = wait_time_provider ())
         {
             {
                 /*
@@ -137,14 +137,14 @@ namespace mqmx
             }
 
             std::for_each (ibegin, iend,
-                           [&](typename std::iterator_traits<ForwardIt>::reference mq)
+                           [&](typename std::iterator_traits<forward_it>::reference mq)
                            {
                                const status_code ret_code = mq->set_listener (*this);
                                assert (ret_code == ExitStatus::Success), ret_code;
                            });
             wait_for_notifications (wtp, rcp);
             std::for_each (ibegin, iend,
-                           [&](typename std::iterator_traits<ForwardIt>::reference mq)
+                           [&](typename std::iterator_traits<forward_it>::reference mq)
                            {
                                mq->clear_listener ();
                            });

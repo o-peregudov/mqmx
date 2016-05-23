@@ -103,7 +103,7 @@ namespace mqmx
         {
             message_queue_poll mqp;
             const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
-                                          WaitTimeProvider::WAIT_INFINITELY);
+                                          wait_time_provider::WAIT_INFINITELY);
             size_t starti = 0;
             if (mqlist.front ().get_qid () == m_mqControl.get_qid ())
             {
