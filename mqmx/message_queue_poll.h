@@ -3,13 +3,12 @@
 #include <mqmx/message_queue.h>
 #include <mqmx/WaitTimeProvider.h>
 
-#include <Common/OAMThreading.hpp>
-
 #include <algorithm>
-#include <vector>
-#include <cassert>
 #include <iterator>
+#include <cassert>
+#include <vector>
 #include <tuple>
+#include <condition_variable>
 
 namespace mqmx
 {
@@ -31,7 +30,7 @@ namespace mqmx
     public:
         typedef message_queue::mutex_type mutex_type;
         typedef message_queue::lock_type  lock_type;
-        typedef BBC_pkg::oam_condvar_type condvar_type;
+        typedef std::condition_variable   condvar_type;
 
         class notification_rec_type
             : private std::tuple<queue_id_type, message_queue *, message_queue::notification_flags_type>
