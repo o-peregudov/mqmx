@@ -87,9 +87,9 @@ namespace mqmx
         typedef std::vector<notification_rec_type> notifications_list_type;
 
     private:
-        mutable mutex_type      m_notifications_mutex;
-        condvar_type            m_notifications_condition;
-        notifications_list_type m_notifications;
+        mutable mutex_type      _notifications_mutex;
+        condvar_type            _notifications_condition;
+        notifications_list_type _notifications;
 
         virtual void notify (const queue_id_type,
                              message_queue *,
@@ -98,18 +98,18 @@ namespace mqmx
         template <typename RefClockProvider>
         void waitForNotifications (const WaitTimeProvider & wtp, const RefClockProvider & rcp)
         {
-            lock_type notifications_guard (m_notifications_mutex);
+            lock_type notifications_guard (_notifications_mutex);
             const auto abs_time = wtp.getTimepoint (rcp);
-            if (m_notifications.empty ())
+            if (_notifications.empty ())
             {
-                const auto pred = [&]{ return !m_notifications.empty (); };
+                const auto pred = [&]{ return !_notifications.empty (); };
                 if (wtp.waitInfinitely ())
                 {
-                    m_notifications_condition.wait (notifications_guard, pred);
+                    _notifications_condition.wait (notifications_guard, pred);
                 }
                 else if (abs_time.time_since_epoch ().count () != 0)
                 {
-                    m_notifications_condition.wait_until (
+                    _notifications_condition.wait_until (
                         notifications_guard, abs_time, pred);
                 }
             }
@@ -132,8 +132,8 @@ namespace mqmx
                 /*
                  * initialize list of notifications
                  */
-                lock_type notifications_guard (m_notifications_mutex);
-                m_notifications.clear ();
+                lock_type notifications_guard (_notifications_mutex);
+                _notifications.clear ();
             }
 
             std::for_each (ibegin, iend,
@@ -148,7 +148,7 @@ namespace mqmx
                            {
                                mq->clear_listener ();
                            });
-            return m_notifications;
+            return _notifications;
         }
     };
 } /* namespace mqmx */
