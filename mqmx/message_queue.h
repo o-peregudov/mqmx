@@ -69,9 +69,9 @@ namespace mqmx
         void clear_listener ();
 
     private:
-        queue_id_type  m_id;
-        mutex_type     m_mutex;
-        container_type m_queue;
-        listener *     m_listener;
+        queue_id_type  _id;
+        mutex_type     _mutex;
+        container_type _queue;
+        listener *     _listener;
     };
 } /* namespace mqmx */
