@@ -1,4 +1,4 @@
-#include "mqmx/MessageQueuePool.h"
+#include "mqmx/message_queue_pool.h"
 #include <algorithm>
 
 namespace mqmx

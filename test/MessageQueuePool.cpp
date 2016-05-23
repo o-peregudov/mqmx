@@ -1,4 +1,4 @@
-#include <mqmx/MessageQueuePool.h>
+#include <mqmx/message_queue_pool.h>
 #include <crs/semaphore.h>
 #include <gmock/gmock.h>
 
