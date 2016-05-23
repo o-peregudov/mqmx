@@ -26,7 +26,7 @@ namespace mqmx
             auto cplistener (m_listener);
             m_listener = nullptr;
 
-            cplistener->notify (m_id, &o, NotificationFlag::Detached);
+            cplistener->notify (m_id, &o, notification_flag::Detached);
         }
     }
 
@@ -39,7 +39,7 @@ namespace mqmx
             lock_type guard_o (o.m_mutex, std::adopt_lock_t ());
             if (m_listener)
             {
-                m_listener->notify (m_id, this, NotificationFlag::Detached);
+                m_listener->notify (m_id, this, notification_flag::Detached);
                 m_listener = nullptr;
             }
             m_queue.clear ();
@@ -52,7 +52,7 @@ namespace mqmx
                 auto cplistener (m_listener);
                 m_listener = nullptr;
 
-                cplistener->notify (m_id, &o, NotificationFlag::Detached);
+                cplistener->notify (m_id, &o, notification_flag::Detached);
             }
         }
         return *this;
@@ -62,7 +62,7 @@ namespace mqmx
     {
         if (m_listener)
         {
-            m_listener->notify (m_id, nullptr, NotificationFlag::Closed);
+            m_listener->notify (m_id, nullptr, notification_flag::Closed);
         }
     }
 
@@ -89,7 +89,7 @@ namespace mqmx
         if (m_listener && (m_queue.size () == 1))
         {
             /* only first message will be reported */
-            m_listener->notify (m_id, this, NotificationFlag::NewData);
+            m_listener->notify (m_id, this, notification_flag::NewData);
         }
 	return ExitStatus::Success;
     }
@@ -117,7 +117,7 @@ namespace mqmx
         m_listener = &l;
         if (!m_queue.empty ())
         {
-            m_listener->notify (m_id, this, NotificationFlag::NewData);
+            m_listener->notify (m_id, this, notification_flag::NewData);
         }
         return ExitStatus::Success;
     }

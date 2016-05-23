@@ -20,7 +20,7 @@ namespace mqmx
         typedef std::deque<Message::upointer_type> container_type;
         typedef size_t                             notification_flags_type;
 
-        enum NotificationFlag
+        enum notification_flag
         {
             NewData  = 0x0001, /* push operation called on this queue */
             Detached = 0x0002, /* move ctor or move assignment called on this queue */
