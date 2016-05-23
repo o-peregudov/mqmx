@@ -96,7 +96,7 @@ namespace mqmx
                              const message_queue::notification_flags_type) override;
 
         template <typename RefClockProvider>
-        void waitForNotifications (const WaitTimeProvider & wtp, const RefClockProvider & rcp)
+        void wait_for_notifications (const WaitTimeProvider & wtp, const RefClockProvider & rcp)
         {
             lock_type notifications_guard (_notifications_mutex);
             const auto abs_time = wtp.getTimepoint (rcp);
@@ -142,7 +142,7 @@ namespace mqmx
                                const status_code ret_code = mq->set_listener (*this);
                                assert (ret_code == ExitStatus::Success), ret_code;
                            });
-            waitForNotifications (wtp, rcp);
+            wait_for_notifications (wtp, rcp);
             std::for_each (ibegin, iend,
                            [&](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
