@@ -53,32 +53,32 @@ namespace mqmx
             notification_rec_type (notification_rec_type &&) = default;
             notification_rec_type & operator = (notification_rec_type &&) = default;
 
-            queue_id_type & getQID ()
+            queue_id_type & get_qid ()
             {
                 return std::get<0> (*this);
             }
 
-            message_queue * & getMQ ()
+            message_queue * & get_mq ()
             {
                 return std::get<1> (*this);
             }
 
-            message_queue::notification_flags_type & getFlags ()
+            message_queue::notification_flags_type & get_flags ()
             {
                 return std::get<2> (*this);
             }
 
-            queue_id_type const & getQID () const
+            queue_id_type const & get_qid () const
             {
                 return std::get<0> (*this);
             }
 
-            message_queue * const & getMQ () const
+            message_queue * const & get_mq () const
             {
                 return std::get<1> (*this);
             }
 
-            message_queue::notification_flags_type const & getFlags () const
+            message_queue::notification_flags_type const & get_flags () const
             {
                 return std::get<2> (*this);
             }

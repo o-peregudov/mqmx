@@ -76,18 +76,18 @@ namespace mqmx
     status_code MessageQueuePool::handleNotifications (
         const message_queue_poll::notification_rec_type & rec)
     {
-        if (rec.getFlags () & (message_queue::notification_flag::closed|
-                               message_queue::notification_flag::detached))
+        if (rec.get_flags () & (message_queue::notification_flag::closed|
+				message_queue::notification_flag::detached))
         {
             /* pointer to message queue is no longer valid */
         }
-        else if (rec.getFlags () & message_queue::notification_flag::data)
+        else if (rec.get_flags () & message_queue::notification_flag::data)
         {
-            assert (rec.getMQ () != nullptr);
-            assert (rec.getQID () < m_mqHandler.size ());
+            assert (rec.get_mq () != nullptr);
+            assert (rec.get_qid () < m_mqHandler.size ());
 
-            message::upointer_type msg = rec.getMQ ()->pop ();
-            const status_code retCode = (m_mqHandler[rec.getQID ()])(std::move (msg));
+            message::upointer_type msg = rec.get_mq ()->pop ();
+            const status_code retCode = (m_mqHandler[rec.get_qid ()])(std::move (msg));
             if (retCode != ExitStatus::Success)
             {
                 /* TODO: print diagnostic message here */
@@ -105,7 +105,7 @@ namespace mqmx
             const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
                                           WaitTimeProvider::WAIT_INFINITELY);
             size_t starti = 0;
-            if (mqlist.front ().getQID () == m_mqControl.get_qid ())
+            if (mqlist.front ().get_qid () == m_mqControl.get_qid ())
             {
                 const status_code retCode = handleNotifications (mqlist.front ());
                 if (retCode == ExitStatus::HaltRequested)

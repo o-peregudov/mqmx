@@ -22,8 +22,8 @@ namespace mqmx
             const notification_rec_type elem (qid, mq, flag);
             const auto compare = [](const notification_rec_type & a,
                                     const notification_rec_type & b) {
-                return ((a.getQID () <= b.getQID ()) &&
-                        (a.getMQ () < b.getMQ ()));
+                return ((a.get_qid () <= b.get_qid ()) &&
+                        (a.get_mq () < b.get_mq ()));
             };
 
             lock_type notifications_guard (m_notifications_mutex);
@@ -34,9 +34,9 @@ namespace mqmx
                 notifications_list_type::iterator prev = iter;
                 --prev;
 
-                if ((prev->getQID () == qid) && (prev->getMQ () == mq))
+                if ((prev->get_qid () == qid) && (prev->get_mq () == mq))
                 {
-                    prev->getFlags () |= flag;
+                    prev->get_flags () |= flag;
                     m_notifications_condition.notify_one ();
                     return; /* queue already has some notification(s) */
                 }
