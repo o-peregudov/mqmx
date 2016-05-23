@@ -421,9 +421,7 @@ nodist_doc_DATA = README
 EXTRA_DIST = CMakeLists.txt		\
 		FindGMock.cmake		\
 		mqmx/CMakeLists.txt	\
-		test/CMakeLists.txt	\
-		Common/CMakeLists.txt	\
-		Common/OAMThreading.hpp
+		test/CMakeLists.txt
 
 SUBDIRS = mqmx test
 all: config.h

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Common/OAMThreading.hpp>
 #include <mqmx/message_queue_poll.h>
 
 #include <crs/mutex.h>
@@ -9,6 +8,7 @@
 
 #include <functional>
 #include <vector>
+#include <thread>
 
 namespace mqmx
 {
@@ -47,6 +47,7 @@ namespace mqmx
 
     private:
         typedef std::vector<message_handler_func_type>                handlers_map_type;
+        typedef std::thread                                           thread_type;
 
         struct add_queue_message;
         friend struct add_queue_message;
@@ -65,7 +66,7 @@ namespace mqmx
         std::vector<message_queue *> m_mqs;
         semaphore_type               m_pauseSemaphore;
         semaphore_type               m_resumeSemaphore;
-        BBC_pkg::oam_thread_type     m_auxThread;
+        thread_type                  m_auxThread;
 
         status_code remove_queue (const message_queue * const);
         status_code control_queue_handler (message::upointer_type &&);

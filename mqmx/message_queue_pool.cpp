@@ -169,7 +169,7 @@ namespace mqmx
         m_mqs.reserve (capacity + 1);
         m_mqs.emplace_back (&m_mqControl);
 
-        std::thread auxiliary_thread ([this]{ thread_loop (); });
+        thread_type auxiliary_thread ([this]{ thread_loop (); });
         m_auxThread.swap (auxiliary_thread);
     }
 

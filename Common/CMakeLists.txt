@@ -1,3 +1,0 @@
-SET (MQMX_COMMON_HEADERS_NODIST
-  OAMThreading.hpp
-)
