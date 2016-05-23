@@ -48,7 +48,7 @@ TEST_F (MQPollFixture, infinite_wait)
     }
 
     ASSERT_EQ (1, mqlist.size ());
-    ASSERT_EQ (mq[idx]->getQID (), mqlist.front ().getQID ());
+    ASSERT_EQ (mq[idx]->get_qid (), mqlist.front ().getQID ());
     ASSERT_EQ (message_queue::notification_flag::NewData, mqlist.front ().getFlags ());
 }
 

@@ -42,7 +42,7 @@ namespace mqmx
         message_queue (message_queue &&);
         message_queue & operator = (message_queue &&);
 
-        queue_id_type getQID () const;
+        queue_id_type get_qid () const;
 
         status_code push (Message::upointer_type &&);
         Message::upointer_type pop ();
@@ -53,7 +53,7 @@ namespace mqmx
             static_assert (std::is_base_of<Message, MessageType>::value,
 			   "Invalid MessageType - should be derived from mqmx::Message");
             return Message::upointer_type (
-                new MessageType (getQID (), std::forward<ParametersTypes> (args)...));
+                new MessageType (get_qid (), std::forward<ParametersTypes> (args)...));
         }
 
         template <typename MessageType, typename... ParametersTypes>

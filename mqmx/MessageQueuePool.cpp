@@ -51,8 +51,8 @@ namespace mqmx
         {
             add_queue_message * aqmsg = static_cast<add_queue_message *> (msg.get ());
             auto it = std::begin (m_mqs);
-            while ((++it != std::end (m_mqs)) && ((*it)->getQID () < aqmsg->mq->getQID ()));
-            assert ((it == std::end (m_mqs)) || (aqmsg->mq->getQID () < (*it)->getQID ()));
+            while ((++it != std::end (m_mqs)) && ((*it)->get_qid () < aqmsg->mq->get_qid ()));
+            assert ((it == std::end (m_mqs)) || (aqmsg->mq->get_qid () < (*it)->get_qid ()));
             m_mqs.insert (it, aqmsg->mq);
             aqmsg->sem->post ();
             return ExitStatus::Success;
@@ -105,7 +105,7 @@ namespace mqmx
             const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
                                           WaitTimeProvider::WAIT_INFINITELY);
             size_t starti = 0;
-            if (mqlist.front ().getQID () == m_mqControl.getQID ())
+            if (mqlist.front ().getQID () == m_mqControl.get_qid ())
             {
                 const status_code retCode = handleNotifications (mqlist.front ());
                 if (retCode == ExitStatus::HaltRequested)
@@ -163,7 +163,7 @@ namespace mqmx
         , m_auxThread ()
     {
         m_mqHandler.resize (capacity + 1);
-        m_mqHandler[m_mqControl.getQID ()] = std::bind (
+        m_mqHandler[m_mqControl.get_qid ()] = std::bind (
             &MessageQueuePool::controlQueueHandler, this, std::placeholders::_1);
 
         m_mqs.reserve (capacity + 1);
@@ -211,7 +211,7 @@ namespace mqmx
             return ExitStatus::InvalidArgument;
         }
 
-        if (!(mq->getQID () < m_mqHandler.size ()) || !m_mqHandler[mq->getQID ()])
+        if (!(mq->get_qid () < m_mqHandler.size ()) || !m_mqHandler[mq->get_qid ()])
         {
             return ExitStatus::NotFound;
         }

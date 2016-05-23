@@ -66,7 +66,7 @@ namespace mqmx
         }
     }
 
-    queue_id_type message_queue::getQID () const
+    queue_id_type message_queue::get_qid () const
     {
         return m_id;
     }
