@@ -1,15 +1,15 @@
 SET (MQMX_SOURCES
   WaitTimeProvider.cpp
-  MessageQueue.cpp
+  message_queue.cpp
   MessageQueuePoll.cpp
   MessageQueuePool.cpp
 )
 
 SET (MQMX_HEADERS
-  Types.h
+  types.h
   WaitTimeProvider.h
   Message.h
-  MessageQueue.h
+  message_queue.h
   MessageQueuePoll.h
   MessageQueuePool.h
 )

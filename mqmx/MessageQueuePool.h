@@ -29,7 +29,7 @@ namespace mqmx
             mq_deleter (mq_deleter && o) = default;
             mq_deleter & operator = (mq_deleter && o) = default;
 
-            void operator () (mqmx::MessageQueue * mq) const
+            void operator () (mqmx::message_queue * mq) const
             {
                 if (_pool)
                     _pool->removeQueue (mq);
@@ -43,7 +43,7 @@ namespace mqmx
         typedef CrossClass::lock_type                                 lock_type;
         typedef CrossClass::condvar_type                              condvar_type;
         typedef CrossClass::semaphore                                 semaphore_type;
-        typedef std::unique_ptr<MessageQueue, mq_deleter>             mq_upointer_type;
+        typedef std::unique_ptr<message_queue, mq_deleter>            mq_upointer_type;
 
     private:
         typedef std::vector<message_handler_func_type>                handlers_map_type;
@@ -60,14 +60,14 @@ namespace mqmx
         static const message_id_type ADD_QUEUE_MESSAGE_ID;
         static const message_id_type REMOVE_QUEUE_MESSAGE_ID;
 
-        MessageQueue                m_mqControl;
-        handlers_map_type           m_mqHandler;
-        std::vector<MessageQueue *> m_mqs;
-        semaphore_type              m_pauseSemaphore;
-        semaphore_type              m_resumeSemaphore;
-        BBC_pkg::oam_thread_type    m_auxThread;
+        message_queue                m_mqControl;
+        handlers_map_type            m_mqHandler;
+        std::vector<message_queue *> m_mqs;
+        semaphore_type               m_pauseSemaphore;
+        semaphore_type               m_resumeSemaphore;
+        BBC_pkg::oam_thread_type     m_auxThread;
 
-        status_code removeQueue (const MessageQueue * const);
+        status_code removeQueue (const message_queue * const);
         status_code controlQueueHandler (Message::upointer_type &&);
         status_code handleNotifications (const MessageQueuePoll::notification_rec_type &);
         void threadLoop ();

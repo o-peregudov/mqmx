@@ -1,9 +1,9 @@
-#include <mqmx/MessageQueue.h>
+#include <mqmx/message_queue.h>
 #include <cassert>
 
 namespace mqmx
 {
-    MessageQueue::MessageQueue (const queue_id_type ID)
+    message_queue::message_queue (const queue_id_type ID)
         : m_id (ID)
         , m_mutex ()
         , m_queue ()
@@ -11,7 +11,7 @@ namespace mqmx
     {
     }
 
-    MessageQueue::MessageQueue (MessageQueue && o)
+    message_queue::message_queue (message_queue && o)
         : m_id (Message::UndefinedQID)
         , m_mutex ()
         , m_queue ()
@@ -30,7 +30,7 @@ namespace mqmx
         }
     }
 
-    MessageQueue & MessageQueue::operator = (MessageQueue && o)
+    message_queue & message_queue::operator = (message_queue && o)
     {
         if (this != &o)
         {
@@ -58,7 +58,7 @@ namespace mqmx
         return *this;
     }
 
-    MessageQueue::~MessageQueue ()
+    message_queue::~message_queue ()
     {
         if (m_listener)
         {
@@ -66,12 +66,12 @@ namespace mqmx
         }
     }
 
-    queue_id_type MessageQueue::getQID () const
+    queue_id_type message_queue::getQID () const
     {
         return m_id;
     }
 
-    status_code MessageQueue::push (Message::upointer_type && msg)
+    status_code message_queue::push (Message::upointer_type && msg)
     {
         if (msg.get () == nullptr)
         {
@@ -94,7 +94,7 @@ namespace mqmx
 	return ExitStatus::Success;
     }
 
-    Message::upointer_type MessageQueue::pop ()
+    Message::upointer_type message_queue::pop ()
     {
         Message::upointer_type msg;
         lock_type guard (m_mutex);
@@ -106,7 +106,7 @@ namespace mqmx
         return std::move (msg);
     }
 
-    status_code MessageQueue::setListener (Listener & l)
+    status_code message_queue::setListener (Listener & l)
     {
         lock_type guard (m_mutex);
         if (m_listener)
@@ -122,7 +122,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    void MessageQueue::clearListener ()
+    void message_queue::clearListener ()
     {
         lock_type guard (m_mutex);
         m_listener = nullptr;

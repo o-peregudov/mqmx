@@ -7,7 +7,7 @@ namespace fixtures
     {
 	for (size_t ix = 0; ix < NQUEUES; ++ix)
 	{
-	    mq.emplace_back (new mqmx::MessageQueue (ix));
+	    mq.emplace_back (new mqmx::message_queue (ix));
 	}
     }
 } /* namespace fixtures */

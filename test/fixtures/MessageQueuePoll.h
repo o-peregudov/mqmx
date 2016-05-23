@@ -7,7 +7,7 @@ namespace fixtures
     struct MessageQueuePollFixture
     {
 	static const size_t NQUEUES = 10;
-	std::vector<mqmx::MessageQueue::upointer_type> mq;
+	std::vector<mqmx::message_queue::upointer_type> mq;
 
 	MessageQueuePollFixture ();
     };

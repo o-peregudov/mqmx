@@ -14,8 +14,8 @@ namespace mqmx
     }
 
     void MessageQueuePoll::notify (const queue_id_type qid,
-                                   MessageQueue * mq,
-                                   const MessageQueue::notification_flags_type flag)
+                                   message_queue * mq,
+                                   const message_queue::notification_flags_type flag)
     {
         try
         {

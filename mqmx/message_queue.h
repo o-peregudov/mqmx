@@ -8,13 +8,13 @@
 
 namespace mqmx
 {
-    class MessageQueue
+    class message_queue
     {
-        MessageQueue (const MessageQueue &) = delete;
-        MessageQueue & operator = (const MessageQueue &) = delete;
+        message_queue (const message_queue &) = delete;
+        message_queue & operator = (const message_queue &) = delete;
 
     public:
-        typedef std::unique_ptr<MessageQueue>      upointer_type;
+        typedef std::unique_ptr<message_queue>     upointer_type;
         typedef std::mutex                         mutex_type;
         typedef std::unique_lock<mutex_type>       lock_type;
         typedef std::deque<Message::upointer_type> container_type;
@@ -22,25 +22,25 @@ namespace mqmx
 
         enum NotificationFlag
         {
-            NewData  = 0x0001,        /* push operation called on this queue */
-            Detached = 0x0002,        /* move ctor or move assignment called on this queue */
-            Closed   = 0x0004         /* destructor called on this queue */
+            NewData  = 0x0001, /* push operation called on this queue */
+            Detached = 0x0002, /* move ctor or move assignment called on this queue */
+            Closed   = 0x0004  /* destructor called on this queue */
         };
 
         struct Listener
         {
             virtual ~Listener () { }
             virtual void notify (const queue_id_type,
-                                 MessageQueue *,
+                                 message_queue *,
                                  const notification_flags_type) = 0;
         };
 
     public:
-        MessageQueue (const queue_id_type = Message::UndefinedQID);
-        ~MessageQueue ();
+        message_queue (const queue_id_type = Message::UndefinedQID);
+        ~message_queue ();
 
-        MessageQueue (MessageQueue &&);
-        MessageQueue & operator = (MessageQueue &&);
+        message_queue (message_queue &&);
+        message_queue & operator = (message_queue &&);
 
         queue_id_type getQID () const;
 

@@ -11,11 +11,11 @@ namespace mqmx
 
     struct MessageQueuePool::add_queue_message : Message
     {
-        MessageQueue * mq;
+        message_queue * mq;
         semaphore_type * sem;
 
         add_queue_message (const queue_id_type queue_id,
-                           MessageQueue * q, semaphore_type * s)
+                           message_queue * q, semaphore_type * s)
             : Message (queue_id, MessageQueuePool::ADD_QUEUE_MESSAGE_ID)
             , mq (q)
             , sem (s)
@@ -24,11 +24,11 @@ namespace mqmx
 
     struct MessageQueuePool::remove_queue_message : Message
     {
-        const MessageQueue * mq;
+        const message_queue * mq;
         MessageQueuePool::semaphore_type * sem;
 
         remove_queue_message (const queue_id_type queue_id,
-                              const MessageQueue * q, semaphore_type * s)
+                              const message_queue * q, semaphore_type * s)
             : Message (queue_id, MessageQueuePool::REMOVE_QUEUE_MESSAGE_ID)
             , mq (q)
             , sem (s)
@@ -76,12 +76,12 @@ namespace mqmx
     status_code MessageQueuePool::handleNotifications (
         const MessageQueuePoll::notification_rec_type & rec)
     {
-        if (rec.getFlags () & (MessageQueue::NotificationFlag::Closed|
-                               MessageQueue::NotificationFlag::Detached))
+        if (rec.getFlags () & (message_queue::NotificationFlag::Closed|
+                               message_queue::NotificationFlag::Detached))
         {
             /* pointer to message queue is no longer valid */
         }
-        else if (rec.getFlags () & MessageQueue::NotificationFlag::NewData)
+        else if (rec.getFlags () & message_queue::NotificationFlag::NewData)
         {
             assert (rec.getMQ () != nullptr);
             assert (rec.getQID () < m_mqHandler.size ());
@@ -192,7 +192,7 @@ namespace mqmx
         const queue_id_type qid = std::distance (std::begin (m_mqHandler), it);
         assert (qid < m_mqHandler.size ());
 
-        mq_upointer_type mq (new MessageQueue (qid), mq_deleter (this));
+        mq_upointer_type mq (new message_queue (qid), mq_deleter (this));
         m_mqHandler[qid] = handler;
 
         semaphore_type sem;
@@ -204,7 +204,7 @@ namespace mqmx
         return mq_upointer_type ();
     }
 
-    status_code MessageQueuePool::removeQueue (const MessageQueue * const mq)
+    status_code MessageQueuePool::removeQueue (const message_queue * const mq)
     {
         if (mq == nullptr)
         {

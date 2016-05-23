@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mqmx/MessageQueue.h>
+#include <mqmx/message_queue.h>
 #include <mqmx/WaitTimeProvider.h>
 
 #include <Common/OAMThreading.hpp>
@@ -23,27 +23,27 @@ namespace mqmx
      *    const auto signaled_queues = mqp.poll (std::begin (mq2poll), std::end (mq2poll), timeout);
      *
      */
-    class MessageQueuePoll final : MessageQueue::Listener
+    class MessageQueuePoll final : message_queue::Listener
     {
         MessageQueuePoll (const MessageQueuePoll &) = delete;
         MessageQueuePoll & operator = (const MessageQueuePoll &) = delete;
 
     public:
-        typedef MessageQueue::mutex_type  mutex_type;
-        typedef MessageQueue::lock_type   lock_type;
+        typedef message_queue::mutex_type mutex_type;
+        typedef message_queue::lock_type  lock_type;
         typedef BBC_pkg::oam_condvar_type condvar_type;
 
         class notification_rec_type
-            : private std::tuple<queue_id_type, MessageQueue *, MessageQueue::notification_flags_type>
+            : private std::tuple<queue_id_type, message_queue *, message_queue::notification_flags_type>
         {
             typedef std::tuple<queue_id_type,
-                               MessageQueue *,
-                               MessageQueue::notification_flags_type> base;
+                               message_queue *,
+                               message_queue::notification_flags_type> base;
 
         public:
             notification_rec_type (queue_id_type qid,
-                                   MessageQueue * mq,
-                                   MessageQueue::notification_flags_type flags)
+                                   message_queue * mq,
+                                   message_queue::notification_flags_type flags)
                 : base (qid, mq, flags)
             { }
 
@@ -59,12 +59,12 @@ namespace mqmx
                 return std::get<0> (*this);
             }
 
-            MessageQueue * & getMQ ()
+            message_queue * & getMQ ()
             {
                 return std::get<1> (*this);
             }
 
-            MessageQueue::notification_flags_type & getFlags ()
+            message_queue::notification_flags_type & getFlags ()
             {
                 return std::get<2> (*this);
             }
@@ -74,12 +74,12 @@ namespace mqmx
                 return std::get<0> (*this);
             }
 
-            MessageQueue * const & getMQ () const
+            message_queue * const & getMQ () const
             {
                 return std::get<1> (*this);
             }
 
-            MessageQueue::notification_flags_type const & getFlags () const
+            message_queue::notification_flags_type const & getFlags () const
             {
                 return std::get<2> (*this);
             }
@@ -93,8 +93,8 @@ namespace mqmx
         notifications_list_type m_notifications;
 
         virtual void notify (const queue_id_type,
-                             MessageQueue *,
-                             const MessageQueue::notification_flags_type) override;
+                             message_queue *,
+                             const message_queue::notification_flags_type) override;
 
         template <typename RefClockProvider>
         void waitForNotifications (const WaitTimeProvider & wtp, const RefClockProvider & rcp)

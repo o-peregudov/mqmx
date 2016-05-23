@@ -1,4 +1,4 @@
-#include <mqmx/MessageQueue.h>
+#include <mqmx/message_queue.h>
 #include <gmock/gmock.h>
 
 TEST (message_queue, sanity_checks)
@@ -7,7 +7,7 @@ TEST (message_queue, sanity_checks)
     const queue_id_type defQID = 10;
     const message_id_type defMID = 10;
 
-    MessageQueue queue (defQID);
+    message_queue queue (defQID);
     Message::upointer_type msg (queue.pop ());
     ASSERT_EQ (nullptr, msg.get ());
 
@@ -15,7 +15,7 @@ TEST (message_queue, sanity_checks)
     ASSERT_EQ (ExitStatus::InvalidArgument, retCode);
 
     {
-	MessageQueue queue2 (defQID + 1);
+	message_queue queue2 (defQID + 1);
 	retCode = queue.push (queue2.newMessage<Message> (defQID));
 	ASSERT_EQ (ExitStatus::NotSupported, retCode);
     }
@@ -30,7 +30,7 @@ TEST (message_queue, fifo_ordering)
     const queue_id_type defQID = 10;
     const message_id_type defMID = 10;
 
-    MessageQueue queue (defQID);
+    message_queue queue (defQID);
     for (size_t ix = 0; ix < 10; ++ix)
     {
 	status_code retCode = queue.enqueue<Message> (defMID + ix);
