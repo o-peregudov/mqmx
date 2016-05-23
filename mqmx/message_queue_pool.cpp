@@ -3,39 +3,39 @@
 
 namespace mqmx
 {
-    const queue_id_type   MessageQueuePool::CONTROL_MESSAGE_QUEUE_ID = 0x00;
-    const message_id_type MessageQueuePool::TERMINATE_MESSAGE_ID = 0x00;
-    const message_id_type MessageQueuePool::POLL_PAUSE_MESSAGE_ID = 0x01;
-    const message_id_type MessageQueuePool::ADD_QUEUE_MESSAGE_ID = 0x02;
-    const message_id_type MessageQueuePool::REMOVE_QUEUE_MESSAGE_ID = 0x03;
+    const queue_id_type   message_queue_pool::CONTROL_MESSAGE_QUEUE_ID = 0x00;
+    const message_id_type message_queue_pool::TERMINATE_MESSAGE_ID = 0x00;
+    const message_id_type message_queue_pool::POLL_PAUSE_MESSAGE_ID = 0x01;
+    const message_id_type message_queue_pool::ADD_QUEUE_MESSAGE_ID = 0x02;
+    const message_id_type message_queue_pool::REMOVE_QUEUE_MESSAGE_ID = 0x03;
 
-    struct MessageQueuePool::add_queue_message : message
+    struct message_queue_pool::add_queue_message : message
     {
         message_queue * mq;
         semaphore_type * sem;
 
         add_queue_message (const queue_id_type queue_id,
                            message_queue * q, semaphore_type * s)
-            : message (queue_id, MessageQueuePool::ADD_QUEUE_MESSAGE_ID)
+            : message (queue_id, message_queue_pool::ADD_QUEUE_MESSAGE_ID)
             , mq (q)
             , sem (s)
         { }
     };
 
-    struct MessageQueuePool::remove_queue_message : message
+    struct message_queue_pool::remove_queue_message : message
     {
         const message_queue * mq;
-        MessageQueuePool::semaphore_type * sem;
+        message_queue_pool::semaphore_type * sem;
 
         remove_queue_message (const queue_id_type queue_id,
                               const message_queue * q, semaphore_type * s)
-            : message (queue_id, MessageQueuePool::REMOVE_QUEUE_MESSAGE_ID)
+            : message (queue_id, message_queue_pool::REMOVE_QUEUE_MESSAGE_ID)
             , mq (q)
             , sem (s)
         { }
     };
 
-    status_code MessageQueuePool::controlQueueHandler (message::upointer_type && msg)
+    status_code message_queue_pool::controlQueueHandler (message::upointer_type && msg)
     {
         if (msg->get_mid () == TERMINATE_MESSAGE_ID)
         {
@@ -73,7 +73,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    status_code MessageQueuePool::handleNotifications (
+    status_code message_queue_pool::handleNotifications (
         const message_queue_poll::notification_rec_type & rec)
     {
         if (rec.get_flags () & (message_queue::notification_flag::closed|
@@ -97,7 +97,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    void MessageQueuePool::threadLoop ()
+    void message_queue_pool::threadLoop ()
     {
         for (;;)
         {
@@ -142,7 +142,7 @@ namespace mqmx
         }
     }
 
-    bool MessageQueuePool::isPollIdle ()
+    bool message_queue_pool::isPollIdle ()
     {
         m_mqControl.enqueue<message> (POLL_PAUSE_MESSAGE_ID);
         m_pauseSemaphore.wait ();
@@ -154,7 +154,7 @@ namespace mqmx
         return idleStatus;
     }
 
-    MessageQueuePool::MessageQueuePool (const size_t capacity)
+    message_queue_pool::message_queue_pool (const size_t capacity)
         : m_mqControl (CONTROL_MESSAGE_QUEUE_ID)
         , m_mqHandler ()
         , m_mqs ()
@@ -164,7 +164,7 @@ namespace mqmx
     {
         m_mqHandler.resize (capacity + 1);
         m_mqHandler[m_mqControl.get_qid ()] = std::bind (
-            &MessageQueuePool::controlQueueHandler, this, std::placeholders::_1);
+            &message_queue_pool::controlQueueHandler, this, std::placeholders::_1);
 
         m_mqs.reserve (capacity + 1);
         m_mqs.emplace_back (&m_mqControl);
@@ -173,13 +173,13 @@ namespace mqmx
         m_auxThread.swap (auxiliary_thread);
     }
 
-    MessageQueuePool::~MessageQueuePool ()
+    message_queue_pool::~message_queue_pool ()
     {
         m_mqControl.enqueue<message> (TERMINATE_MESSAGE_ID);
         m_auxThread.join ();
     }
 
-    MessageQueuePool::mq_upointer_type MessageQueuePool::allocateQueue (
+    message_queue_pool::mq_upointer_type message_queue_pool::allocateQueue (
         const message_handler_func_type & handler)
     {
         if (!handler)
@@ -204,7 +204,7 @@ namespace mqmx
         return mq_upointer_type ();
     }
 
-    status_code MessageQueuePool::removeQueue (const message_queue * const mq)
+    status_code message_queue_pool::removeQueue (const message_queue * const mq)
     {
         if (mq == nullptr)
         {

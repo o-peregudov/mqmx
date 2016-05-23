@@ -12,14 +12,14 @@
 
 namespace mqmx
 {
-    class MessageQueuePool
+    class message_queue_pool
     {
     public:
         struct mq_deleter
         {
-            MessageQueuePool * _pool;
+            message_queue_pool * _pool;
 
-            mq_deleter (MessageQueuePool * pool = nullptr)
+            mq_deleter (message_queue_pool * pool = nullptr)
                 : _pool (pool)
             { }
 
@@ -73,8 +73,8 @@ namespace mqmx
         void threadLoop ();
 
     public:
-        explicit MessageQueuePool (const size_t capacity = 10);
-        ~MessageQueuePool ();
+        explicit message_queue_pool (const size_t capacity = 10);
+        ~message_queue_pool ();
 
         bool isPollIdle ();
 

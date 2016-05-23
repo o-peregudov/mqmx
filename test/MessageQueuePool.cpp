@@ -4,10 +4,10 @@
 
 TEST (message_queue_pool, sanity_checks)
 {
-    mqmx::MessageQueuePool sut;
+    mqmx::message_queue_pool sut;
     ASSERT_TRUE (sut.isPollIdle ());
 
-    auto mq = sut.allocateQueue (mqmx::MessageQueuePool::message_handler_func_type ());
+    auto mq = sut.allocateQueue (mqmx::message_queue_pool::message_handler_func_type ());
     ASSERT_EQ (nullptr, mq.get ());
 
     mq = sut.allocateQueue ([](mqmx::message::upointer_type && msg)->mqmx::status_code
@@ -21,7 +21,7 @@ TEST (message_queue_pool, counter_test)
 {
     const size_t NMSGS = 1000;
     CrossClass::semaphore sem;
-    mqmx::MessageQueuePool sut;
+    mqmx::message_queue_pool sut;
     ASSERT_TRUE (sut.isPollIdle ());
     size_t counter_a = 0;
     size_t counter_b = 0;
