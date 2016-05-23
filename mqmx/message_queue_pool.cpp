@@ -35,7 +35,7 @@ namespace mqmx
         { }
     };
 
-    status_code message_queue_pool::controlQueueHandler (message::upointer_type && msg)
+    status_code message_queue_pool::control_queue_handler (message::upointer_type && msg)
     {
         if (msg->get_mid () == TERMINATE_MESSAGE_ID)
         {
@@ -73,7 +73,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    status_code message_queue_pool::handleNotifications (
+    status_code message_queue_pool::handle_notifications (
         const message_queue_poll::notification_rec_type & rec)
     {
         if (rec.get_flags () & (message_queue::notification_flag::closed|
@@ -97,7 +97,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    void message_queue_pool::threadLoop ()
+    void message_queue_pool::thread_loop ()
     {
         for (;;)
         {
@@ -107,7 +107,7 @@ namespace mqmx
             size_t starti = 0;
             if (mqlist.front ().get_qid () == m_mqControl.get_qid ())
             {
-                const status_code retCode = handleNotifications (mqlist.front ());
+                const status_code retCode = handle_notifications (mqlist.front ());
                 if (retCode == ExitStatus::HaltRequested)
                 {
                     break;
@@ -132,7 +132,7 @@ namespace mqmx
             {
                 try
                 {
-                    handleNotifications (mqlist[i]);
+                    handle_notifications (mqlist[i]);
                 }
                 catch (...)
                 {
@@ -142,7 +142,7 @@ namespace mqmx
         }
     }
 
-    bool message_queue_pool::isPollIdle ()
+    bool message_queue_pool::is_poll_idle ()
     {
         m_mqControl.enqueue<message> (POLL_PAUSE_MESSAGE_ID);
         m_pauseSemaphore.wait ();
@@ -164,12 +164,12 @@ namespace mqmx
     {
         m_mqHandler.resize (capacity + 1);
         m_mqHandler[m_mqControl.get_qid ()] = std::bind (
-            &message_queue_pool::controlQueueHandler, this, std::placeholders::_1);
+            &message_queue_pool::control_queue_handler, this, std::placeholders::_1);
 
         m_mqs.reserve (capacity + 1);
         m_mqs.emplace_back (&m_mqControl);
 
-        std::thread auxiliary_thread ([this]{ threadLoop (); });
+        std::thread auxiliary_thread ([this]{ thread_loop (); });
         m_auxThread.swap (auxiliary_thread);
     }
 
@@ -179,7 +179,7 @@ namespace mqmx
         m_auxThread.join ();
     }
 
-    message_queue_pool::mq_upointer_type message_queue_pool::allocateQueue (
+    message_queue_pool::mq_upointer_type message_queue_pool::allocate_queue (
         const message_handler_func_type & handler)
     {
         if (!handler)
@@ -204,7 +204,7 @@ namespace mqmx
         return mq_upointer_type ();
     }
 
-    status_code message_queue_pool::removeQueue (const message_queue * const mq)
+    status_code message_queue_pool::remove_queue (const message_queue * const mq)
     {
         if (mq == nullptr)
         {

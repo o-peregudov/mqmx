@@ -32,7 +32,7 @@ namespace mqmx
             void operator () (mqmx::message_queue * mq) const
             {
                 if (_pool)
-                    _pool->removeQueue (mq);
+                    _pool->remove_queue (mq);
             }
         };
 
@@ -67,17 +67,17 @@ namespace mqmx
         semaphore_type               m_resumeSemaphore;
         BBC_pkg::oam_thread_type     m_auxThread;
 
-        status_code removeQueue (const message_queue * const);
-        status_code controlQueueHandler (message::upointer_type &&);
-        status_code handleNotifications (const message_queue_poll::notification_rec_type &);
-        void threadLoop ();
+        status_code remove_queue (const message_queue * const);
+        status_code control_queue_handler (message::upointer_type &&);
+        status_code handle_notifications (const message_queue_poll::notification_rec_type &);
+        void thread_loop ();
 
     public:
         explicit message_queue_pool (const size_t capacity = 10);
         ~message_queue_pool ();
 
-        bool isPollIdle ();
+        bool is_poll_idle ();
 
-        mq_upointer_type allocateQueue (const message_handler_func_type &);
+        mq_upointer_type allocate_queue (const message_handler_func_type &);
     };
 } /* namespace mqmx */
