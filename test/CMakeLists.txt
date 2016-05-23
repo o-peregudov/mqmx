@@ -1,105 +1,58 @@
-SET (${PROJECT_NAME}_MOCKS_AND_STUBS_HEADERS
-  mocks/MessageQueueListener.h
-  fixtures/MessageQueuePoll.h
-)
-
-SET (${PROJECT_NAME}_MOCKS_AND_STUBS_SOURCES
-  mocks/MessageQueueListener.cpp
-  fixtures/MessageQueuePoll.cpp
-)
-
-SET (MOCKS_AND_STUBS_LA
-  ${PROJECT_NAME}MocksAndStubs
-)
-
 INCLUDE_DIRECTORIES (
   ${CMAKE_SOURCE_DIR}/test
 )
 
-ADD_LIBRARY (${MOCKS_AND_STUBS_LA} STATIC
-  ${${PROJECT_NAME}_MOCKS_AND_STUBS_HEADERS}
-  ${${PROJECT_NAME}_MOCKS_AND_STUBS_SOURCES}
+ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
+  mocks/MessageQueueListener.h
+  mocks/MessageQueueListener.cpp
+  fixtures/MessageQueuePoll.h
+  fixtures/MessageQueuePoll.cpp
 )
 
-TARGET_LINK_LIBRARIES (${MOCKS_AND_STUBS_LA}
+TARGET_LINK_LIBRARIES (${PROJECT_NAME}_mocks
   ${CMAKE_THREAD_LIBS_INIT}
   ${GMOCK_MAIN_LIBRARY}
   ${LIBCRS_LDFLAGS}
-  mqmx
+  ${PROJECT_NAME}
 )
 
-############################################################
-
-ADD_EXECUTABLE (MessageQueueSanityChecks
-  MessageQueueSanityChecks.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueueSanityChecks
+SET (LDADD
   ${CMAKE_THREAD_LIBS_INIT}
-  ${MOCKS_AND_STUBS_LA}
   ${GMOCK_MAIN_LIBRARY}
   ${LIBCRS_LDFLAGS}
-  mqmx
+  ${PROJECT_NAME}_mocks
+  ${PROJECT_NAME}
 )
 
-ADD_TEST (NAME MessageQueue/SanityChecks
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueueSanityChecks
+SET (TESTS
+  MessageQueueSanityChecks
+  MessageQueueListener
+  MessageQueuePoll
+  MessageQueuePool
 )
 
-############################################################
-
-ADD_EXECUTABLE (MessageQueueListener
-  MessageQueueListener.cpp
+SET (check_PROGRAMS
+  MessageQueueSanityChecks
+  MessageQueueListener
+  MessageQueuePoll
+  MessageQueuePool
 )
 
-TARGET_LINK_LIBRARIES (MessageQueueListener
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${MOCKS_AND_STUBS_LA}
-  ${GMOCK_MAIN_LIBRARY}
-  ${LIBCRS_LDFLAGS}
-  mqmx
-)
+SET (AM_DEFAULT_SOURCE_EXT ".cpp")
 
-ADD_TEST (NAME MessageQueue/Listener
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueueListener
-)
+FOREACH (CHECK_EXECUTABLE ${check_PROGRAMS})
+  IF (DEFINED AM_DEFAULT_SOURCE_EXT)
+    SET (CHECK_SOURCE_FILE_NAME "${CHECK_EXECUTABLE}${AM_DEFAULT_SOURCE_EXT}")
+  ELSE ()
+    SET (CHECK_SOURCE_FILE_NAME "${CHECK_EXECUTABLE}.c")
+  ENDIF ()
+  ADD_EXECUTABLE ("${CHECK_EXECUTABLE}" "${CHECK_SOURCE_FILE_NAME}")
+  TARGET_LINK_LIBRARIES ("${CHECK_EXECUTABLE}" ${LDADD})
+ENDFOREACH ()
 
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePoll
-  MessageQueuePoll.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePoll
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${MOCKS_AND_STUBS_LA}
-  ${GMOCK_MAIN_LIBRARY}
-  ${LIBCRS_LDFLAGS}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Poll
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePoll
-)
-
-############################################################
-
-ADD_EXECUTABLE (MessageQueuePool
-  MessageQueuePool.cpp
-)
-
-TARGET_LINK_LIBRARIES (MessageQueuePool
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${MOCKS_AND_STUBS_LA}
-  ${GMOCK_MAIN_LIBRARY}
-  ${LIBCRS_LDFLAGS}
-  mqmx
-)
-
-ADD_TEST (NAME MessageQueue/Pool
-  WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-  COMMAND MessageQueuePool
-)
+FOREACH (TEST_EXECUTABLE ${TESTS})
+  ADD_TEST (NAME "${TEST_EXECUTABLE}"
+    WORKING_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+    COMMAND "${TEST_EXECUTABLE}"
+  )
+ENDFOREACH ()
