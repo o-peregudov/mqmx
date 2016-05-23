@@ -16,7 +16,7 @@ TEST (message_queue, sanity_checks)
 
     {
 	message_queue queue2 (defQID + 1);
-	retCode = queue.push (queue2.newMessage<Message> (defQID));
+	retCode = queue.push (queue2.new_message<Message> (defQID));
 	ASSERT_EQ (ExitStatus::NotSupported, retCode);
     }
 
