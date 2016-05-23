@@ -1,21 +1,21 @@
-#include <mqmx/MessageQueuePoll.h>
+#include <mqmx/message_queue_poll.h>
 
 namespace mqmx
 {
-    MessageQueuePoll::MessageQueuePoll ()
+    message_queue_poll::message_queue_poll ()
         : m_notifications_mutex ()
         , m_notifications_condition ()
         , m_notifications ()
     {
     }
 
-    MessageQueuePoll::~MessageQueuePoll ()
+    message_queue_poll::~message_queue_poll ()
     {
     }
 
-    void MessageQueuePoll::notify (const queue_id_type qid,
-                                   message_queue * mq,
-                                   const message_queue::notification_flags_type flag)
+    void message_queue_poll::notify (const queue_id_type qid,
+                                     message_queue * mq,
+                                     const message_queue::notification_flags_type flag)
     {
         try
         {

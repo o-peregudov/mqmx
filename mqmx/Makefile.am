@@ -9,7 +9,7 @@ pkginclude_HEADERS =		\
 	message.h		\
 	WaitTimeProvider.h	\
 	message_queue.h		\
-	MessageQueuePoll.h      \
+	message_queue_poll.h    \
 	MessageQueuePool.h
 
 nodist_pkginclude_HEADERS =
@@ -17,7 +17,7 @@ nodist_pkginclude_HEADERS =
 libmqmx_la_SOURCES =		\
 	WaitTimeProvider.cpp	\
 	message_queue.cpp	\
-	MessageQueuePoll.cpp	\
+	message_queue_poll.cpp	\
 	MessageQueuePool.cpp
 
 @CODE_COVERAGE_RULES@

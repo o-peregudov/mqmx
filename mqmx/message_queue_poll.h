@@ -19,14 +19,14 @@ namespace mqmx
      * Class itself is lightweight, and the main implementation is done in
      * templated method - poll. Example use of this class is the following:
      *
-     *    mqmx::MessageQueuePoll mqp;
+     *    mqmx::message_queue_poll mqp;
      *    const auto signaled_queues = mqp.poll (std::begin (mq2poll), std::end (mq2poll), timeout);
      *
      */
-    class MessageQueuePoll final : message_queue::listener
+    class message_queue_poll final : message_queue::listener
     {
-        MessageQueuePoll (const MessageQueuePoll &) = delete;
-        MessageQueuePoll & operator = (const MessageQueuePoll &) = delete;
+        message_queue_poll (const message_queue_poll &) = delete;
+        message_queue_poll & operator = (const message_queue_poll &) = delete;
 
     public:
         typedef message_queue::mutex_type mutex_type;
@@ -117,8 +117,8 @@ namespace mqmx
         }
 
     public:
-        MessageQueuePoll ();
-        virtual ~MessageQueuePoll ();
+        message_queue_poll ();
+        virtual ~message_queue_poll ();
 
         /*
          * NOTE: iterators should represent a sequence of pointers to MessageQueue

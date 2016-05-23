@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mqmx/MessageQueuePoll.h>
+#include <mqmx/message_queue_poll.h>
 
 namespace fixtures
 {

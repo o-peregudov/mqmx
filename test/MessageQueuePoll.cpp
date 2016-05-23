@@ -5,7 +5,7 @@
 struct MQPollFixture : ::testing::Test
                      , fixtures::MessageQueuePollFixture
 {
-    mqmx::MessageQueuePoll sut;
+    mqmx::message_queue_poll sut;
 };
 
 TEST_F (MQPollFixture, sanity_checks)

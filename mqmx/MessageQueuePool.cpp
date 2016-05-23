@@ -74,7 +74,7 @@ namespace mqmx
     }
 
     status_code MessageQueuePool::handleNotifications (
-        const MessageQueuePoll::notification_rec_type & rec)
+        const message_queue_poll::notification_rec_type & rec)
     {
         if (rec.getFlags () & (message_queue::notification_flag::closed|
                                message_queue::notification_flag::detached))
@@ -101,7 +101,7 @@ namespace mqmx
     {
         for (;;)
         {
-            MessageQueuePoll mqp;
+            message_queue_poll mqp;
             const auto mqlist = mqp.poll (std::begin (m_mqs), std::end (m_mqs),
                                           WaitTimeProvider::WAIT_INFINITELY);
             size_t starti = 0;
@@ -147,7 +147,7 @@ namespace mqmx
         m_mqControl.enqueue<message> (POLL_PAUSE_MESSAGE_ID);
         m_pauseSemaphore.wait ();
 
-        MessageQueuePoll mqp;
+        message_queue_poll mqp;
         const bool idleStatus = mqp.poll (std::begin (m_mqs), std::end (m_mqs)).empty ();
 
         m_resumeSemaphore.post ();

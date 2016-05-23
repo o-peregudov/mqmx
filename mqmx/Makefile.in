@@ -139,7 +139,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgincludedir)" \
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libmqmx_la_LIBADD =
 am_libmqmx_la_OBJECTS = WaitTimeProvider.lo message_queue.lo \
-	MessageQueuePoll.lo MessageQueuePool.lo
+	message_queue_poll.lo MessageQueuePool.lo
 libmqmx_la_OBJECTS = $(am_libmqmx_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -391,14 +391,14 @@ pkginclude_HEADERS = \
 	message.h		\
 	WaitTimeProvider.h	\
 	message_queue.h		\
-	MessageQueuePoll.h      \
+	message_queue_poll.h    \
 	MessageQueuePool.h
 
 nodist_pkginclude_HEADERS = 
 libmqmx_la_SOURCES = \
 	WaitTimeProvider.cpp	\
 	message_queue.cpp	\
-	MessageQueuePoll.cpp	\
+	message_queue_poll.cpp	\
 	MessageQueuePool.cpp
 
 all: all-am
@@ -479,10 +479,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePoll.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WaitTimeProvider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_poll.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

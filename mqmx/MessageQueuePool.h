@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common/OAMThreading.hpp>
-#include <mqmx/MessageQueuePoll.h>
+#include <mqmx/message_queue_poll.h>
 
 #include <crs/mutex.h>
 #include <crs/condition_variable.h>
@@ -69,7 +69,7 @@ namespace mqmx
 
         status_code removeQueue (const message_queue * const);
         status_code controlQueueHandler (message::upointer_type &&);
-        status_code handleNotifications (const MessageQueuePoll::notification_rec_type &);
+        status_code handleNotifications (const message_queue_poll::notification_rec_type &);
         void threadLoop ();
 
     public:
