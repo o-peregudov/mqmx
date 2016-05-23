@@ -76,12 +76,12 @@ namespace mqmx
     status_code MessageQueuePool::handleNotifications (
         const MessageQueuePoll::notification_rec_type & rec)
     {
-        if (rec.getFlags () & (message_queue::notification_flag::Closed|
-                               message_queue::notification_flag::Detached))
+        if (rec.getFlags () & (message_queue::notification_flag::closed|
+                               message_queue::notification_flag::detached))
         {
             /* pointer to message queue is no longer valid */
         }
-        else if (rec.getFlags () & message_queue::notification_flag::NewData)
+        else if (rec.getFlags () & message_queue::notification_flag::data)
         {
             assert (rec.getMQ () != nullptr);
             assert (rec.getQID () < m_mqHandler.size ());

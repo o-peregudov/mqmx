@@ -9,7 +9,7 @@ TEST (message_queue, NewData_and_Closed_notifications)
 
     mocks::ListenerMock mock;
 
-    EXPECT_CALL (mock, notify (defQID, nullptr, message_queue::notification_flag::Closed))
+    EXPECT_CALL (mock, notify (defQID, nullptr, message_queue::notification_flag::closed))
         .Times (1);
     {
         mqmx::message_queue queue (defQID);
@@ -22,7 +22,7 @@ TEST (message_queue, NewData_and_Closed_notifications)
         retCode = queue.set_listener (mock);
         ASSERT_EQ (ExitStatus::AlreadyExist, retCode);
 
-        EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::NewData))
+        EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::data))
             .Times (1);
 
         retCode = queue.enqueue<mqmx::message> (defMID);
@@ -44,12 +44,12 @@ TEST (message_queue, Detached_because_of_move_ctor)
     status_code retCode = queue.set_listener (mock);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
-    EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::NewData))
+    EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::data))
 	.Times (1);
     retCode = queue.enqueue<mqmx::message> (defMID);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
-    EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::Detached))
+    EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::detached))
 	.Times (1);
     message_queue queueB (std::move (queue));
 
@@ -85,16 +85,16 @@ TEST (message_queue, Detached_because_of_move_assignment)
     retCode = queueB.set_listener (mock);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
-    EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::NewData))
+    EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::data))
 	.Times (1);
-    EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::NewData))
+    EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::data))
 	.Times (1);
     retCode = queueA.enqueue<mqmx::message> (defMIDa);
     retCode = queueB.enqueue<mqmx::message> (defMIDb);
 
-    EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::Detached))
+    EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::detached))
 	.Times (1);
-    EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::Detached))
+    EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::detached))
 	.Times (1);
     queueB = std::move (queueA);
 

@@ -22,9 +22,9 @@ namespace mqmx
 
         enum notification_flag
         {
-            NewData  = 0x0001, /* push operation called on this queue */
-            Detached = 0x0002, /* move ctor or move assignment called on this queue */
-            Closed   = 0x0004  /* destructor called on this queue */
+            data     = 0x0001, /* push operation called on this queue */
+            detached = 0x0002, /* move ctor or move assignment called on this queue */
+            closed   = 0x0004  /* destructor called on this queue */
         };
 
         struct listener
