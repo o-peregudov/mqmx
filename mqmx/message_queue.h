@@ -27,9 +27,9 @@ namespace mqmx
             Closed   = 0x0004  /* destructor called on this queue */
         };
 
-        struct Listener
+        struct listener
         {
-            virtual ~Listener () { }
+            virtual ~listener () { }
             virtual void notify (const queue_id_type,
                                  message_queue *,
                                  const notification_flags_type) = 0;
@@ -65,13 +65,13 @@ namespace mqmx
         }
 
     public:
-        status_code setListener (Listener &);
-        void clearListener ();
+        status_code set_listener (listener &);
+        void clear_listener ();
 
     private:
         queue_id_type  m_id;
         mutex_type     m_mutex;
         container_type m_queue;
-        Listener *     m_listener;
+        listener *     m_listener;
     };
 } /* namespace mqmx */

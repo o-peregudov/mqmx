@@ -15,11 +15,11 @@ TEST (message_queue, NewData_and_Closed_notifications)
         mqmx::message_queue queue (defQID);
         mqmx::Message::upointer_type msg;
 
-        status_code retCode = queue.setListener (mock);
+        status_code retCode = queue.set_listener (mock);
         ASSERT_EQ (ExitStatus::Success, retCode);
 
         /* test for double insert */
-        retCode = queue.setListener (mock);
+        retCode = queue.set_listener (mock);
         ASSERT_EQ (ExitStatus::AlreadyExist, retCode);
 
         EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::NewData))
@@ -41,7 +41,7 @@ TEST (message_queue, Detached_because_of_move_ctor)
     mqmx::message_queue queue (defQID);
     mqmx::Message::upointer_type msg;
 
-    status_code retCode = queue.setListener (mock);
+    status_code retCode = queue.set_listener (mock);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
     EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::NewData))
@@ -79,10 +79,10 @@ TEST (message_queue, Detached_because_of_move_assignment)
     mqmx::Message::upointer_type msg;
     status_code retCode = ExitStatus::Success;
 
-    retCode = queueA.setListener (mock);
+    retCode = queueA.set_listener (mock);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
-    retCode = queueB.setListener (mock);
+    retCode = queueB.set_listener (mock);
     ASSERT_EQ (ExitStatus::Success, retCode);
 
     EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::NewData))

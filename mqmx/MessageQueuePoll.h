@@ -23,7 +23,7 @@ namespace mqmx
      *    const auto signaled_queues = mqp.poll (std::begin (mq2poll), std::end (mq2poll), timeout);
      *
      */
-    class MessageQueuePoll final : message_queue::Listener
+    class MessageQueuePoll final : message_queue::listener
     {
         MessageQueuePoll (const MessageQueuePoll &) = delete;
         MessageQueuePoll & operator = (const MessageQueuePoll &) = delete;
@@ -140,14 +140,14 @@ namespace mqmx
             std::for_each (ibegin, iend,
                            [&](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
-                               const status_code ret_code = mq->setListener (*this);
+                               const status_code ret_code = mq->set_listener (*this);
                                assert (ret_code == ExitStatus::Success), ret_code;
                            });
             waitForNotifications (wtp, rcp);
             std::for_each (ibegin, iend,
                            [&](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
-                               mq->clearListener ();
+                               mq->clear_listener ();
                            });
             return m_notifications;
         }

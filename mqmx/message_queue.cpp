@@ -106,7 +106,7 @@ namespace mqmx
         return std::move (msg);
     }
 
-    status_code message_queue::setListener (Listener & l)
+    status_code message_queue::set_listener (listener & l)
     {
         lock_type guard (m_mutex);
         if (m_listener)
@@ -122,7 +122,7 @@ namespace mqmx
         return ExitStatus::Success;
     }
 
-    void message_queue::clearListener ()
+    void message_queue::clear_listener ()
     {
         lock_type guard (m_mutex);
         m_listener = nullptr;
