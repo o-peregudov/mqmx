@@ -75,7 +75,7 @@ namespace mqmx
         void thread_loop ();
 
     public:
-        explicit message_queue_pool (const size_t capacity = 10);
+        explicit message_queue_pool (const size_t capacity = 15);
         ~message_queue_pool ();
 
         bool is_poll_idle ();
