@@ -104,7 +104,7 @@ namespace mqmx
                                      const reference_clock_provider & rcp)
         {
             lock_type guard (_mutex);
-            const auto abs_time = wtp.get_timepoint (rcp);
+            const auto abs_time = wtp.get_time_point (rcp);
             if (_notifications.empty ())
             {
                 const auto pred = [&]{ return !_notifications.empty (); };

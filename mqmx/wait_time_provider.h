@@ -20,7 +20,7 @@ namespace mqmx
         const time_point_type _abs_time;
         const bool            _wait_infinitely;
 
-        time_point_type get_current_timepoint () const
+        time_point_type get_current_time_point () const
         {
             return clock_type::now ();
         }
@@ -45,7 +45,8 @@ namespace mqmx
             , _wait_infinitely (false)
         { }
 
-        wait_time_provider (const time_point_type & abs_time)
+        template <class Clock, class Duration>
+        wait_time_provider (const std::chrono::time_point<Clock, Duration> & abs_time)
             : _rel_time ()
             , _abs_time (abs_time)
             , _wait_infinitely (false)
@@ -56,13 +57,13 @@ namespace mqmx
             return _wait_infinitely;
         }
 
-        time_point_type get_timepoint () const
+        time_point_type get_time_point () const
         {
-            return get_timepoint (*this);
+            return get_time_point (*this);
         }
 
         template <class reference_clock_provider>
-        time_point_type get_timepoint (const reference_clock_provider & rcp) const
+        time_point_type get_time_point (const reference_clock_provider & rcp) const
         {
             if ((_abs_time.time_since_epoch ().count () == 0) &&
                 (_rel_time.count () == 0))
@@ -71,7 +72,7 @@ namespace mqmx
             }
 
             return ((_abs_time.time_since_epoch ().count () == 0)
-                    ? (rcp.get_current_timepoint () + _rel_time)
+                    ? (rcp.get_current_time_point () + _rel_time)
                     : _abs_time);
         }
     };
