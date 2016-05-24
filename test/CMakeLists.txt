@@ -27,6 +27,7 @@ SET (LDADD
 SET (TESTS
   message_queue_sanity
   message_queue_listener
+  message_queue_poll_listener
   message_queue_poll
   message_queue_pool
 )
@@ -34,6 +35,7 @@ SET (TESTS
 SET (check_PROGRAMS
   message_queue_sanity
   message_queue_listener
+  message_queue_poll_listener
   message_queue_poll
   message_queue_pool
 )

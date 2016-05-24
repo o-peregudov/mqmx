@@ -1,6 +1,6 @@
 #include "test/mocks/message_queue_listener.h"
 
-TEST (message_queue, NewData_and_Closed_notifications)
+TEST (message_queue, Data_and_Closed_notifications)
 {
     using namespace mqmx;
     using namespace ::testing;
