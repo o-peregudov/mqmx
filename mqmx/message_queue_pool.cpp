@@ -25,7 +25,7 @@ namespace mqmx
     struct message_queue_pool::remove_queue_message : message
     {
         const message_queue * mq;
-        message_queue_pool::semaphore_type * sem;
+        semaphore_type * sem;
 
         remove_queue_message (const queue_id_type queue_id,
                               const message_queue * q, semaphore_type * s)
@@ -77,7 +77,7 @@ namespace mqmx
         const message_queue_poll_listener::notification_rec_type & rec)
     {
         if (rec.get_flags () & (message_queue::notification_flag::closed|
-				message_queue::notification_flag::detached))
+                                message_queue::notification_flag::detached))
         {
             /* pointer to message queue is no longer valid */
         }
@@ -102,7 +102,7 @@ namespace mqmx
         for (;;)
         {
             const auto mqlist = poll (std::begin (_mqs), std::end (_mqs),
-				      wait_time_provider::WAIT_INFINITELY);
+                                      wait_time_provider::WAIT_INFINITELY);
             size_t starti = 0;
             if (mqlist.front ().get_qid () == _mq_control.get_qid ())
             {
