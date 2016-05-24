@@ -1,11 +1,13 @@
 #pragma once
 
-#include <mutex>
+#include <mqmx/message.h>
+
+#include <crs/mutex.h>
+
 #include <deque>
 #include <type_traits>
 
-#include <mqmx/message.h>
-
+namespace crs = CrossClass;
 namespace mqmx
 {
     class message_queue
@@ -15,8 +17,8 @@ namespace mqmx
 
     public:
         typedef std::unique_ptr<message_queue>     upointer_type;
-        typedef std::mutex                         mutex_type;
-        typedef std::unique_lock<mutex_type>       lock_type;
+        typedef crs::mutex_type                    mutex_type;
+        typedef crs::lock_type                     lock_type;
         typedef std::deque<message::upointer_type> container_type;
         typedef size_t                             notification_flags_type;
 

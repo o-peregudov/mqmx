@@ -36,8 +36,8 @@ namespace mqmx
         typedef crs::condvar_type condvar_type;
 
         class notification_rec_type : std::tuple<queue_id_type,
-						 message_queue *,
-						 message_queue::notification_flags_type>
+                                                 message_queue *,
+                                                 message_queue::notification_flags_type>
         {
             typedef std::tuple<queue_id_type,
                                message_queue *,
@@ -99,8 +99,9 @@ namespace mqmx
                              message_queue *,
                              const message_queue::notification_flags_type) override;
 
-        template <typename RefClockProvider>
-        void wait_for_notifications (const wait_time_provider & wtp, const RefClockProvider & rcp)
+        template <typename reference_clock_provider>
+        void wait_for_notifications (const wait_time_provider & wtp,
+                                     const reference_clock_provider & rcp)
         {
             lock_type guard (_mutex);
             const auto abs_time = wtp.get_timepoint (rcp);
