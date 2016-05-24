@@ -1,9 +1,9 @@
-#include "test/fixtures/MessageQueuePoll.h"
+#include "test/fixtures/message_queue_poll.h"
 #include <gmock/gmock.h>
 #include <thread>
 
 struct MQPollFixture : ::testing::Test
-                     , fixtures::MessageQueuePollFixture
+                     , fixtures::message_queue_poll_fixture
 {
     mqmx::message_queue_poll sut;
 };
@@ -70,7 +70,7 @@ TEST_F (MQPollFixture, relative_timeout)
     const size_t NREPS = 3;
     for (size_t ix = 0; ix < NREPS; ++ix)
     {
-	auto mqlist = sut.poll (std::begin (mq), std::end (mq), std::chrono::microseconds (1));
+        auto mqlist = sut.poll (std::begin (mq), std::end (mq), std::chrono::microseconds (1));
         ASSERT_EQ (0, mqlist.size ());
     }
 }

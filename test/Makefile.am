@@ -7,8 +7,8 @@ check_LTLIBRARIES = libmqmx_mocks.la
 libmqmx_mocks_la_SOURCES = 			\
 	mocks/message_queue_listener.h		\
 	mocks/message_queue_listener.cpp	\
-	fixtures/MessageQueuePoll.h		\
-	fixtures/MessageQueuePoll.cpp
+	fixtures/message_queue_poll.h		\
+	fixtures/message_queue_poll.cpp
 
 libmqmx_mocks_la_LIBADD = $(top_builddir)/mqmx/libmqmx.la
 libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -module -rpath /nowhere

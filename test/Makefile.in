@@ -112,7 +112,7 @@ CONFIG_CLEAN_VPATH_FILES =
 libmqmx_mocks_la_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la
 am__dirstamp = $(am__leading_dot)dirstamp
 am_libmqmx_mocks_la_OBJECTS = mocks/message_queue_listener.lo \
-	fixtures/MessageQueuePoll.lo
+	fixtures/message_queue_poll.lo
 libmqmx_mocks_la_OBJECTS = $(am_libmqmx_mocks_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -610,8 +610,8 @@ check_LTLIBRARIES = libmqmx_mocks.la
 libmqmx_mocks_la_SOURCES = \
 	mocks/message_queue_listener.h		\
 	mocks/message_queue_listener.cpp	\
-	fixtures/MessageQueuePoll.h		\
-	fixtures/MessageQueuePoll.cpp
+	fixtures/message_queue_poll.h		\
+	fixtures/message_queue_poll.cpp
 
 libmqmx_mocks_la_LIBADD = $(top_builddir)/mqmx/libmqmx.la
 libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -module -rpath /nowhere
@@ -676,7 +676,7 @@ fixtures/$(am__dirstamp):
 fixtures/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) fixtures/$(DEPDIR)
 	@: > fixtures/$(DEPDIR)/$(am__dirstamp)
-fixtures/MessageQueuePoll.lo: fixtures/$(am__dirstamp) \
+fixtures/message_queue_poll.lo: fixtures/$(am__dirstamp) \
 	fixtures/$(DEPDIR)/$(am__dirstamp)
 
 libmqmx_mocks.la: $(libmqmx_mocks_la_OBJECTS) $(libmqmx_mocks_la_DEPENDENCIES) $(EXTRA_libmqmx_mocks_la_DEPENDENCIES) 
@@ -721,7 +721,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_poll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_pool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_sanity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/MessageQueuePoll.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/message_queue_poll.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mocks/$(DEPDIR)/message_queue_listener.Plo@am__quote@
 
 .cpp.o:
