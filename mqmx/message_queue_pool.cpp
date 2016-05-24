@@ -84,10 +84,10 @@ namespace mqmx
         else if (rec.get_flags () & message_queue::notification_flag::data)
         {
             assert (rec.get_mq () != nullptr);
-            assert (rec.get_qid () < _mqHandler.size ());
+            assert (rec.get_qid () < _handler.size ());
 
             message::upointer_type msg = rec.get_mq ()->pop ();
-            const status_code retCode = (_mqHandler[rec.get_qid ()])(std::move (msg));
+            const status_code retCode = (_handler[rec.get_qid ()])(std::move (msg));
             if (retCode != ExitStatus::Success)
             {
                 /* TODO: print diagnostic message here */
@@ -105,7 +105,7 @@ namespace mqmx
             const auto mqlist = mqp.poll (std::begin (_mqs), std::end (_mqs),
                                           wait_time_provider::WAIT_INFINITELY);
             size_t starti = 0;
-            if (mqlist.front ().get_qid () == _mqControl.get_qid ())
+            if (mqlist.front ().get_qid () == _mq_control.get_qid ())
             {
                 const status_code retCode = handle_notifications (mqlist.front ());
                 if (retCode == ExitStatus::HaltRequested)
@@ -120,8 +120,8 @@ namespace mqmx
 
                 if (retCode == ExitStatus::PauseRequested)
                 {
-                    _pauseSemaphore.post ();
-                    _resumeSemaphore.wait ();
+                    _sem_pause.post ();
+                    _sem_resume.wait ();
                     continue;
                 }
 
@@ -144,39 +144,39 @@ namespace mqmx
 
     bool message_queue_pool::is_poll_idle ()
     {
-        _mqControl.enqueue<message> (POLL_PAUSE_MESSAGE_ID);
-        _pauseSemaphore.wait ();
+        _mq_control.enqueue<message> (POLL_PAUSE_MESSAGE_ID);
+        _sem_pause.wait ();
 
         message_queue_poll mqp;
         const bool idleStatus = mqp.poll (std::begin (_mqs), std::end (_mqs)).empty ();
 
-        _resumeSemaphore.post ();
+        _sem_resume.post ();
         return idleStatus;
     }
 
     message_queue_pool::message_queue_pool (const size_t capacity)
-        : _mqControl (CONTROL_MESSAGE_QUEUE_ID)
-        , _mqHandler ()
+        : _mq_control (CONTROL_MESSAGE_QUEUE_ID)
+        , _handler ()
         , _mqs ()
-        , _pauseSemaphore ()
-        , _resumeSemaphore ()
-        , _auxThread ()
+        , _sem_pause ()
+        , _sem_resume ()
+        , _worker ()
     {
-        _mqHandler.resize (capacity + 1);
-        _mqHandler[_mqControl.get_qid ()] = std::bind (
+        _handler.resize (capacity + 1);
+        _handler[_mq_control.get_qid ()] = std::bind (
             &message_queue_pool::control_queue_handler, this, std::placeholders::_1);
 
         _mqs.reserve (capacity + 1);
-        _mqs.emplace_back (&_mqControl);
+        _mqs.emplace_back (&_mq_control);
 
         thread_type auxiliary_thread ([this]{ thread_loop (); });
-        _auxThread.swap (auxiliary_thread);
+        _worker.swap (auxiliary_thread);
     }
 
     message_queue_pool::~message_queue_pool ()
     {
-        _mqControl.enqueue<message> (TERMINATE_MESSAGE_ID);
-        _auxThread.join ();
+        _mq_control.enqueue<message> (TERMINATE_MESSAGE_ID);
+        _worker.join ();
     }
 
     message_queue_pool::mq_upointer_type message_queue_pool::allocate_queue (
@@ -187,16 +187,16 @@ namespace mqmx
             return mq_upointer_type ();
         }
 
-        auto it = std::begin (_mqHandler);
-        while ((++it != std::end (_mqHandler)) && *it);
-        const queue_id_type qid = std::distance (std::begin (_mqHandler), it);
-        assert (qid < _mqHandler.size ());
+        auto it = std::begin (_handler);
+        while ((++it != std::end (_handler)) && *it);
+        const queue_id_type qid = std::distance (std::begin (_handler), it);
+        assert (qid < _handler.size ());
 
         mq_upointer_type mq (new message_queue (qid), mq_deleter (this));
-        _mqHandler[qid] = handler;
+        _handler[qid] = handler;
 
         semaphore_type sem;
-        if (_mqControl.enqueue<add_queue_message> (mq.get (), &sem) == ExitStatus::Success)
+        if (_mq_control.enqueue<add_queue_message> (mq.get (), &sem) == ExitStatus::Success)
         {
             sem.wait ();
             return mq;
@@ -211,13 +211,13 @@ namespace mqmx
             return ExitStatus::InvalidArgument;
         }
 
-        if (!(mq->get_qid () < _mqHandler.size ()) || !_mqHandler[mq->get_qid ()])
+        if (!(mq->get_qid () < _handler.size ()) || !_handler[mq->get_qid ()])
         {
             return ExitStatus::NotFound;
         }
 
         semaphore_type sem;
-        _mqControl.enqueue<remove_queue_message> (mq, &sem);
+        _mq_control.enqueue<remove_queue_message> (mq, &sem);
         sem.wait ();
 
         return ExitStatus::Success;
