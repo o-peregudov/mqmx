@@ -11,9 +11,9 @@ namespace mqmx
         const message_id_type _mid;
 
     public:
-	typedef std::unique_ptr<message> upointer_type;
+        typedef std::unique_ptr<message> upointer_type;
 
-        static constexpr queue_id_type UndefinedQID = static_cast<queue_id_type> (-1);
+        static constexpr queue_id_type undefined_qid = static_cast<queue_id_type> (-1);
 
         message (const queue_id_type queue_id,
                  const message_id_type message_id)

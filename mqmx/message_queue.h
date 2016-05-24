@@ -38,7 +38,7 @@ namespace mqmx
         };
 
     public:
-        message_queue (const queue_id_type = message::UndefinedQID);
+        message_queue (const queue_id_type = message::undefined_qid);
         ~message_queue ();
 
         message_queue (message_queue &&);
