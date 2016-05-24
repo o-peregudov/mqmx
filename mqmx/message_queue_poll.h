@@ -35,8 +35,9 @@ namespace mqmx
         typedef crs::lock_type    lock_type;
         typedef crs::condvar_type condvar_type;
 
-        class notification_rec_type
-            : private std::tuple<queue_id_type, message_queue *, message_queue::notification_flags_type>
+        class notification_rec_type : std::tuple<queue_id_type,
+						 message_queue *,
+						 message_queue::notification_flags_type>
         {
             typedef std::tuple<queue_id_type,
                                message_queue *,
@@ -90,8 +91,8 @@ namespace mqmx
         typedef std::vector<notification_rec_type> notifications_list_type;
 
     private:
-        mutable mutex_type      _notifications_mutex;
-        condvar_type            _notifications_condition;
+        mutable mutex_type      _mutex;
+        condvar_type            _condition;
         notifications_list_type _notifications;
 
         virtual void notify (const queue_id_type,
@@ -101,19 +102,18 @@ namespace mqmx
         template <typename RefClockProvider>
         void wait_for_notifications (const wait_time_provider & wtp, const RefClockProvider & rcp)
         {
-            lock_type notifications_guard (_notifications_mutex);
+            lock_type guard (_mutex);
             const auto abs_time = wtp.get_timepoint (rcp);
             if (_notifications.empty ())
             {
                 const auto pred = [&]{ return !_notifications.empty (); };
                 if (wtp.wait_infinitely ())
                 {
-                    _notifications_condition.wait (notifications_guard, pred);
+                    _condition.wait (guard, pred);
                 }
                 else if (abs_time.time_since_epoch ().count () != 0)
                 {
-                    _notifications_condition.wait_until (
-                        notifications_guard, abs_time, pred);
+                    _condition.wait_until (guard, abs_time, pred);
                 }
             }
         }
@@ -135,7 +135,7 @@ namespace mqmx
                 /*
                  * initialize list of notifications
                  */
-                lock_type notifications_guard (_notifications_mutex);
+                lock_type guard (_mutex);
                 _notifications.clear ();
             }
 
