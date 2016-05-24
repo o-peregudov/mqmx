@@ -5,43 +5,40 @@
 struct MQPollFixture : ::testing::Test
                      , fixtures::message_queue_poll_fixture
 {
-    mqmx::message_queue_poll sut;
 };
 
 TEST_F (MQPollFixture, sanity_checks)
 {
-    auto mqlist = sut.poll (std::begin (mq), std::end (mq));
+    auto mqlist = mqmx::poll (std::begin (mq), std::end (mq));
     ASSERT_TRUE (mqlist.empty ());
 }
 
 TEST_F (MQPollFixture, initial_notification)
 {
-    using namespace mqmx;
     const size_t STRIDE = 3;
     size_t nqueues_signaled = 0;
     for (size_t ix = 0; ix < NQUEUES; ix += STRIDE)
     {
-        mq[ix]->enqueue<message> (0);
+        mq[ix]->enqueue<mqmx::message> (0);
         ++nqueues_signaled;
     }
 
-    auto mqlist = sut.poll (std::begin (mq), std::end (mq));
+    auto mqlist = poll (std::begin (mq), std::end (mq));
     ASSERT_EQ (nqueues_signaled, mqlist.size ());
 }
 
 TEST_F (MQPollFixture, infinite_wait)
 {
-    using namespace mqmx;
     const size_t idx = NQUEUES - 1;
-    const message_id_type defMID = 10;
+    const mqmx::message_id_type defMID = 10;
 
     std::thread thr ([&] {
             std::this_thread::sleep_for (std::chrono::milliseconds (50));
-            mq[idx]->enqueue<message> (defMID);
+            mq[idx]->enqueue<mqmx::message> (defMID);
         });
 
-    auto mqlist = sut.poll (std::begin (mq), std::end (mq),
-                            wait_time_provider::WAIT_INFINITELY);
+    auto mqlist = mqmx::poll (std::begin (mq), std::end (mq),
+			      mqmx::wait_time_provider::WAIT_INFINITELY);
     if (thr.joinable ())
     {
         thr.join ();
@@ -49,28 +46,26 @@ TEST_F (MQPollFixture, infinite_wait)
 
     ASSERT_EQ (1, mqlist.size ());
     ASSERT_EQ (mq[idx]->get_qid (), mqlist.front ().get_qid ());
-    ASSERT_EQ (message_queue::notification_flag::data, mqlist.front ().get_flags ());
+    ASSERT_EQ (mqmx::message_queue::notification_flag::data, mqlist.front ().get_flags ());
 }
 
 TEST_F (MQPollFixture, absolute_timeout)
 {
-    using namespace mqmx;
     const size_t NREPS = 3;
     for (size_t ix = 0; ix < NREPS; ++ix)
     {
-        auto mqlist = sut.poll (std::begin (mq), std::end (mq),
-                                std::chrono::steady_clock::now () + std::chrono::microseconds (1));
+        auto mqlist = mqmx::poll (std::begin (mq), std::end (mq),
+				  std::chrono::steady_clock::now () + std::chrono::microseconds (1));
         ASSERT_EQ (0, mqlist.size ());
     }
 }
 
 TEST_F (MQPollFixture, relative_timeout)
 {
-    using namespace mqmx;
     const size_t NREPS = 3;
     for (size_t ix = 0; ix < NREPS; ++ix)
     {
-        auto mqlist = sut.poll (std::begin (mq), std::end (mq), std::chrono::microseconds (1));
+        auto mqlist = mqmx::poll (std::begin (mq), std::end (mq), std::chrono::microseconds (1));
         ASSERT_EQ (0, mqlist.size ());
     }
 }

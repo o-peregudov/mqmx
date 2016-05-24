@@ -2,20 +2,20 @@
 
 namespace mqmx
 {
-    message_queue_poll::message_queue_poll ()
+    message_queue_poll_listener::message_queue_poll_listener ()
         : _mutex ()
         , _condition ()
         , _notifications ()
     {
     }
 
-    message_queue_poll::~message_queue_poll ()
+    message_queue_poll_listener::~message_queue_poll_listener ()
     {
     }
 
-    void message_queue_poll::notify (const queue_id_type qid,
-                                     message_queue * mq,
-                                     const message_queue::notification_flags_type flag)
+    void message_queue_poll_listener::notify (const queue_id_type qid,
+					      message_queue * mq,
+					      const message_queue::notification_flags_type flag)
     {
         try
         {

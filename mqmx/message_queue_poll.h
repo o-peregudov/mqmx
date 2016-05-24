@@ -15,20 +15,10 @@
 namespace crs = CrossClass;
 namespace mqmx
 {
-    /**
-     * \brief Class for polling several message queues for notifications.
-     *
-     * Class itself is lightweight, and the main implementation is done in
-     * templated method - poll. Example use of this class is the following:
-     *
-     *    mqmx::message_queue_poll mqp;
-     *    const auto signaled_queues = mqp.poll (std::begin (mq2poll), std::end (mq2poll), timeout);
-     *
-     */
-    class message_queue_poll final : message_queue::listener
+    class message_queue_poll_listener : public message_queue::listener
     {
-        message_queue_poll (const message_queue_poll &) = delete;
-        message_queue_poll & operator = (const message_queue_poll &) = delete;
+        message_queue_poll_listener (const message_queue_poll_listener &) = delete;
+        message_queue_poll_listener & operator = (const message_queue_poll_listener &) = delete;
 
     public:
         typedef crs::mutex_type   mutex_type;
@@ -99,60 +89,62 @@ namespace mqmx
                              message_queue *,
                              const message_queue::notification_flags_type) override;
 
+    public:
+        message_queue_poll_listener ();
+        virtual ~message_queue_poll_listener ();
+
         template <typename reference_clock_provider>
         void wait_for_notifications (const wait_time_provider & wtp,
                                      const reference_clock_provider & rcp)
         {
             lock_type guard (_mutex);
-            const auto abs_time = wtp.get_time_point (rcp);
             if (_notifications.empty ())
             {
                 const auto pred = [&]{ return !_notifications.empty (); };
                 if (wtp.wait_infinitely ())
                 {
                     _condition.wait (guard, pred);
+		    return;
                 }
-                else if (abs_time.time_since_epoch ().count () != 0)
-                {
-                    _condition.wait_until (guard, abs_time, pred);
-                }
+
+		const auto abs_time = wtp.get_time_point (rcp);
+		if (abs_time.time_since_epoch ().count () != 0)
+		{
+		    _condition.wait_until (guard, abs_time, pred);
+		}
             }
         }
 
-    public:
-        message_queue_poll ();
-        virtual ~message_queue_poll ();
-
-        /*
-         * NOTE: iterators should represent a sequence of pointers to MessageQueue
-         */
-        template <typename forward_it,
-                  typename reference_clock_provider = wait_time_provider>
-        notifications_list_type poll (const forward_it ibegin, const forward_it iend,
-                                      const wait_time_provider & wtp = wait_time_provider (),
-                                      const reference_clock_provider & rcp = wait_time_provider ())
+	notifications_list_type get_notifications () const
         {
-            {
-                /*
-                 * initialize list of notifications
-                 */
-                lock_type guard (_mutex);
-                _notifications.clear ();
-            }
-
-            std::for_each (ibegin, iend,
-                           [&](typename std::iterator_traits<forward_it>::reference mq)
-                           {
-                               const status_code ret_code = mq->set_listener (*this);
-                               assert (ret_code == ExitStatus::Success), ret_code;
-                           });
-            wait_for_notifications (wtp, rcp);
-            std::for_each (ibegin, iend,
-                           [&](typename std::iterator_traits<forward_it>::reference mq)
-                           {
-                               mq->clear_listener ();
-                           });
-            return _notifications;
-        }
+	    lock_type guard (_mutex);
+	    return _notifications;
+	}
     };
+
+    /*
+     * NOTE: iterators should represent a sequence of pointers to MessageQueue
+     */
+    template <typename forward_it,
+	      typename reference_clock_provider = wait_time_provider>
+    message_queue_poll_listener::notifications_list_type
+    poll (const forward_it ibegin, const forward_it iend,
+	  const wait_time_provider & wtp = wait_time_provider (),
+	  const reference_clock_provider & rcp = wait_time_provider ())
+    {
+	message_queue_poll_listener listener;
+	std::for_each (ibegin, iend,
+		       [&listener](typename std::iterator_traits<forward_it>::reference mq)
+		       {
+			   const status_code ret_code = mq->set_listener (listener);
+			   assert (ret_code == ExitStatus::Success), ret_code;
+		       });
+	listener.wait_for_notifications (wtp, rcp);
+	std::for_each (ibegin, iend,
+		       [&listener](typename std::iterator_traits<forward_it>::reference mq)
+		       {
+			   mq->clear_listener ();
+		       });
+	return listener.get_notifications ();
+    }
 } /* namespace mqmx */

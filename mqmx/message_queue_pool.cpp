@@ -74,7 +74,7 @@ namespace mqmx
     }
 
     status_code message_queue_pool::handle_notifications (
-        const message_queue_poll::notification_rec_type & rec)
+        const message_queue_poll_listener::notification_rec_type & rec)
     {
         if (rec.get_flags () & (message_queue::notification_flag::closed|
 				message_queue::notification_flag::detached))
@@ -101,9 +101,8 @@ namespace mqmx
     {
         for (;;)
         {
-            message_queue_poll mqp;
-            const auto mqlist = mqp.poll (std::begin (_mqs), std::end (_mqs),
-                                          wait_time_provider::WAIT_INFINITELY);
+            const auto mqlist = poll (std::begin (_mqs), std::end (_mqs),
+				      wait_time_provider::WAIT_INFINITELY);
             size_t starti = 0;
             if (mqlist.front ().get_qid () == _mq_control.get_qid ())
             {
@@ -147,8 +146,7 @@ namespace mqmx
         _mq_control.enqueue<message> (POLL_PAUSE_MESSAGE_ID);
         _sem_pause.wait ();
 
-        message_queue_poll mqp;
-        const bool idleStatus = mqp.poll (std::begin (_mqs), std::end (_mqs)).empty ();
+        const bool idleStatus = poll (std::begin (_mqs), std::end (_mqs)).empty ();
 
         _sem_resume.post ();
         return idleStatus;

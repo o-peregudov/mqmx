@@ -71,7 +71,7 @@ namespace mqmx
 
         status_code remove_queue (const message_queue * const);
         status_code control_queue_handler (message::upointer_type &&);
-        status_code handle_notifications (const message_queue_poll::notification_rec_type &);
+        status_code handle_notifications (const message_queue_poll_listener::notification_rec_type &);
         void thread_loop ();
 
     public:
