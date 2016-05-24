@@ -27,14 +27,14 @@ SET (LDADD
 SET (TESTS
   message_queue_sanity
   message_queue_listener
-  MessageQueuePoll
+  message_queue_poll
   MessageQueuePool
 )
 
 SET (check_PROGRAMS
   message_queue_sanity
   message_queue_listener
-  MessageQueuePoll
+  message_queue_poll
   MessageQueuePool
 )
 
