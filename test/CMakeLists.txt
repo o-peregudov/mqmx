@@ -3,8 +3,8 @@ INCLUDE_DIRECTORIES (
 )
 
 ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
-  mocks/MessageQueueListener.h
-  mocks/MessageQueueListener.cpp
+  mocks/message_queue_listener.h
+  mocks/message_queue_listener.cpp
   fixtures/MessageQueuePoll.h
   fixtures/MessageQueuePoll.cpp
 )

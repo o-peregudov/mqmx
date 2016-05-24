@@ -1,4 +1,4 @@
-#include "test/mocks/MessageQueueListener.h"
+#include "test/mocks/message_queue_listener.h"
 
 TEST (message_queue, NewData_and_Closed_notifications)
 {
@@ -7,7 +7,7 @@ TEST (message_queue, NewData_and_Closed_notifications)
     const queue_id_type defQID = 10;
     const message_id_type defMID = 10;
 
-    mocks::ListenerMock mock;
+    mocks::message_queue_listener_mock mock;
 
     EXPECT_CALL (mock, notify (defQID, nullptr, message_queue::notification_flag::closed))
         .Times (1);
@@ -37,7 +37,7 @@ TEST (message_queue, Detached_because_of_move_ctor)
     const queue_id_type defQID = 10;
     const message_id_type defMID = 10;
 
-    mocks::ListenerMock mock;
+    mocks::message_queue_listener_mock mock;
     mqmx::message_queue queue (defQID);
     mqmx::message::upointer_type msg;
 
@@ -71,7 +71,7 @@ TEST (message_queue, Detached_because_of_move_assignment)
     const message_id_type defMIDa = 10;
     const message_id_type defMIDb = 20;
 
-    mocks::ListenerMock mock;
+    mocks::message_queue_listener_mock mock;
 
     message_queue queueA (defQIDa);
     message_queue queueB (defQIDb);

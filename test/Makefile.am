@@ -5,8 +5,8 @@ AM_CPPFLAGS =	-I$(top_builddir)	\
 
 check_LTLIBRARIES = libmqmx_mocks.la
 libmqmx_mocks_la_SOURCES = 			\
-	mocks/MessageQueueListener.h		\
-	mocks/MessageQueueListener.cpp		\
+	mocks/message_queue_listener.h		\
+	mocks/message_queue_listener.cpp	\
 	fixtures/MessageQueuePoll.h		\
 	fixtures/MessageQueuePoll.cpp
 
