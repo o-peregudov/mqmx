@@ -3,13 +3,16 @@
 #include <mqmx/message_queue.h>
 #include <mqmx/wait_time_provider.h>
 
+#include <crs/mutex.h>
+#include <crs/condition_variable.h>
+
 #include <algorithm>
 #include <iterator>
 #include <cassert>
 #include <vector>
 #include <tuple>
-#include <condition_variable>
 
+namespace crs = CrossClass;
 namespace mqmx
 {
     /**
@@ -28,9 +31,9 @@ namespace mqmx
         message_queue_poll & operator = (const message_queue_poll &) = delete;
 
     public:
-        typedef message_queue::mutex_type mutex_type;
-        typedef message_queue::lock_type  lock_type;
-        typedef std::condition_variable   condvar_type;
+        typedef crs::mutex_type   mutex_type;
+        typedef crs::lock_type    lock_type;
+        typedef crs::condvar_type condvar_type;
 
         class notification_rec_type
             : private std::tuple<queue_id_type, message_queue *, message_queue::notification_flags_type>

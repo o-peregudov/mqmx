@@ -10,6 +10,7 @@
 #include <vector>
 #include <thread>
 
+namespace crs = CrossClass;
 namespace mqmx
 {
     class message_queue_pool
@@ -39,10 +40,10 @@ namespace mqmx
         friend class mq_deleter;
 
         typedef std::function<status_code(message::upointer_type &&)> message_handler_func_type;
-        typedef CrossClass::mutex_type                                mutex_type;
-        typedef CrossClass::lock_type                                 lock_type;
-        typedef CrossClass::condvar_type                              condvar_type;
-        typedef CrossClass::semaphore                                 semaphore_type;
+        typedef crs::mutex_type                                       mutex_type;
+        typedef crs::lock_type                                        lock_type;
+        typedef crs::condvar_type                                     condvar_type;
+        typedef crs::semaphore                                        semaphore_type;
         typedef std::unique_ptr<message_queue, mq_deleter>            mq_upointer_type;
 
     private:
