@@ -49,21 +49,21 @@ namespace mqmx
         status_code push (message::upointer_type &&);
         message::upointer_type pop ();
 
-        template <typename MessageType, typename... ParametersTypes>
-        message::upointer_type new_message (ParametersTypes&&... args) const
+        template <typename message_type, typename... parameters>
+        message::upointer_type new_message (parameters&&... args) const
         {
-            static_assert (std::is_base_of<message, MessageType>::value,
-			   "Invalid MessageType - should be derived from mqmx::Message");
+            static_assert (std::is_base_of<message, message_type>::value,
+			   "Invalid message_type - should be derived from mqmx::message");
             return message::upointer_type (
-                new MessageType (get_qid (), std::forward<ParametersTypes> (args)...));
+                new message_type (get_qid (), std::forward<parameters> (args)...));
         }
 
-        template <typename MessageType, typename... ParametersTypes>
-        status_code enqueue (ParametersTypes&&... args)
+        template <typename message_type, typename... parameters>
+        status_code enqueue (parameters&&... args)
         {
-            static_assert (std::is_base_of<message, MessageType>::value,
-			   "Invalid MessageType - should be derived from mqmx::Message");
-            return push (new_message<MessageType> (std::forward<ParametersTypes> (args)...));
+            static_assert (std::is_base_of<message, message_type>::value,
+			   "Invalid message_type - should be derived from mqmx::message");
+            return push (new_message<message_type> (std::forward<parameters> (args)...));
         }
 
     public:
