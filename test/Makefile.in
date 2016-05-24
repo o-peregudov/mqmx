@@ -88,10 +88,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 TESTS = message_queue_sanity$(EXEEXT) message_queue_listener$(EXEEXT) \
-	message_queue_poll$(EXEEXT) MessageQueuePool$(EXEEXT)
+	message_queue_poll$(EXEEXT) message_queue_pool$(EXEEXT)
 check_PROGRAMS = message_queue_sanity$(EXEEXT) \
 	message_queue_listener$(EXEEXT) message_queue_poll$(EXEEXT) \
-	MessageQueuePool$(EXEEXT)
+	message_queue_pool$(EXEEXT)
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_code_coverage.m4 \
@@ -122,11 +122,6 @@ libmqmx_mocks_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libmqmx_mocks_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-MessageQueuePool_SOURCES = MessageQueuePool.cpp
-MessageQueuePool_OBJECTS = MessageQueuePool.$(OBJEXT)
-MessageQueuePool_LDADD = $(LDADD)
-MessageQueuePool_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
-	libmqmx_mocks.la
 message_queue_listener_SOURCES = message_queue_listener.cpp
 message_queue_listener_OBJECTS = message_queue_listener.$(OBJEXT)
 message_queue_listener_LDADD = $(LDADD)
@@ -136,6 +131,11 @@ message_queue_poll_SOURCES = message_queue_poll.cpp
 message_queue_poll_OBJECTS = message_queue_poll.$(OBJEXT)
 message_queue_poll_LDADD = $(LDADD)
 message_queue_poll_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
+	libmqmx_mocks.la
+message_queue_pool_SOURCES = message_queue_pool.cpp
+message_queue_pool_OBJECTS = message_queue_pool.$(OBJEXT)
+message_queue_pool_LDADD = $(LDADD)
+message_queue_pool_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
 	libmqmx_mocks.la
 message_queue_sanity_SOURCES = message_queue_sanity.cpp
 message_queue_sanity_OBJECTS = message_queue_sanity.$(OBJEXT)
@@ -194,11 +194,11 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueuePool.cpp \
-	message_queue_listener.cpp message_queue_poll.cpp \
+SOURCES = $(libmqmx_mocks_la_SOURCES) message_queue_listener.cpp \
+	message_queue_poll.cpp message_queue_pool.cpp \
 	message_queue_sanity.cpp
-DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueuePool.cpp \
-	message_queue_listener.cpp message_queue_poll.cpp \
+DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) message_queue_listener.cpp \
+	message_queue_poll.cpp message_queue_pool.cpp \
 	message_queue_sanity.cpp
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -691,10 +691,6 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-MessageQueuePool$(EXEEXT): $(MessageQueuePool_OBJECTS) $(MessageQueuePool_DEPENDENCIES) $(EXTRA_MessageQueuePool_DEPENDENCIES) 
-	@rm -f MessageQueuePool$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePool_OBJECTS) $(MessageQueuePool_LDADD) $(LIBS)
-
 message_queue_listener$(EXEEXT): $(message_queue_listener_OBJECTS) $(message_queue_listener_DEPENDENCIES) $(EXTRA_message_queue_listener_DEPENDENCIES) 
 	@rm -f message_queue_listener$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_listener_OBJECTS) $(message_queue_listener_LDADD) $(LIBS)
@@ -702,6 +698,10 @@ message_queue_listener$(EXEEXT): $(message_queue_listener_OBJECTS) $(message_que
 message_queue_poll$(EXEEXT): $(message_queue_poll_OBJECTS) $(message_queue_poll_DEPENDENCIES) $(EXTRA_message_queue_poll_DEPENDENCIES) 
 	@rm -f message_queue_poll$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_poll_OBJECTS) $(message_queue_poll_LDADD) $(LIBS)
+
+message_queue_pool$(EXEEXT): $(message_queue_pool_OBJECTS) $(message_queue_pool_DEPENDENCIES) $(EXTRA_message_queue_pool_DEPENDENCIES) 
+	@rm -f message_queue_pool$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_pool_OBJECTS) $(message_queue_pool_LDADD) $(LIBS)
 
 message_queue_sanity$(EXEEXT): $(message_queue_sanity_OBJECTS) $(message_queue_sanity_DEPENDENCIES) $(EXTRA_message_queue_sanity_DEPENDENCIES) 
 	@rm -f message_queue_sanity$(EXEEXT)
@@ -717,9 +717,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_listener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_poll.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_pool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_sanity.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/MessageQueuePoll.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mocks/$(DEPDIR)/MessageQueueListener.Plo@am__quote@
@@ -970,9 +970,9 @@ message_queue_poll.log: message_queue_poll$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MessageQueuePool.log: MessageQueuePool$(EXEEXT)
-	@p='MessageQueuePool$(EXEEXT)'; \
-	b='MessageQueuePool'; \
+message_queue_pool.log: message_queue_pool$(EXEEXT)
+	@p='message_queue_pool$(EXEEXT)'; \
+	b='message_queue_pool'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -28,14 +28,14 @@ SET (TESTS
   message_queue_sanity
   message_queue_listener
   message_queue_poll
-  MessageQueuePool
+  message_queue_pool
 )
 
 SET (check_PROGRAMS
   message_queue_sanity
   message_queue_listener
   message_queue_poll
-  MessageQueuePool
+  message_queue_pool
 )
 
 SET (AM_DEFAULT_SOURCE_EXT ".cpp")
