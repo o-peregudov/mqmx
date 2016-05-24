@@ -87,10 +87,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = MessageQueueSanityChecks$(EXEEXT) \
-	MessageQueueListener$(EXEEXT) MessageQueuePoll$(EXEEXT) \
-	MessageQueuePool$(EXEEXT)
-check_PROGRAMS = MessageQueueSanityChecks$(EXEEXT) \
+TESTS = message_queue_sanity$(EXEEXT) MessageQueueListener$(EXEEXT) \
+	MessageQueuePoll$(EXEEXT) MessageQueuePool$(EXEEXT)
+check_PROGRAMS = message_queue_sanity$(EXEEXT) \
 	MessageQueueListener$(EXEEXT) MessageQueuePoll$(EXEEXT) \
 	MessageQueuePool$(EXEEXT)
 subdir = test
@@ -138,11 +137,11 @@ MessageQueuePool_OBJECTS = MessageQueuePool.$(OBJEXT)
 MessageQueuePool_LDADD = $(LDADD)
 MessageQueuePool_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
 	libmqmx_mocks.la
-MessageQueueSanityChecks_SOURCES = MessageQueueSanityChecks.cpp
-MessageQueueSanityChecks_OBJECTS = MessageQueueSanityChecks.$(OBJEXT)
-MessageQueueSanityChecks_LDADD = $(LDADD)
-MessageQueueSanityChecks_DEPENDENCIES =  \
-	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
+message_queue_sanity_SOURCES = message_queue_sanity.cpp
+message_queue_sanity_OBJECTS = message_queue_sanity.$(OBJEXT)
+message_queue_sanity_LDADD = $(LDADD)
+message_queue_sanity_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
+	libmqmx_mocks.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -197,10 +196,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueueListener.cpp \
 	MessageQueuePoll.cpp MessageQueuePool.cpp \
-	MessageQueueSanityChecks.cpp
+	message_queue_sanity.cpp
 DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) MessageQueueListener.cpp \
 	MessageQueuePoll.cpp MessageQueuePool.cpp \
-	MessageQueueSanityChecks.cpp
+	message_queue_sanity.cpp
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -704,9 +703,9 @@ MessageQueuePool$(EXEEXT): $(MessageQueuePool_OBJECTS) $(MessageQueuePool_DEPEND
 	@rm -f MessageQueuePool$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueuePool_OBJECTS) $(MessageQueuePool_LDADD) $(LIBS)
 
-MessageQueueSanityChecks$(EXEEXT): $(MessageQueueSanityChecks_OBJECTS) $(MessageQueueSanityChecks_DEPENDENCIES) $(EXTRA_MessageQueueSanityChecks_DEPENDENCIES) 
-	@rm -f MessageQueueSanityChecks$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MessageQueueSanityChecks_OBJECTS) $(MessageQueueSanityChecks_LDADD) $(LIBS)
+message_queue_sanity$(EXEEXT): $(message_queue_sanity_OBJECTS) $(message_queue_sanity_DEPENDENCIES) $(EXTRA_message_queue_sanity_DEPENDENCIES) 
+	@rm -f message_queue_sanity$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_sanity_OBJECTS) $(message_queue_sanity_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -721,7 +720,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueListener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePoll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueuePool.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageQueueSanityChecks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_sanity.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/MessageQueuePoll.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mocks/$(DEPDIR)/MessageQueueListener.Plo@am__quote@
 
@@ -950,9 +949,9 @@ recheck: all $(check_LTLIBRARIES) $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-MessageQueueSanityChecks.log: MessageQueueSanityChecks$(EXEEXT)
-	@p='MessageQueueSanityChecks$(EXEEXT)'; \
-	b='MessageQueueSanityChecks'; \
+message_queue_sanity.log: message_queue_sanity$(EXEEXT)
+	@p='message_queue_sanity$(EXEEXT)'; \
+	b='message_queue_sanity'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
