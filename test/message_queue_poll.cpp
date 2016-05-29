@@ -1,7 +1,6 @@
 #include "mqmx/message_queue_poll.h"
 
 #include <thread>
-#include <cstdlib>
 #include <ctime>
 
 #undef NDEBUG
@@ -42,11 +41,7 @@ int main (int argc, const char ** argv)
          */
         fixtures::message_queue_poll fixture;
 
-        srand (time (nullptr));
-        const size_t STRIDE
-            = static_cast<double> (rand ()) / RAND_MAX
-            * fixtures::message_queue_poll::NQUEUES;
-
+        const size_t STRIDE = 3;
         size_t nqueues_signaled = 0;
         for (size_t ix = 0; ix < fixtures::message_queue_poll::NQUEUES; ix += STRIDE)
         {

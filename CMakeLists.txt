@@ -3,29 +3,18 @@ CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
 PROJECT (mqmx C CXX)
 ENABLE_TESTING ()
 
-############################################################
 #
 # CMake function(s) and macro(s)
 #
-############################################################
 
 INCLUDE (InstallRequiredSystemLibraries)
-INCLUDE (CheckCXXSourceRuns)
-INCLUDE (CheckCXXSourceCompiles)
 INCLUDE (CheckCCompilerFlag)
 INCLUDE (CheckCXXCompilerFlag)
-INCLUDE (CheckFunctionExists)
-INCLUDE (CheckIncludeFileCXX)
-INCLUDE (CheckLibraryExists)
-INCLUDE (CheckIncludeFile)
-INCLUDE (ExternalProject)
 INCLUDE (FindPkgConfig)
 
-############################################################
 #
 # Init output directories
 #
-############################################################
 
 SET (EXECUTABLE_OUTPUT_PATH     ${CMAKE_BINARY_DIR}/bin)
 SET (LIBRARY_OUTPUT_PATH        ${CMAKE_BINARY_DIR}/lib)
