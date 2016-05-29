@@ -1,71 +1,114 @@
-#include "test/fixtures/message_queue_poll.h"
-#include <gmock/gmock.h>
+#include "mqmx/message_queue_poll.h"
+
 #include <thread>
+#include <cstdlib>
+#include <ctime>
 
-struct MQPollFixture : ::testing::Test
-                     , fixtures::message_queue_poll_fixture
-{
-};
+#undef NDEBUG
+#include <cassert>
 
-TEST_F (MQPollFixture, sanity_checks)
+namespace fixtures
 {
-    auto mqlist = mqmx::poll (std::begin (mq), std::end (mq));
-    ASSERT_TRUE (mqlist.empty ());
-}
-
-TEST_F (MQPollFixture, initial_notification)
-{
-    const size_t STRIDE = 3;
-    size_t nqueues_signaled = 0;
-    for (size_t ix = 0; ix < NQUEUES; ix += STRIDE)
+    struct message_queue_poll
     {
-        mq[ix]->enqueue<mqmx::message> (0);
-        ++nqueues_signaled;
-    }
+        static const size_t NQUEUES = 10;
+        std::vector<mqmx::message_queue::upointer_type> mq;
 
-    auto mqlist = poll (std::begin (mq), std::end (mq));
-    ASSERT_EQ (nqueues_signaled, mqlist.size ());
-}
+        message_queue_poll ()
+            : mq ()
+        {
+            for (size_t ix = 0; ix < NQUEUES; ++ix)
+            {
+                mq.emplace_back (new mqmx::message_queue (ix));
+            }
+        }
+    };
+} /* namespace fixtures */
 
-TEST_F (MQPollFixture, infinite_wait)
+int main (int argc, const char ** argv)
 {
-    const size_t idx = NQUEUES - 1;
-    const mqmx::message_id_type defMID = 10;
-
-    std::thread thr ([&] {
-            std::this_thread::sleep_for (std::chrono::milliseconds (50));
-            mq[idx]->enqueue<mqmx::message> (defMID);
-        });
-
-    auto mqlist = mqmx::poll (std::begin (mq), std::end (mq),
-			      mqmx::wait_time_provider::WAIT_INFINITELY);
-    if (thr.joinable ())
     {
-        thr.join ();
+        /*
+         * sanity checks
+         */
+        fixtures::message_queue_poll fixture;
+
+        auto mqlist = mqmx::poll (std::begin (fixture.mq), std::end (fixture.mq));
+        assert (mqlist.empty ());
     }
-
-    ASSERT_EQ (1, mqlist.size ());
-    ASSERT_EQ (mq[idx]->get_qid (), mqlist.front ().get_qid ());
-    ASSERT_EQ (mqmx::message_queue::notification_flag::data, mqlist.front ().get_flags ());
-}
-
-TEST_F (MQPollFixture, absolute_timeout)
-{
-    const size_t NREPS = 3;
-    for (size_t ix = 0; ix < NREPS; ++ix)
     {
-        auto mqlist = mqmx::poll (std::begin (mq), std::end (mq),
-				  std::chrono::steady_clock::now () + std::chrono::microseconds (1));
-        ASSERT_EQ (0, mqlist.size ());
-    }
-}
+        /*
+         * initial notifications
+         */
+        fixtures::message_queue_poll fixture;
 
-TEST_F (MQPollFixture, relative_timeout)
-{
-    const size_t NREPS = 3;
-    for (size_t ix = 0; ix < NREPS; ++ix)
-    {
-        auto mqlist = mqmx::poll (std::begin (mq), std::end (mq), std::chrono::microseconds (1));
-        ASSERT_EQ (0, mqlist.size ());
+        srand (time (nullptr));
+        const size_t STRIDE
+            = static_cast<double> (rand ()) / RAND_MAX
+            * fixtures::message_queue_poll::NQUEUES;
+
+        size_t nqueues_signaled = 0;
+        for (size_t ix = 0; ix < fixtures::message_queue_poll::NQUEUES; ix += STRIDE)
+        {
+            fixture.mq[ix]->enqueue<mqmx::message> (0);
+            ++nqueues_signaled;
+        }
+
+        auto mqlist = mqmx::poll (std::begin (fixture.mq), std::end (fixture.mq));
+        assert (nqueues_signaled == mqlist.size ());
     }
+    {
+        /*
+         * inifinite wait
+         */
+        fixtures::message_queue_poll fixture;
+
+        const size_t idx = fixtures::message_queue_poll::NQUEUES - 1;
+        const mqmx::message_id_type defMID = 10;
+
+        std::thread thr ([&] {
+                std::this_thread::sleep_for (std::chrono::milliseconds (50));
+                fixture.mq[idx]->enqueue<mqmx::message> (defMID);
+            });
+
+        auto mqlist = mqmx::poll (std::begin (fixture.mq), std::end (fixture.mq),
+                                  mqmx::wait_time_provider::WAIT_INFINITELY);
+        if (thr.joinable ())
+        {
+            thr.join ();
+        }
+
+        assert (1 == mqlist.size ());
+        assert (fixture.mq[idx]->get_qid () == mqlist.front ().get_qid ());
+        assert (mqmx::message_queue::notification_flag::data == mqlist.front ().get_flags ());
+    }
+    {
+        /*
+         * absolute timeout
+         */
+        fixtures::message_queue_poll fixture;
+
+        const size_t NREPS = 3;
+        for (size_t ix = 0; ix < NREPS; ++ix)
+        {
+            auto mqlist = mqmx::poll (std::begin (fixture.mq), std::end (fixture.mq),
+                                      std::chrono::steady_clock::now () + std::chrono::microseconds (1));
+            assert (0 == mqlist.size ());
+        }
+    }
+    {
+        /*
+         * relative timeout
+         */
+        fixtures::message_queue_poll fixture;
+
+        const size_t NREPS = 3;
+        for (size_t ix = 0; ix < NREPS; ++ix)
+        {
+            auto mqlist = mqmx::poll (std::begin (fixture.mq), std::end (fixture.mq),
+                                      std::chrono::microseconds (1));
+            assert (0 == mqlist.size ());
+        }
+    }
+    return 0;
 }

@@ -2,23 +2,9 @@ INCLUDE_DIRECTORIES (
   ${CMAKE_SOURCE_DIR}/test
 )
 
-ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
-  mocks/message_queue_listener.h
-  mocks/message_queue_listener.cpp
-  fixtures/message_queue_poll.h
-  fixtures/message_queue_poll.cpp
-)
-
-TARGET_LINK_LIBRARIES (${PROJECT_NAME}_mocks
-  ${CMAKE_THREAD_LIBS_INIT}
-  ${LIBCRS_LDFLAGS}
-  ${PROJECT_NAME}
-)
-
 SET (LDADD
   ${CMAKE_THREAD_LIBS_INIT}
   ${LIBCRS_LDFLAGS}
-  ${PROJECT_NAME}_mocks
   ${PROJECT_NAME}
 )
 
