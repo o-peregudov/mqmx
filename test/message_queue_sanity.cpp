@@ -1,51 +1,60 @@
-#include <mqmx/message_queue.h>
-#include <gmock/gmock.h>
+#include "mqmx/message_queue.h"
 
-TEST (message_queue, sanity_checks)
+#undef NDEBUG
+#include <cassert>
+
+int main (int argc, const char ** argv)
 {
-    using namespace mqmx;
-    const queue_id_type defQID = 10;
-    const message_id_type defMID = 10;
-
-    message_queue queue (defQID);
-    message::upointer_type msg (queue.pop ());
-    ASSERT_EQ (nullptr, msg.get ());
-
-    status_code retCode = queue.push (nullptr);
-    ASSERT_EQ (ExitStatus::InvalidArgument, retCode);
-
     {
-	message_queue queue2 (defQID + 1);
-	retCode = queue.push (queue2.new_message<message> (defQID));
-	ASSERT_EQ (ExitStatus::NotSupported, retCode);
+        /*
+         * sanity checks
+         */
+        using namespace mqmx;
+        const queue_id_type defQID = 10;
+        const message_id_type defMID = 10;
+
+        message_queue queue (defQID);
+        message::upointer_type msg (queue.pop ());
+        assert (nullptr == msg.get ());
+
+        status_code retCode = queue.push (nullptr);
+        assert (ExitStatus::InvalidArgument == retCode);
+
+        {
+            message_queue queue2 (defQID + 1);
+            retCode = queue.push (queue2.new_message<message> (defQID));
+            assert (ExitStatus::NotSupported == retCode);
+        }
+
+        retCode = queue.enqueue<message> (defMID);
+        assert (ExitStatus::Success == retCode);
     }
-
-    retCode = queue.enqueue<message> (defMID);
-    ASSERT_EQ (ExitStatus::Success, retCode);
-}
-
-TEST (message_queue, fifo_ordering)
-{
-    using namespace mqmx;
-    const queue_id_type defQID = 10;
-    const message_id_type defMID = 10;
-
-    message_queue queue (defQID);
-    for (size_t ix = 0; ix < 10; ++ix)
     {
-	status_code retCode = queue.enqueue<message> (defMID + ix);
-	ASSERT_EQ (ExitStatus::Success, retCode);
-    }
+        /*
+         * FIFO order
+         */
+        using namespace mqmx;
+        const queue_id_type defQID = 10;
+        const message_id_type defMID = 10;
 
-    message::upointer_type msg;
-    for (size_t ix = 0; ix < 10; ++ix)
-    {
+        message_queue queue (defQID);
+        for (size_t ix = 0; ix < 10; ++ix)
+        {
+            status_code retCode = queue.enqueue<message> (defMID + ix);
+            assert (ExitStatus::Success == retCode);
+        }
+
+        message::upointer_type msg;
+        for (size_t ix = 0; ix < 10; ++ix)
+        {
+            msg = queue.pop ();
+            assert (nullptr != msg.get ());
+            assert (defQID == msg->get_qid ());
+            assert ((defMID + ix) == msg->get_mid ());
+        }
+
         msg = queue.pop ();
-	ASSERT_NE (nullptr, msg.get ());
-	ASSERT_EQ (defQID, msg->get_qid ());
-	ASSERT_EQ ((defMID + ix), msg->get_mid ());
+        assert (nullptr == msg.get ());
     }
-
-    msg = queue.pop ();
-    ASSERT_EQ (nullptr, msg.get ());
+    return 0;
 }

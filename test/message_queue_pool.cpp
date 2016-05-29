@@ -20,7 +20,7 @@ TEST (message_queue_pool, sanity_checks)
 TEST (message_queue_pool, counter_test)
 {
     const size_t NMSGS = 1000;
-    CrossClass::semaphore sem;
+    crs::semaphore sem;
     mqmx::message_queue_pool sut;
     ASSERT_TRUE (sut.is_poll_idle ());
     size_t counter_a = 0;

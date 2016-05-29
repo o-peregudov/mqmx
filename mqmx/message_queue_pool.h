@@ -10,7 +10,6 @@
 #include <vector>
 #include <thread>
 
-namespace crs = CrossClass;
 namespace mqmx
 {
     class message_queue_pool

@@ -1,108 +1,135 @@
-#include "test/mocks/message_queue_listener.h"
+#include "mqmx/message_queue.h"
+#include "test/FakeIt/single_header/standalone/fakeit.hpp"
 
-TEST (message_queue, Data_and_Closed_notifications)
+#undef NDEBUG
+#include <cassert>
+
+int main (int argc, const char ** argv)
 {
-    using namespace mqmx;
-    using namespace ::testing;
-    const queue_id_type defQID = 10;
-    const message_id_type defMID = 10;
-
-    mocks::message_queue_listener_mock mock;
-
-    EXPECT_CALL (mock, notify (defQID, nullptr, message_queue::notification_flag::closed))
-        .Times (1);
     {
+        /*
+         * 'data' and 'closed' notifications
+         */
+        using namespace fakeit;
+        const mqmx::queue_id_type defQID = 10;
+        const mqmx::message_id_type defMID = 10;
+
+        Mock<mqmx::message_queue::listener> mock;
+        Fake (Method (mock, notify));
+        {
+            mqmx::message_queue queue (defQID);
+            mqmx::message::upointer_type msg;
+
+            mqmx::status_code retCode = queue.set_listener (mock.get ());
+            assert (mqmx::ExitStatus::Success == retCode);
+
+            /* test for double insert */
+            retCode = queue.set_listener (mock.get ());
+            assert (mqmx::ExitStatus::AlreadyExist == retCode);
+
+            retCode = queue.enqueue<mqmx::message> (defMID);
+            assert (mqmx::ExitStatus::Success == retCode);
+
+            Verify (Method (mock, notify).Using (
+                        defQID, &queue, mqmx::message_queue::notification_flag::data))
+                .Once ();
+        }
+        Verify (Method (mock, notify).Using (
+                    defQID, nullptr, mqmx::message_queue::notification_flag::closed))
+            .Once ();
+        VerifyNoOtherInvocations (mock);
+    }
+    {
+        /*
+         * 'detached' because of move ctor
+         */
+        using namespace fakeit;
+        const mqmx::queue_id_type defQID = 10;
+        const mqmx::message_id_type defMID = 10;
+
+        Mock<mqmx::message_queue::listener> mock;
+        Fake (Method (mock, notify));
+
         mqmx::message_queue queue (defQID);
         mqmx::message::upointer_type msg;
 
-        status_code retCode = queue.set_listener (mock);
-        ASSERT_EQ (ExitStatus::Success, retCode);
-
-        /* test for double insert */
-        retCode = queue.set_listener (mock);
-        ASSERT_EQ (ExitStatus::AlreadyExist, retCode);
-
-        EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::data))
-            .Times (1);
+        mqmx::status_code retCode = queue.set_listener (mock.get ());
+        assert (mqmx::ExitStatus::Success == retCode);
 
         retCode = queue.enqueue<mqmx::message> (defMID);
-        ASSERT_EQ (ExitStatus::Success, retCode);
+        assert (mqmx::ExitStatus::Success == retCode);
+
+        Verify (Method (mock, notify).Using (
+                    defQID, &queue, mqmx::message_queue::notification_flag::data))
+            .Once ();
+
+        mqmx::message_queue queueB (std::move (queue));
+        Verify (Method (mock, notify).Using (
+                    defQID, &queue, mqmx::message_queue::notification_flag::detached))
+            .Once ();
+
+        msg = queue.pop (); /* message should be moved to the new queue */
+        assert (nullptr == msg.get ());
+
+        msg = queueB.pop (); /* message should be moved from the original queue */
+        assert (nullptr != msg.get ());
+        assert (defQID == msg->get_qid ());
+        assert (defMID == msg->get_mid ());
+
+        VerifyNoOtherInvocations (mock);
     }
-}
+    {
+        /*
+         * 'detached' because of move assignment
+         */
+        using namespace fakeit;
+        const mqmx::queue_id_type defQIDa = 10;
+        const mqmx::queue_id_type defQIDb = 20;
+        const mqmx::message_id_type defMIDa = 10;
+        const mqmx::message_id_type defMIDb = 20;
 
-TEST (message_queue, Detached_because_of_move_ctor)
-{
-    using namespace mqmx;
-    using namespace ::testing;
-    const queue_id_type defQID = 10;
-    const message_id_type defMID = 10;
+        Mock<mqmx::message_queue::listener> mock;
+	Fake (Method (mock, notify));
 
-    mocks::message_queue_listener_mock mock;
-    mqmx::message_queue queue (defQID);
-    mqmx::message::upointer_type msg;
+        mqmx::message_queue queueA (defQIDa);
+        mqmx::message_queue queueB (defQIDb);
 
-    status_code retCode = queue.set_listener (mock);
-    ASSERT_EQ (ExitStatus::Success, retCode);
+        mqmx::message::upointer_type msg;
+        mqmx::status_code retCode = mqmx::ExitStatus::Success;
 
-    EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::data))
-	.Times (1);
-    retCode = queue.enqueue<mqmx::message> (defMID);
-    ASSERT_EQ (ExitStatus::Success, retCode);
+        retCode = queueA.set_listener (mock.get ());
+        assert (mqmx::ExitStatus::Success == retCode);
 
-    EXPECT_CALL (mock, notify (defQID, &queue, message_queue::notification_flag::detached))
-	.Times (1);
-    message_queue queueB (std::move (queue));
+        retCode = queueB.set_listener (mock.get ());
+        assert (mqmx::ExitStatus::Success == retCode);
 
-    msg = queue.pop (); /* message should be moved to the new queue */
-    ASSERT_EQ (nullptr, msg.get ());
+        retCode = queueA.enqueue<mqmx::message> (defMIDa);
+        retCode = queueB.enqueue<mqmx::message> (defMIDb);
 
-    msg = queueB.pop (); /* message should be moved from the original queue */
-    ASSERT_NE (nullptr, msg.get ());
-    ASSERT_EQ (defQID, msg->get_qid ());
-    ASSERT_EQ (defMID, msg->get_mid ());
-}
+        Verify (Method (mock, notify).Using (
+                    defQIDa, &queueA, mqmx::message_queue::notification_flag::data))
+            .Once ();
+        Verify (Method (mock, notify).Using (
+                    defQIDb, &queueB, mqmx::message_queue::notification_flag::data))
+            .Once ();
+        queueB = std::move (queueA);
 
-TEST (message_queue, Detached_because_of_move_assignment)
-{
-    using namespace mqmx;
-    using namespace ::testing;
-    const queue_id_type defQIDa = 10;
-    const queue_id_type defQIDb = 20;
-    const message_id_type defMIDa = 10;
-    const message_id_type defMIDb = 20;
+        Verify (Method (mock, notify).Using (
+                    defQIDa, &queueA, mqmx::message_queue::notification_flag::detached))
+            .Once ();
+        Verify (Method (mock, notify).Using (
+                    defQIDb, &queueB, mqmx::message_queue::notification_flag::detached))
+            .Once ();
 
-    mocks::message_queue_listener_mock mock;
+        msg = queueA.pop (); /* message should be moved to the new queue */
+        assert (nullptr == msg.get ());
 
-    message_queue queueA (defQIDa);
-    message_queue queueB (defQIDb);
+        msg = queueB.pop (); /* message should be moved from the original queue */
+        assert (nullptr != msg.get ());
+        assert (defQIDa == msg->get_qid ());
+        assert (defMIDa == msg->get_mid ());
 
-    mqmx::message::upointer_type msg;
-    status_code retCode = ExitStatus::Success;
-
-    retCode = queueA.set_listener (mock);
-    ASSERT_EQ (ExitStatus::Success, retCode);
-
-    retCode = queueB.set_listener (mock);
-    ASSERT_EQ (ExitStatus::Success, retCode);
-
-    EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::data))
-	.Times (1);
-    EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::data))
-	.Times (1);
-    retCode = queueA.enqueue<mqmx::message> (defMIDa);
-    retCode = queueB.enqueue<mqmx::message> (defMIDb);
-
-    EXPECT_CALL (mock, notify (defQIDa, &queueA, message_queue::notification_flag::detached))
-	.Times (1);
-    EXPECT_CALL (mock, notify (defQIDb, &queueB, message_queue::notification_flag::detached))
-	.Times (1);
-    queueB = std::move (queueA);
-
-    msg = queueA.pop (); /* message should be moved to the new queue */
-    ASSERT_EQ (nullptr, msg.get ());
-
-    msg = queueB.pop (); /* message should be moved from the original queue */
-    ASSERT_NE (nullptr, msg.get ());
-    ASSERT_EQ (defQIDa, msg->get_qid ());
-    ASSERT_EQ (defMIDa, msg->get_mid ());
+        VerifyNoOtherInvocations (mock);
+    }
+    return 0;
 }

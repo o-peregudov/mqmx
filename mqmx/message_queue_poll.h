@@ -12,7 +12,6 @@
 #include <vector>
 #include <tuple>
 
-namespace crs = CrossClass;
 namespace mqmx
 {
     class message_queue_poll_listener : public message_queue::listener

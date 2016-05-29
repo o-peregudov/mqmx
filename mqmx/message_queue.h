@@ -7,7 +7,6 @@
 #include <deque>
 #include <type_traits>
 
-namespace crs = CrossClass;
 namespace mqmx
 {
     class message_queue
