@@ -137,65 +137,6 @@ else
   AC_MSG_FAILURE([Can't find suitable version of libcrs installed. Please install one (https://github.com/o-peregudov/libcrs.git) and run configure once again])
 fi
 
-dnl dnl
-dnl dnl Check for Google Test/Mock frameworks
-dnl dnl
-dnl HAVE_LIBGTEST=0
-dnl HAVE_LIBGMOCK=0
-dnl AC_LANG_PUSH([C++])
-dnl AC_CHECK_HEADER(gtest/gtest.h, [ac_gtest_h_found=yes], [ac_gtest_h_found=no])
-dnl if test $ac_gtest_h_found = yes; then
-dnl   save_LIBS="$LIBS"
-dnl   LIBS="$LIBS -lgtest -lgtest_main"
-dnl   AC_CACHE_CHECK(for gtest library, ac_cv_libgtest_works,
-dnl     AC_LINK_IFELSE([AC_LANG_SOURCE([[
-dnl       #include <gtest/gtest.h>
-dnl       int main (int argc, char ** argv)
-dnl       {
-dnl         ::testing::InitGoogleTest(&argc, argv);
-dnl         return 0;
-dnl       }
-dnl     ]])],[ac_cv_libgtest_works=yes],[ac_cv_libgtest_works=no]))
-dnl   LIBS="$save_LIBS"
-dnl   if test $ac_cv_libgtest_works = yes; then
-dnl     LIBS="$LIBS -lgtest -lgtest_main"
-dnl     HAVE_LIBGTEST=1
-dnl   else
-dnl     AC_MSG_FAILURE([failed to link with libgtest])
-dnl   fi
-
-dnl   AC_CHECK_HEADER(gmock/gmock.h,
-dnl     [ac_gmock_h_found=yes], [ac_gmock_h_found=no],
-dnl     [#include <gtest/gtest.h>])
-dnl   if test $ac_gmock_h_found = yes; then
-dnl     save_LIBS="$LIBS"
-dnl     LIBS="$LIBS -lgmock -lgmock_main"
-dnl     AC_CACHE_CHECK(for gmock library, ac_cv_libgmock_works,
-dnl       AC_LINK_IFELSE([AC_LANG_SOURCE([[
-dnl         #include <gmock/gmock.h>
-dnl         int main (int argc, char ** argv)
-dnl         {
-dnl           ::testing::InitGoogleMock(&argc, argv);
-dnl           return 0;
-dnl         }
-dnl       ]])],[ac_cv_libgmock_works=yes],[ac_cv_libgmock_works=no]))
-dnl     LIBS="$save_LIBS"
-dnl     if test $ac_cv_libgmock_works = yes; then
-dnl       LIBS="$LIBS -lgmock -lgmock_main"
-dnl       HAVE_LIBGMOCK=1
-dnl     else
-dnl       AC_MSG_FAILURE([failed to link with libgmock])
-dnl     fi
-dnl   else
-dnl     AC_MSG_FAILURE([gmock.h is mandatory])
-dnl   fi
-dnl else
-dnl   AC_MSG_FAILURE([gtest.h is mandatory])
-dnl fi
-dnl AC_LANG_POP([C++])
-dnl AC_SUBST(HAVE_LIBGTEST)
-dnl AC_SUBST(HAVE_LIBGMOCK)
-
 DX_INIT_DOXYGEN($PACKAGE_NAME)
 
 AC_CONFIG_FILES([
