@@ -9,13 +9,6 @@ namespace fixtures
         static const size_t NQUEUES = 10;
         std::vector<mqmx::message_queue::upointer_type> mq;
 
-        message_queue_poll ()
-            : mq ()
-        {
-            for (size_t ix = 0; ix < NQUEUES; ++ix)
-            {
-                mq.emplace_back (new mqmx::message_queue (ix));
-            }
-        }
+        message_queue_poll ();
     };
 } /* namespace fixtures */
