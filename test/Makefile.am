@@ -10,14 +10,22 @@ AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir
 TESTS =	message_queue_sanity		\
 	message_queue_listener		\
 	message_queue_poll_listener	\
-	message_queue_poll		\
+	message_queue_poll_sanity	\
+	message_queue_poll_initial_notifications \
+	message_queue_poll_infinite_wait \
+	message_queue_poll_absolute_timeout \
+	message_queue_poll_relative_timeout \
 	message_queue_pool
 
 check_PROGRAMS =			\
 	message_queue_sanity		\
 	message_queue_listener		\
 	message_queue_poll_listener	\
-	message_queue_poll		\
+	message_queue_poll_sanity	\
+	message_queue_poll_initial_notifications \
+	message_queue_poll_infinite_wait \
+	message_queue_poll_absolute_timeout \
+	message_queue_poll_relative_timeout \
 	message_queue_pool
 
 AM_DEFAULT_SOURCE_EXT = .cpp
