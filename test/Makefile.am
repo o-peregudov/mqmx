@@ -16,8 +16,9 @@ LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 
 TESTS =	message_queue_sanity		\
-	message_queue_listener		\
 	message_queue_listener_data_and_closed \
+	message_queue_listener_detached_because_of_move_ctor \
+	message_queue_listener_detached_because_of_move_assignment \
 	message_queue_poll_listener	\
 	message_queue_poll_sanity	\
 	message_queue_poll_initial_notifications \
@@ -28,8 +29,9 @@ TESTS =	message_queue_sanity		\
 
 check_PROGRAMS =			\
 	message_queue_sanity		\
-	message_queue_listener		\
 	message_queue_listener_data_and_closed \
+	message_queue_listener_detached_because_of_move_ctor \
+	message_queue_listener_detached_because_of_move_assignment \
 	message_queue_poll_listener	\
 	message_queue_poll_sanity	\
 	message_queue_poll_initial_notifications \

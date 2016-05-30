@@ -87,7 +87,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = message_queue_sanity$(EXEEXT) message_queue_listener$(EXEEXT) \
+TESTS = message_queue_sanity$(EXEEXT) \
+	message_queue_listener_data_and_closed$(EXEEXT) \
+	message_queue_listener_detached_because_of_move_ctor$(EXEEXT) \
+	message_queue_listener_detached_because_of_move_assignment$(EXEEXT) \
 	message_queue_poll_listener$(EXEEXT) \
 	message_queue_poll_sanity$(EXEEXT) \
 	message_queue_poll_initial_notifications$(EXEEXT) \
@@ -96,7 +99,9 @@ TESTS = message_queue_sanity$(EXEEXT) message_queue_listener$(EXEEXT) \
 	message_queue_poll_relative_timeout$(EXEEXT) \
 	message_queue_pool$(EXEEXT)
 check_PROGRAMS = message_queue_sanity$(EXEEXT) \
-	message_queue_listener$(EXEEXT) \
+	message_queue_listener_data_and_closed$(EXEEXT) \
+	message_queue_listener_detached_because_of_move_ctor$(EXEEXT) \
+	message_queue_listener_detached_because_of_move_assignment$(EXEEXT) \
 	message_queue_poll_listener$(EXEEXT) \
 	message_queue_poll_sanity$(EXEEXT) \
 	message_queue_poll_initial_notifications$(EXEEXT) \
@@ -133,11 +138,25 @@ libmqmx_mocks_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libmqmx_mocks_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-message_queue_listener_SOURCES = message_queue_listener.cpp
-message_queue_listener_OBJECTS = message_queue_listener.$(OBJEXT)
-message_queue_listener_LDADD = $(LDADD)
-message_queue_listener_DEPENDENCIES = $(top_builddir)/mqmx/libmqmx.la \
-	libmqmx_mocks.la
+message_queue_listener_data_and_closed_SOURCES =  \
+	message_queue_listener_data_and_closed.cpp
+message_queue_listener_data_and_closed_OBJECTS =  \
+	message_queue_listener_data_and_closed.$(OBJEXT)
+message_queue_listener_data_and_closed_LDADD = $(LDADD)
+message_queue_listener_data_and_closed_DEPENDENCIES =  \
+	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
+message_queue_listener_detached_because_of_move_assignment_SOURCES = message_queue_listener_detached_because_of_move_assignment.cpp
+message_queue_listener_detached_because_of_move_assignment_OBJECTS = message_queue_listener_detached_because_of_move_assignment.$(OBJEXT)
+message_queue_listener_detached_because_of_move_assignment_LDADD =  \
+	$(LDADD)
+message_queue_listener_detached_because_of_move_assignment_DEPENDENCIES =  \
+	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
+message_queue_listener_detached_because_of_move_ctor_SOURCES =  \
+	message_queue_listener_detached_because_of_move_ctor.cpp
+message_queue_listener_detached_because_of_move_ctor_OBJECTS = message_queue_listener_detached_because_of_move_ctor.$(OBJEXT)
+message_queue_listener_detached_because_of_move_ctor_LDADD = $(LDADD)
+message_queue_listener_detached_because_of_move_ctor_DEPENDENCIES =  \
+	$(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 message_queue_poll_absolute_timeout_SOURCES =  \
 	message_queue_poll_absolute_timeout.cpp
 message_queue_poll_absolute_timeout_OBJECTS =  \
@@ -240,7 +259,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libmqmx_mocks_la_SOURCES) message_queue_listener.cpp \
+SOURCES = $(libmqmx_mocks_la_SOURCES) \
+	message_queue_listener_data_and_closed.cpp \
+	message_queue_listener_detached_because_of_move_assignment.cpp \
+	message_queue_listener_detached_because_of_move_ctor.cpp \
 	message_queue_poll_absolute_timeout.cpp \
 	message_queue_poll_infinite_wait.cpp \
 	message_queue_poll_initial_notifications.cpp \
@@ -248,7 +270,10 @@ SOURCES = $(libmqmx_mocks_la_SOURCES) message_queue_listener.cpp \
 	message_queue_poll_relative_timeout.cpp \
 	message_queue_poll_sanity.cpp message_queue_pool.cpp \
 	message_queue_sanity.cpp
-DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) message_queue_listener.cpp \
+DIST_SOURCES = $(libmqmx_mocks_la_SOURCES) \
+	message_queue_listener_data_and_closed.cpp \
+	message_queue_listener_detached_because_of_move_assignment.cpp \
+	message_queue_listener_detached_because_of_move_ctor.cpp \
 	message_queue_poll_absolute_timeout.cpp \
 	message_queue_poll_infinite_wait.cpp \
 	message_queue_poll_initial_notifications.cpp \
@@ -735,9 +760,17 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-message_queue_listener$(EXEEXT): $(message_queue_listener_OBJECTS) $(message_queue_listener_DEPENDENCIES) $(EXTRA_message_queue_listener_DEPENDENCIES) 
-	@rm -f message_queue_listener$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_listener_OBJECTS) $(message_queue_listener_LDADD) $(LIBS)
+message_queue_listener_data_and_closed$(EXEEXT): $(message_queue_listener_data_and_closed_OBJECTS) $(message_queue_listener_data_and_closed_DEPENDENCIES) $(EXTRA_message_queue_listener_data_and_closed_DEPENDENCIES) 
+	@rm -f message_queue_listener_data_and_closed$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_listener_data_and_closed_OBJECTS) $(message_queue_listener_data_and_closed_LDADD) $(LIBS)
+
+message_queue_listener_detached_because_of_move_assignment$(EXEEXT): $(message_queue_listener_detached_because_of_move_assignment_OBJECTS) $(message_queue_listener_detached_because_of_move_assignment_DEPENDENCIES) $(EXTRA_message_queue_listener_detached_because_of_move_assignment_DEPENDENCIES) 
+	@rm -f message_queue_listener_detached_because_of_move_assignment$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_listener_detached_because_of_move_assignment_OBJECTS) $(message_queue_listener_detached_because_of_move_assignment_LDADD) $(LIBS)
+
+message_queue_listener_detached_because_of_move_ctor$(EXEEXT): $(message_queue_listener_detached_because_of_move_ctor_OBJECTS) $(message_queue_listener_detached_because_of_move_ctor_DEPENDENCIES) $(EXTRA_message_queue_listener_detached_because_of_move_ctor_DEPENDENCIES) 
+	@rm -f message_queue_listener_detached_because_of_move_ctor$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(message_queue_listener_detached_because_of_move_ctor_OBJECTS) $(message_queue_listener_detached_because_of_move_ctor_LDADD) $(LIBS)
 
 message_queue_poll_absolute_timeout$(EXEEXT): $(message_queue_poll_absolute_timeout_OBJECTS) $(message_queue_poll_absolute_timeout_DEPENDENCIES) $(EXTRA_message_queue_poll_absolute_timeout_DEPENDENCIES) 
 	@rm -f message_queue_poll_absolute_timeout$(EXEEXT)
@@ -779,7 +812,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_listener.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_listener_data_and_closed.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_listener_detached_because_of_move_assignment.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_listener_detached_because_of_move_ctor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_poll_absolute_timeout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_poll_infinite_wait.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_queue_poll_initial_notifications.Po@am__quote@
@@ -1021,9 +1056,23 @@ message_queue_sanity.log: message_queue_sanity$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-message_queue_listener.log: message_queue_listener$(EXEEXT)
-	@p='message_queue_listener$(EXEEXT)'; \
-	b='message_queue_listener'; \
+message_queue_listener_data_and_closed.log: message_queue_listener_data_and_closed$(EXEEXT)
+	@p='message_queue_listener_data_and_closed$(EXEEXT)'; \
+	b='message_queue_listener_data_and_closed'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_listener_detached_because_of_move_ctor.log: message_queue_listener_detached_because_of_move_ctor$(EXEEXT)
+	@p='message_queue_listener_detached_because_of_move_ctor$(EXEEXT)'; \
+	b='message_queue_listener_detached_because_of_move_ctor'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_listener_detached_because_of_move_assignment.log: message_queue_listener_detached_because_of_move_assignment$(EXEEXT)
+	@p='message_queue_listener_detached_because_of_move_assignment$(EXEEXT)'; \
+	b='message_queue_listener_detached_because_of_move_assignment'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

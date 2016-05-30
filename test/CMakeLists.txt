@@ -18,8 +18,9 @@ SET (LDADD
 
 SET (TESTS
   message_queue_sanity
-  message_queue_listener
   message_queue_listener_data_and_closed
+  message_queue_listener_detached_because_of_move_ctor
+  message_queue_listener_detached_because_of_move_assignment
   message_queue_poll_listener
   message_queue_poll_initial_notifications
   message_queue_poll_infinite_wait
@@ -30,8 +31,9 @@ SET (TESTS
 
 SET (check_PROGRAMS
   message_queue_sanity
-  message_queue_listener
   message_queue_listener_data_and_closed
+  message_queue_listener_detached_because_of_move_ctor
+  message_queue_listener_detached_because_of_move_assignment
   message_queue_poll_listener
   message_queue_poll_initial_notifications
   message_queue_poll_infinite_wait
