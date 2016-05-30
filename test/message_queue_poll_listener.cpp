@@ -5,9 +5,6 @@
 
 int main (int argc, const char ** argv)
 {
-    /*
-     * notifications ordering
-     */
     const mqmx::queue_id_type aqid = 10;
     const mqmx::queue_id_type bqid = 20;
     const mqmx::message_id_type defmid = 10;
