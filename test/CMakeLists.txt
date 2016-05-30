@@ -1,6 +1,18 @@
+ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
+  fixtures/message_queue_poll.h
+  fixtures/message_queue_poll.cpp
+)
+
+TARGET_LINK_LIBRARIES (${PROJECT_NAME}_mocks
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${LIBCRS_LDFLAGS}
+  ${PROJECT_NAME}
+)
+
 SET (LDADD
   ${CMAKE_THREAD_LIBS_INIT}
   ${LIBCRS_LDFLAGS}
+  ${PROJECT_NAME}_mocks
   ${PROJECT_NAME}
 )
 
@@ -8,7 +20,10 @@ SET (TESTS
   message_queue_sanity
   message_queue_listener
   message_queue_poll_listener
-  message_queue_poll
+  message_queue_poll_initial_notifications
+  message_queue_poll_infinite_wait
+  message_queue_poll_absolute_timeout
+  message_queue_poll_relative_timeout
   message_queue_pool
 )
 
@@ -16,7 +31,10 @@ SET (check_PROGRAMS
   message_queue_sanity
   message_queue_listener
   message_queue_poll_listener
-  message_queue_poll
+  message_queue_poll_initial_notifications
+  message_queue_poll_infinite_wait
+  message_queue_poll_absolute_timeout
+  message_queue_poll_relative_timeout
   message_queue_pool
 )
 
