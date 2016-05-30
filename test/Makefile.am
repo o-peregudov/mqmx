@@ -17,6 +17,7 @@ AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir
 
 TESTS =	message_queue_sanity		\
 	message_queue_listener		\
+	message_queue_listener_data_and_closed \
 	message_queue_poll_listener	\
 	message_queue_poll_sanity	\
 	message_queue_poll_initial_notifications \
@@ -28,6 +29,7 @@ TESTS =	message_queue_sanity		\
 check_PROGRAMS =			\
 	message_queue_sanity		\
 	message_queue_listener		\
+	message_queue_listener_data_and_closed \
 	message_queue_poll_listener	\
 	message_queue_poll_sanity	\
 	message_queue_poll_initial_notifications \
