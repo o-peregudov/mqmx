@@ -3,7 +3,7 @@
 #undef NDEBUG
 #include <cassert>
 
-int main (int argc, const char ** argv)
+int main ()
 {
     fixtures::message_queue_poll fixture;
     auto mqlist = mqmx::poll (std::begin (fixture.mq), std::end (fixture.mq));

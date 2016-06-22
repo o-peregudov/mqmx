@@ -82,10 +82,10 @@ fi
 dnl
 dnl check if compiler supports -Wall -Werror switches
 dnl
-AC_MSG_CHECKING([if $CXX supports -Wall -Werror])
+AC_MSG_CHECKING([if $CXX supports -Wall -Wextra -Werror])
 ac_report_all_warnings_supported=no
 save_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS -Wall -Werror"
+CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror"
 AC_LANG_PUSH([C++])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
   [ac_report_all_warnings_supported=yes],
@@ -94,7 +94,7 @@ AC_LANG_POP([C++])
 CXXFLAGS="$save_CXXFLAGS"
 AC_MSG_RESULT([$ac_report_all_warnings_supported])
 if test x$ac_report_all_warnings_supported = xyes; then
-  CXXFLAGS="$CXXFLAGS -Wall -Werror"
+  CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror"
 fi
 
 dnl

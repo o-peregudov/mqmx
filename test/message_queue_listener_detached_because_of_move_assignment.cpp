@@ -4,7 +4,7 @@
 #undef NDEBUG
 #include <cassert>
 
-int main (int argc, const char ** argv)
+int main ()
 {
     using namespace fakeit;
     const mqmx::queue_id_type defQIDa = 10;

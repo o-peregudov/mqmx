@@ -4,7 +4,7 @@
 #undef NDEBUG
 #include <cassert>
 
-int main (int argc, const char ** argv)
+int main ()
 {
     {
         /*
@@ -18,7 +18,7 @@ int main (int argc, const char ** argv)
         assert (nullptr == mq.get ());
 
         mq = sut.allocate_queue (
-            [](mqmx::message::upointer_type && msg)->mqmx::status_code
+            [](mqmx::message::upointer_type &&)->mqmx::status_code
             {
                 return mqmx::ExitStatus::Success;
             });
@@ -35,7 +35,7 @@ int main (int argc, const char ** argv)
         size_t counter_b = 0;
         size_t counter_c = 0;
         auto mqa = sut.allocate_queue (
-            [&](mqmx::message::upointer_type && msg)
+            [&](mqmx::message::upointer_type &&)
             {
                 if (++counter_a == NMSGS)
                 {
@@ -44,7 +44,7 @@ int main (int argc, const char ** argv)
                 return mqmx::ExitStatus::Success;
             });
         auto mqb = sut.allocate_queue (
-            [&](mqmx::message::upointer_type && msg)
+            [&](mqmx::message::upointer_type &&)
             {
                 if (++counter_b == NMSGS)
                 {
@@ -53,7 +53,7 @@ int main (int argc, const char ** argv)
                 return mqmx::ExitStatus::Success;
             });
         auto mqc = sut.allocate_queue (
-            [&](mqmx::message::upointer_type && msg)
+            [&](mqmx::message::upointer_type &&)
             {
                 if (++counter_c == NMSGS)
                 {

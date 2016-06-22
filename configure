@@ -18834,11 +18834,11 @@ if test x$ac_pedantic_supported = xyes; then
   CXXFLAGS="$CXXFLAGS -pedantic"
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if $CXX supports -Wall -Werror" >&5
-$as_echo_n "checking if $CXX supports -Wall -Werror... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if $CXX supports -Wall -Wextra -Werror" >&5
+$as_echo_n "checking if $CXX supports -Wall -Wextra -Werror... " >&6; }
 ac_report_all_warnings_supported=no
 save_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS -Wall -Werror"
+CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror"
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -18872,7 +18872,7 @@ CXXFLAGS="$save_CXXFLAGS"
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_report_all_warnings_supported" >&5
 $as_echo "$ac_report_all_warnings_supported" >&6; }
 if test x$ac_report_all_warnings_supported = xyes; then
-  CXXFLAGS="$CXXFLAGS -Wall -Werror"
+  CXXFLAGS="$CXXFLAGS -Wall -Wextra -Werror"
 fi
 
 

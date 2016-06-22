@@ -3,7 +3,7 @@
 #undef NDEBUG
 #include <cassert>
 
-int main (int argc, const char ** argv)
+int main ()
 {
     const mqmx::queue_id_type aqid = 10;
     const mqmx::queue_id_type bqid = 20;
