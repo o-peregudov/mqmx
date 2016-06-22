@@ -695,7 +695,7 @@ libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -rpath /nowhere
 LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 AM_DEFAULT_SOURCE_EXT = .cpp
-EXTRA_DIST = FakeIt
+EXTRA_DIST = FakeIt CMakeLists.txt
 all: all-am
 
 .SUFFIXES:

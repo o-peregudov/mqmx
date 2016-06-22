@@ -1,5 +1,4 @@
 AM_CPPFLAGS = -I$(top_srcdir)
-EXTRA_DIST = CMakeLists.txt
 
 lib_LTLIBRARIES = libmqmx.la
 libmqmx_la_LDFLAGS = -no-undefined -version-info $(MQMX_LT_VERSION)
@@ -21,3 +20,5 @@ libmqmx_la_SOURCES =		\
 	message_queue_pool.cpp
 
 @CODE_COVERAGE_RULES@
+
+EXTRA_DIST = CMakeLists.txt
