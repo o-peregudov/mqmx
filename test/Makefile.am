@@ -43,3 +43,11 @@ check_PROGRAMS =			\
 AM_DEFAULT_SOURCE_EXT = .cpp
 
 @CODE_COVERAGE_RULES@
+
+EXTRA_DIST = FakeIt
+dist-hook:
+	rm -f $(distdir)/FakeIt/.git
+	rm -f $(distdir)/FakeIt/.gitattributes
+	rm -f $(distdir)/FakeIt/.gitignore
+	rm -f $(distdir)/FakeIt/.gitmodules
+

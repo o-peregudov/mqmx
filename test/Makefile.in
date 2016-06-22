@@ -695,6 +695,7 @@ libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -rpath /nowhere
 LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 AM_DEFAULT_SOURCE_EXT = .cpp
+EXTRA_DIST = FakeIt
 all: all-am
 
 .SUFFIXES:
@@ -1171,6 +1172,9 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_LTLIBRARIES) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
@@ -1287,7 +1291,7 @@ uninstall-am:
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-checkLTLIBRARIES clean-checkPROGRAMS clean-generic \
-	clean-libtool cscopelist-am ctags ctags-am distclean \
+	clean-libtool cscopelist-am ctags ctags-am dist-hook distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
@@ -1304,6 +1308,11 @@ uninstall-am:
 
 
 @CODE_COVERAGE_RULES@
+dist-hook:
+	rm -f $(distdir)/FakeIt/.git
+	rm -f $(distdir)/FakeIt/.gitattributes
+	rm -f $(distdir)/FakeIt/.gitignore
+	rm -f $(distdir)/FakeIt/.gitmodules
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
