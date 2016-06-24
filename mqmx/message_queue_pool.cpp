@@ -86,13 +86,16 @@ namespace mqmx
             assert (rec.get_mq () != nullptr);
             assert (rec.get_qid () < _handler.size ());
 
-            message::upointer_type msg = rec.get_mq ()->pop ();
-            const status_code retCode = (_handler[rec.get_qid ()])(std::move (msg));
-            if (retCode != ExitStatus::Success)
+            for (message::upointer_type msg = rec.get_mq ()->pop ();
+		 msg; msg = rec.get_mq ()->pop ())
             {
-                /* TODO: print diagnostic message here */
-            }
-            return retCode;
+                const status_code retCode = (_handler[rec.get_qid ()])(std::move (msg));
+                if (retCode != ExitStatus::Success)
+                {
+                    /* TODO: print diagnostic message here */
+                    return retCode;
+		}
+	    }
         }
         return ExitStatus::Success;
     }
