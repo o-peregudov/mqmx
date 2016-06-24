@@ -62,6 +62,14 @@ IF (WALL_SUPPORTED EQUAL 1)
 ENDIF ()
 
 #
+# check if compilers supports -Wextra
+#
+CHECK_CXX_COMPILER_FLAG (-Wextra WEXTRA_SUPPORTED)
+IF (WEXTRA_SUPPORTED EQUAL 1)
+  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+ENDIF ()
+
+#
 # check if compilers supports -Werror
 #
 CHECK_CXX_COMPILER_FLAG (-Werror WERROR_SUPPORTED)
