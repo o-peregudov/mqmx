@@ -137,11 +137,11 @@ else
   AC_MSG_FAILURE([Can't find suitable version of libcrs installed. Please install one (https://github.com/o-peregudov/libcrs.git) and run configure once again])
 fi
 
-DX_INIT_DOXYGEN($PACKAGE_NAME)
-
 AC_CONFIG_FILES([
     Makefile
     mqmx/Makefile
     test/Makefile
+    doc/Makefile
+    doc/Doxyfile
 ])
 AC_OUTPUT

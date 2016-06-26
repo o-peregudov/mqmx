@@ -1,0 +1,17 @@
+IF (DOXYGEN_FOUND)
+  CONFIGURE_FILE (
+    ${PROJECT_SOURCE_DIR}/doc/Doxyfile.in.cmake
+    ${PROJECT_BINARY_DIR}/doc/Doxyfile
+    @ONLY
+  )
+
+  ADD_CUSTOM_TARGET(doc
+    ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxyfile
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc
+    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+
+  INSTALL(DIRECTORY
+    ${PROJECT_BINARY_DIR}/doc/html DESTINATION share/doc/${PROJECT_NAME}
+  )
+ENDIF (DOXYGEN_FOUND)

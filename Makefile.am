@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 nodist_doc_DATA = README
 
-SUBDIRS = mqmx test
+SUBDIRS = mqmx test doc
 
 @CODE_COVERAGE_RULES@
 
