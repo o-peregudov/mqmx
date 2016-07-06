@@ -25,8 +25,8 @@ AC_SUBST(MQMX_CURRENT)
 AC_SUBST(MQMX_REVISION)
 AC_SUBST(MQMX_AGE)
 
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-if test x$PKG_CONFIG != xno ; then
+AC_PATH_PROG(PKG_CONFIG, pkg-config${EXEEXT}, no)
+if test "x$PKG_CONFIG" != xno ; then
   if $PKG_CONFIG --atleast-pkgconfig-version 0.7 ; then
     :
   else
@@ -35,6 +35,15 @@ if test x$PKG_CONFIG != xno ; then
 else
   AC_MSG_FAILURE([pkg-config is required. Please install and run configure once again.])
 fi
+
+dnl
+dnl doxygen
+dnl
+AC_PATH_PROG(DOXYGEN, doxygen${EXEEXT}, no)
+if test "x$DOXYGEN" = xno ; then
+  DOXYGEN=
+fi
+AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 
 dnl
 dnl gcov/lcov stuff
@@ -80,7 +89,7 @@ if test x$ac_pedantic_supported = xyes; then
 fi
 
 dnl
-dnl check if compiler supports -Wall -Werror switches
+dnl check if compiler supports -Wall -Wextra -Werror switches
 dnl
 AC_MSG_CHECKING([if $CXX supports -Wall -Wextra -Werror])
 ac_report_all_warnings_supported=no
@@ -138,10 +147,10 @@ else
 fi
 
 AC_CONFIG_FILES([
-    Makefile
-    mqmx/Makefile
-    test/Makefile
-    doc/Makefile
-    doc/Doxyfile
+  Makefile
+  mqmx/Makefile
+  test/Makefile
+  doc/Makefile
+  doc/Doxyfile
 ])
 AC_OUTPUT

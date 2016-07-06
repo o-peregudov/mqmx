@@ -5,7 +5,7 @@ IF (DOXYGEN_FOUND)
     @ONLY
   )
 
-  ADD_CUSTOM_TARGET(doc
+  ADD_CUSTOM_TARGET(html
     ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doc/Doxyfile
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/doc
     COMMENT "Generating API documentation with Doxygen" VERBATIM
