@@ -5,6 +5,14 @@
 
 namespace mqmx
 {
+    /**
+     * \brief Base class for all messages.
+     *
+     * Each message holds two attributes - message queue ID and message ID.
+     * First is needed to specify to which queue this message belongs and because
+     * of this there is no possibility to put message from one queue to the queue with
+     * different ID. Second - provides the information for proper message deserialization.
+     */
     class message
     {
         const queue_id_type _qid;
@@ -26,11 +34,17 @@ namespace mqmx
         {
         }
 
+        /**
+         * \returns ID of the queue to which this message belongs
+         */
         queue_id_type get_qid () const
         {
             return _qid;
         }
 
+        /**
+         * \returns ID of the message
+         */
         message_id_type get_mid () const
         {
             return _mid;

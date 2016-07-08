@@ -9,6 +9,19 @@
 
 namespace mqmx
 {
+    /**
+     * \brief Message queue (FIFO).
+     *
+     * In addition to the classical implementation of message queue this class
+     * also supports a single listener (observer). And if this listener is set,
+     * message queue will send notifications to it about some changes in state
+     * of the object. Currently only three notifications supported and they are
+     * described by the \link mqmx::message_queue::notification_flag \endlink
+     * enumerator.
+     *
+     * \note All notifications are used for the purpose of internal implementation,
+     *       but you may find them usefull for some other purposes.
+     */
     class message_queue
     {
         message_queue (const message_queue &) = delete;
@@ -23,11 +36,19 @@ namespace mqmx
 
         enum notification_flag
         {
-            data     = 0x0001, /* push operation called on this queue */
-            detached = 0x0002, /* move ctor or move assignment called on this queue */
-            closed   = 0x0004  /* destructor called on this queue */
+            data     = 0x0001, /*!< push operation called on this queue */
+            detached = 0x0002, /*!< move ctor or move assignment called on this queue
+                                * and the queue is no longer usable
+                                */
+            closed   = 0x0004  /*!< destructor called on this queue */
         };
 
+        /**
+         * \brief Interface for the listener.
+         *
+         * Provides the way for passing notifications about some changes in state
+         * of message queue object.
+         */
         struct listener
         {
             virtual ~listener () { }
@@ -37,36 +58,90 @@ namespace mqmx
         };
 
     public:
+        /**
+         * \brief Default constructor.
+         */
         message_queue (const queue_id_type = message::undefined_qid);
         ~message_queue ();
 
+        /**
+         * \brief Move constructor.
+         */
         message_queue (message_queue &&);
+
+        /**
+         * \brief Move assignment.
+         */
         message_queue & operator = (message_queue &&);
 
+        /**
+         * \brief Get ID of this message queue
+         */
         queue_id_type get_qid () const;
 
+        /**
+         * \brief Push some message to the end of the queue.
+         *
+         * \note The object of this class could be moved out and in this case push
+         *       operation will fail with status code ExitStatus::NotSupported.
+         *
+         * \retval ExitStatus::Success          if operation completed successfully
+         * \retval ExitStatus::InvalidArgument  if argument is a nullptr
+         * \retval ExitStatus::NotSupported     if message passed as a parameter doesn't belong
+         *                                      to this message queue (has different QID) or
+         *                                      message queue was moved out
+         */
         status_code push (message::upointer_type &&);
+
+        /**
+         * \brief Remove and return message from the top of the queue.
+         *
+         * \returns Pointer to the message or nullptr if queue is empty or moved out.
+         */
         message::upointer_type pop ();
 
+        /**
+         * \brief Create a message for this particular queue.
+         *
+         * \returns Pointer to a newly created message
+         */
         template <typename message_type, typename... parameters>
         message::upointer_type new_message (parameters&&... args) const
         {
             static_assert (std::is_base_of<message, message_type>::value,
-			   "Invalid message_type - should be derived from mqmx::message");
+                           "Invalid message_type - should be derived from mqmx::message");
             return message::upointer_type (
                 new message_type (get_qid (), std::forward<parameters> (args)...));
         }
 
+        /**
+         * \brief Create and push newly created message to the end of message queue.
+         *
+         * \returns The same set of status codes that could be returned from the
+         *          \link mqmx::message_queue::push \endlink method
+         */
         template <typename message_type, typename... parameters>
         status_code enqueue (parameters&&... args)
         {
             static_assert (std::is_base_of<message, message_type>::value,
-			   "Invalid message_type - should be derived from mqmx::message");
+                           "Invalid message_type - should be derived from mqmx::message");
             return push (new_message<message_type> (std::forward<parameters> (args)...));
         }
 
     public:
+        /**
+         * \brief Sets new listener for this message queue.
+         *
+         * \note By design only one listener can be set.
+         *
+         * \retval ExitStatus::Success       if operation completed successfully
+         * \retval ExitStatus::AlreadyExist  if listener is already set
+         */
         status_code set_listener (listener &);
+
+        /**
+         * \brief Removes listener.
+         */
         void clear_listener ();
 
     private:
