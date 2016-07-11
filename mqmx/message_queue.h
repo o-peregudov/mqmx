@@ -62,15 +62,31 @@ namespace mqmx
          * \brief Default constructor.
          */
         message_queue (const queue_id_type = message::undefined_qid);
+
+        /**
+         * \brief Destructor.
+         *
+         * In case some listener is set in this message queue it will be notified with
+         *       \link mqmx::message_queue::notification_flag::closed \endlink
+         *       notification.
+         */
         ~message_queue ();
 
         /**
          * \brief Move constructor.
+         *
+         * \note The listener set in the original message queue is not moved, instead
+         *       \link mqmx::message_queue::notification_flag::detached \endlink
+         *       notification will be delivered to it.
          */
         message_queue (message_queue &&);
 
         /**
          * \brief Move assignment.
+         *
+         * \note The listener set in the original message queue is not moved, instead
+         *       \link mqmx::message_queue::notification_flag::detached \endlink
+         *       notification will be delivered to it.
          */
         message_queue & operator = (message_queue &&);
 
@@ -81,6 +97,10 @@ namespace mqmx
 
         /**
          * \brief Push some message to the end of the queue.
+         *
+         * This method also delivers \link mqmx::message_queue::notification_flag::data \endlink
+         * notification in case some listener is set, but only if before this call message queue
+         * was empty. So only first push will be reported to the listener.
          *
          * \note The object of this class could be moved out and in this case push
          *       operation will fail with status code ExitStatus::NotSupported.
@@ -132,7 +152,11 @@ namespace mqmx
         /**
          * \brief Sets new listener for this message queue.
          *
-         * \note By design only one listener can be set.
+         * By design only one listener can be set.
+         *
+         * \note If message queue has some messages the newly set listener will get
+         * \link mqmx::message_queue::notification_flag::data \endlink notification
+         * immediately from this call.
          *
          * \retval ExitStatus::Success       if operation completed successfully
          * \retval ExitStatus::AlreadyExist  if listener is already set

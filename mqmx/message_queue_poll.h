@@ -126,8 +126,13 @@ namespace mqmx
         }
     };
 
-    /*
-     * NOTE: iterators should represent a sequence of pointers to message_queue
+    /**
+     * \brief Function waits for the notifications on multiple message queue.
+     *
+     * \note Iterators should represent a sequence of pointers to message_queue.
+     *
+     * \returns The list of notifications records for message queues for which
+     *          any notifications were reported.
      */
     template <typename forward_it,
               typename reference_clock_provider = wait_time_provider>
