@@ -159,33 +159,79 @@ namespace mqmx
     };
 
     /**
+     * \brief Helper class for set listener to multiple queues in RAII way.
+     *
+     * Sets given listener for each message queue from the range defined by
+     * two iterators. Iterators should represent a sequence of pointers to
+     * objects of class \link mqmx::message_queue \endlink.
+     */
+    template <typename ForwardIt>
+    class set_listener_for_each_queue
+    {
+        ForwardIt _first;
+        ForwardIt _last;
+
+        set_listener_for_each_queue (const set_listener_for_each_queue &) = delete;
+        set_listener_for_each_queue & operator = (const set_listener_for_each_queue &) = delete;
+
+        static_assert (std::is_base_of<std::forward_iterator_tag,
+                       typename std::iterator_traits<ForwardIt>::iterator_category>::value,
+                       "ForwardIterator should be used");
+
+    public:
+        /**
+         * \brief Constructor.
+         *
+         * Sets a given listener for each message queue from the range [first, last).
+         */
+        set_listener_for_each_queue (ForwardIt first,
+                                     ForwardIt last,
+                                     mqmx::message_queue::listener & listener)
+            : _first (first)
+            , _last (last)
+        {
+            std::for_each (_first, _last,
+                           [&listener](typename std::iterator_traits<ForwardIt>::reference mq)
+                           {
+                               const status_code ret_code = mq->set_listener (listener);
+                               assert (ret_code == ExitStatus::Success), ret_code;
+                           });
+        }
+
+        /**
+         * \brief Destructor.
+         *
+         * Clears listener for each message queue from the range [first, last).
+         */
+        ~set_listener_for_each_queue ()
+        {
+            std::for_each (_first, _last,
+                           [](typename std::iterator_traits<ForwardIt>::reference mq)
+                           {
+                               mq->clear_listener ();
+                           });
+        }
+    };
+
+    /**
      * \brief Function waits for the notifications on multiple message queues.
      *
-     * \note Iterators should represent a sequence of pointers to message_queue.
+     * \note Iterators should represent a sequence of pointers to objects of
+     *       class \link mqmx::message_queue \endlink.
      *
      * \returns The list of notifications records for message queues for which
      *          any notifications were reported.
      */
-    template <typename forward_it,
+    template <typename ForwardIt,
               typename reference_clock_provider = wait_time_provider>
     message_queue_poll_listener::notifications_list_type
-    poll (const forward_it ibegin, const forward_it iend,
+    poll (const ForwardIt first,
+          const ForwardIt last,
           const wait_time_provider & wtp = wait_time_provider (),
           const reference_clock_provider & rcp = wait_time_provider ())
     {
         message_queue_poll_listener listener;
-        std::for_each (ibegin, iend,
-                       [&listener](typename std::iterator_traits<forward_it>::reference mq)
-                       {
-                           const status_code ret_code = mq->set_listener (listener);
-                           assert (ret_code == ExitStatus::Success), ret_code;
-                       });
-        auto notifications = listener.wait_for_notifications (wtp, rcp);
-        std::for_each (ibegin, iend,
-                       [](typename std::iterator_traits<forward_it>::reference mq)
-                       {
-                           mq->clear_listener ();
-                       });
-        return notifications;
+        set_listener_for_each_queue<ForwardIt> set (first, last, listener);
+        return listener.wait_for_notifications (wtp, rcp);
     }
 } /* namespace mqmx */
