@@ -108,34 +108,34 @@ namespace mqmx
                              const message_queue::notification_flags_type) override;
 
     public:
-	/**
-	 * \brief Default constructor.
-	 */
+        /**
+         * \brief Default constructor.
+         */
         message_queue_poll_listener ();
 
-	/**
-	 * \brief Destructor.
-	 */
+        /**
+         * \brief Destructor.
+         */
         virtual ~message_queue_poll_listener ();
 
-	/**
-	 * \brief Get the list of notifications.
-	 */
+        /**
+         * \brief Get the list of notifications.
+         */
         notifications_list_type get_notifications () const
         {
             lock_type guard (_mutex);
             return _notifications;
         }
 
-	/**
-	 * \brief Wait for notifications.
-	 *
-	 * If the current list of notifications is empty method will block
-	 * until either timeout expires or any notification delivered.
-	 */
+        /**
+         * \brief Wait for notifications.
+         *
+         * If the current list of notifications is empty method will block
+         * until either timeout expires or any notification delivered.
+         */
         template <typename reference_clock_provider>
-        void wait_for_notifications (const wait_time_provider & wtp,
-                                     const reference_clock_provider & rcp)
+        notifications_list_type wait_for_notifications (const wait_time_provider & wtp,
+                                                        const reference_clock_provider & rcp)
         {
             lock_type guard (_mutex);
             if (_notifications.empty ())
@@ -144,15 +144,17 @@ namespace mqmx
                 if (wtp.wait_infinitely ())
                 {
                     _condition.wait (guard, pred);
-                    return;
                 }
-
-                const auto abs_time = wtp.get_time_point (rcp);
-                if (abs_time.time_since_epoch ().count () != 0)
+                else
                 {
-                    _condition.wait_until (guard, abs_time, pred);
+                    const auto abs_time = wtp.get_time_point (rcp);
+                    if (abs_time.time_since_epoch ().count () != 0)
+                    {
+                        _condition.wait_until (guard, abs_time, pred);
+                    }
                 }
             }
+            return _notifications;
         }
     };
 
@@ -178,12 +180,12 @@ namespace mqmx
                            const status_code ret_code = mq->set_listener (listener);
                            assert (ret_code == ExitStatus::Success), ret_code;
                        });
-        listener.wait_for_notifications (wtp, rcp);
+        auto notifications = listener.wait_for_notifications (wtp, rcp);
         std::for_each (ibegin, iend,
-                       [&listener](typename std::iterator_traits<forward_it>::reference mq)
+                       [](typename std::iterator_traits<forward_it>::reference mq)
                        {
                            mq->clear_listener ();
                        });
-        return listener.get_notifications ();
+        return notifications;
     }
 } /* namespace mqmx */
