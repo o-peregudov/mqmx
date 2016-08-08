@@ -46,7 +46,7 @@ namespace mqmx
         /**
          * \brief Interface for the listener.
          *
-         * Provides the way for passing notifications about some changes in state
+         * Provides the way for passing notifications about changes in state
          * of message queue object.
          */
         struct listener
@@ -66,9 +66,9 @@ namespace mqmx
         /**
          * \brief Destructor.
          *
-         * In case some listener is set in this message queue it will be notified with
-         *       \link mqmx::message_queue::notification_flag::closed \endlink
-         *       notification.
+         * In case some listener is set for this message queue it will be notified
+	 * with \link mqmx::message_queue::notification_flag::closed \endlink
+         * notification.
          */
         ~message_queue ();
 
@@ -91,7 +91,7 @@ namespace mqmx
         message_queue & operator = (message_queue &&);
 
         /**
-         * \brief Get ID of this message queue
+         * \brief Get ID of this message queue.
          */
         queue_id_type get_qid () const;
 
@@ -150,7 +150,7 @@ namespace mqmx
 
     public:
         /**
-         * \brief Sets new listener for this message queue.
+         * \Brief Sets new listener for this message queue.
          *
          * By design only one listener can be set.
          *

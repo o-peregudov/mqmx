@@ -14,6 +14,20 @@
 
 namespace mqmx
 {
+    /**
+     * \brief Listener for polling state of multiple message queues.
+     *
+     * Special listener for polling notifications from multiple message queues.
+     * Stores all notifications as a list (vector) in ascending order of message
+     * queue ID, so record about notifications from message queue with the
+     * smallest ID will be first in the list.
+     *
+     * This class doesn't poll message queues directly, but polling is done
+     * when this listener is set for some message queue.
+     * \see \link mqmx::message_queue::set_listener \endlink
+     *
+     * Class also provides the way for waiting for notifications for some time.
+     */
     class message_queue_poll_listener : public message_queue::listener
     {
         message_queue_poll_listener (const message_queue_poll_listener &) = delete;
@@ -94,9 +108,31 @@ namespace mqmx
                              const message_queue::notification_flags_type) override;
 
     public:
+	/**
+	 * \brief Default constructor.
+	 */
         message_queue_poll_listener ();
+
+	/**
+	 * \brief Destructor.
+	 */
         virtual ~message_queue_poll_listener ();
 
+	/**
+	 * \brief Get the list of notifications.
+	 */
+        notifications_list_type get_notifications () const
+        {
+            lock_type guard (_mutex);
+            return _notifications;
+        }
+
+	/**
+	 * \brief Wait for notifications.
+	 *
+	 * If the current list of notifications is empty method will block
+	 * until either timeout expires or any notification delivered.
+	 */
         template <typename reference_clock_provider>
         void wait_for_notifications (const wait_time_provider & wtp,
                                      const reference_clock_provider & rcp)
@@ -118,16 +154,10 @@ namespace mqmx
                 }
             }
         }
-
-        notifications_list_type get_notifications () const
-        {
-            lock_type guard (_mutex);
-            return _notifications;
-        }
     };
 
     /**
-     * \brief Function waits for the notifications on multiple message queue.
+     * \brief Function waits for the notifications on multiple message queues.
      *
      * \note Iterators should represent a sequence of pointers to message_queue.
      *
