@@ -1,23 +1,22 @@
 AM_CPPFLAGS = -I$(top_srcdir)
+nodist_pkginclude_HEADERS =
 
 lib_LTLIBRARIES = libmqmx.la
 libmqmx_la_LDFLAGS = -no-undefined -version-info $(MQMX_LT_VERSION)
 
-pkginclude_HEADERS =		\
-	types.h			\
-	wait_time_provider.h	\
-	message.h		\
-	message_queue.h		\
-	message_queue_poll.h    \
-	message_queue_pool.h
+pkginclude_HEADERS =
+pkginclude_HEADERS += types.h
+pkginclude_HEADERS += wait_time_provider.h
+pkginclude_HEADERS += message.h
+pkginclude_HEADERS += message_queue.h
+pkginclude_HEADERS += message_queue_poll.h
+pkginclude_HEADERS += message_queue_pool.h
 
-nodist_pkginclude_HEADERS =
-
-libmqmx_la_SOURCES =		\
-	wait_time_provider.cpp	\
-	message_queue.cpp	\
-	message_queue_poll.cpp	\
-	message_queue_pool.cpp
+libmqmx_la_SOURCES =
+libmqmx_la_SOURCES += wait_time_provider.cpp
+libmqmx_la_SOURCES += message_queue.cpp
+libmqmx_la_SOURCES += message_queue_poll.cpp
+libmqmx_la_SOURCES += message_queue_pool.cpp
 
 @CODE_COVERAGE_RULES@
 

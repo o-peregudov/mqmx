@@ -1,9 +1,11 @@
 ACLOCAL_AMFLAGS = -I m4
 
-AM_CPPFLAGS =	-I$(top_builddir)	\
-		-I$(top_srcdir)
+AM_CPPFLAGS =
+AM_CPPFLAGS += -I$(top_builddir)
+AM_CPPFLAGS += -I$(top_srcdir)
 
-check_LTLIBRARIES = libmqmx_mocks.la
+check_LTLIBRARIES =
+check_LTLIBRARIES += libmqmx_mocks.la
 libmqmx_mocks_la_SOURCES = 		\
 	fixtures/message_queue_poll.h	\
 	fixtures/message_queue_poll.cpp
@@ -11,34 +13,37 @@ libmqmx_mocks_la_SOURCES = 		\
 libmqmx_mocks_la_LIBADD = $(top_builddir)/mqmx/libmqmx.la
 libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -rpath /nowhere
 
-LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
+LDADD =
+LDADD += $(top_builddir)/mqmx/libmqmx.la
+LDADD += libmqmx_mocks.la
 
 AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(top_builddir)/test/.libs:$(top_builddir)/test:$$LD_LIBRARY_PATH; export LD_LIBRARY_PATH;
 
-TESTS =	message_queue_sanity		\
-	message_queue_listener_data_and_closed \
-	message_queue_listener_detached_because_of_move_ctor \
-	message_queue_listener_detached_because_of_move_assignment \
-	message_queue_poll_listener	\
-	message_queue_poll_sanity	\
-	message_queue_poll_initial_notifications \
-	message_queue_poll_infinite_wait \
-	message_queue_poll_absolute_timeout \
-	message_queue_poll_relative_timeout \
-	message_queue_pool
+TESTS =
+TESTS += message_queue_sanity
+TESTS += message_queue_listener_data_and_closed
+TESTS += message_queue_listener_detached_because_of_move_ctor
+TESTS += message_queue_listener_detached_because_of_move_assignment
+TESTS += message_queue_poll_listener
+TESTS += message_queue_poll_sanity
+TESTS += message_queue_poll_initial_notifications
+TESTS += message_queue_poll_infinite_wait
+TESTS += message_queue_poll_absolute_timeout
+TESTS += message_queue_poll_relative_timeout
+TESTS += message_queue_pool
 
-check_PROGRAMS =			\
-	message_queue_sanity		\
-	message_queue_listener_data_and_closed \
-	message_queue_listener_detached_because_of_move_ctor \
-	message_queue_listener_detached_because_of_move_assignment \
-	message_queue_poll_listener	\
-	message_queue_poll_sanity	\
-	message_queue_poll_initial_notifications \
-	message_queue_poll_infinite_wait \
-	message_queue_poll_absolute_timeout \
-	message_queue_poll_relative_timeout \
-	message_queue_pool
+check_PROGRAMS =
+check_PROGRAMS += message_queue_sanity
+check_PROGRAMS += message_queue_listener_data_and_closed
+check_PROGRAMS += message_queue_listener_detached_because_of_move_ctor
+check_PROGRAMS += message_queue_listener_detached_because_of_move_assignment
+check_PROGRAMS += message_queue_poll_listener
+check_PROGRAMS += message_queue_poll_sanity
+check_PROGRAMS += message_queue_poll_initial_notifications
+check_PROGRAMS += message_queue_poll_infinite_wait
+check_PROGRAMS += message_queue_poll_absolute_timeout
+check_PROGRAMS += message_queue_poll_relative_timeout
+check_PROGRAMS += message_queue_pool
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
@@ -50,4 +55,3 @@ dist-hook:
 	rm -f $(distdir)/FakeIt/.gitattributes
 	rm -f $(distdir)/FakeIt/.gitignore
 	rm -f $(distdir)/FakeIt/.gitmodules
-
