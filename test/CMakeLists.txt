@@ -1,6 +1,6 @@
 ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
-  fixtures/message_queue_poll.h
   fixtures/message_queue_poll.cpp
+  fixtures/message_queue_poll.h
 )
 
 TARGET_LINK_LIBRARIES (${PROJECT_NAME}_mocks
@@ -17,31 +17,31 @@ SET (LDADD
 )
 
 SET (TESTS
-  message_queue_sanity
   message_queue_listener_data_and_closed
-  message_queue_listener_detached_because_of_move_ctor
   message_queue_listener_detached_because_of_move_assignment
-  message_queue_poll_sanity
-  message_queue_poll_listener
-  message_queue_poll_initial_notifications
-  message_queue_poll_infinite_wait
+  message_queue_listener_detached_because_of_move_ctor
   message_queue_poll_absolute_timeout
+  message_queue_poll_infinite_wait
+  message_queue_poll_initial_notifications
+  message_queue_poll_listener
   message_queue_poll_relative_timeout
+  message_queue_poll_sanity
   message_queue_pool
+  message_queue_sanity
 )
 
 SET (check_PROGRAMS
-  message_queue_sanity
   message_queue_listener_data_and_closed
-  message_queue_listener_detached_because_of_move_ctor
   message_queue_listener_detached_because_of_move_assignment
-  message_queue_poll_sanity
-  message_queue_poll_listener
-  message_queue_poll_initial_notifications
-  message_queue_poll_infinite_wait
+  message_queue_listener_detached_because_of_move_ctor
   message_queue_poll_absolute_timeout
+  message_queue_poll_infinite_wait
+  message_queue_poll_initial_notifications
+  message_queue_poll_listener
   message_queue_poll_relative_timeout
+  message_queue_poll_sanity
   message_queue_pool
+  message_queue_sanity
 )
 
 SET (AM_DEFAULT_SOURCE_EXT ".cpp")

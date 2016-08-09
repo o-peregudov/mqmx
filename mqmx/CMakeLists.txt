@@ -1,17 +1,17 @@
 SET (MQMX_SOURCES
-  wait_time_provider.cpp
   message_queue.cpp
   message_queue_poll.cpp
   message_queue_pool.cpp
+  wait_time_provider.cpp
 )
 
 SET (MQMX_HEADERS
-  types.h
-  wait_time_provider.h
   message.h
   message_queue.h
   message_queue_poll.h
   message_queue_pool.h
+  types.h
+  wait_time_provider.h
 )
 
 ADD_LIBRARY (${PROJECT_NAME} STATIC
