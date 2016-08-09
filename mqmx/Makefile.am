@@ -5,18 +5,18 @@ lib_LTLIBRARIES = libmqmx.la
 libmqmx_la_LDFLAGS = -no-undefined -version-info $(MQMX_LT_VERSION)
 
 pkginclude_HEADERS =
-pkginclude_HEADERS += types.h
-pkginclude_HEADERS += wait_time_provider.h
 pkginclude_HEADERS += message.h
 pkginclude_HEADERS += message_queue.h
 pkginclude_HEADERS += message_queue_poll.h
 pkginclude_HEADERS += message_queue_pool.h
+pkginclude_HEADERS += types.h
+pkginclude_HEADERS += wait_time_provider.h
 
 libmqmx_la_SOURCES =
-libmqmx_la_SOURCES += wait_time_provider.cpp
 libmqmx_la_SOURCES += message_queue.cpp
 libmqmx_la_SOURCES += message_queue_poll.cpp
 libmqmx_la_SOURCES += message_queue_pool.cpp
+libmqmx_la_SOURCES += wait_time_provider.cpp
 
 @CODE_COVERAGE_RULES@
 
