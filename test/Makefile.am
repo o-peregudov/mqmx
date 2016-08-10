@@ -1,5 +1,3 @@
-ACLOCAL_AMFLAGS = -I m4
-
 AM_CPPFLAGS =
 AM_CPPFLAGS += -I$(top_builddir)
 AM_CPPFLAGS += -I$(top_srcdir)

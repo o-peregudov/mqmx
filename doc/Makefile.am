@@ -1,8 +1,6 @@
-ACLOCAL_AMFLAGS = -I m4
-
-EXTRA_DIST = \
-	CMakeLists.txt	\
-	Doxyfile.in.cmake
+EXTRA_DIST =
+EXTRA_DIST += CMakeLists.txt
+EXTRA_DIST += Doxyfile.in.cmake
 
 html-local:
 if HAVE_DOXYGEN

@@ -87,28 +87,26 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = message_queue_sanity$(EXEEXT) \
-	message_queue_listener_data_and_closed$(EXEEXT) \
-	message_queue_listener_detached_because_of_move_ctor$(EXEEXT) \
+TESTS = message_queue_listener_data_and_closed$(EXEEXT) \
 	message_queue_listener_detached_because_of_move_assignment$(EXEEXT) \
-	message_queue_poll_listener$(EXEEXT) \
-	message_queue_poll_sanity$(EXEEXT) \
-	message_queue_poll_initial_notifications$(EXEEXT) \
-	message_queue_poll_infinite_wait$(EXEEXT) \
-	message_queue_poll_absolute_timeout$(EXEEXT) \
-	message_queue_poll_relative_timeout$(EXEEXT) \
-	message_queue_pool$(EXEEXT)
-check_PROGRAMS = message_queue_sanity$(EXEEXT) \
-	message_queue_listener_data_and_closed$(EXEEXT) \
 	message_queue_listener_detached_because_of_move_ctor$(EXEEXT) \
-	message_queue_listener_detached_because_of_move_assignment$(EXEEXT) \
-	message_queue_poll_listener$(EXEEXT) \
-	message_queue_poll_sanity$(EXEEXT) \
-	message_queue_poll_initial_notifications$(EXEEXT) \
-	message_queue_poll_infinite_wait$(EXEEXT) \
 	message_queue_poll_absolute_timeout$(EXEEXT) \
+	message_queue_poll_infinite_wait$(EXEEXT) \
+	message_queue_poll_initial_notifications$(EXEEXT) \
+	message_queue_poll_listener$(EXEEXT) \
 	message_queue_poll_relative_timeout$(EXEEXT) \
-	message_queue_pool$(EXEEXT)
+	message_queue_poll_sanity$(EXEEXT) message_queue_pool$(EXEEXT) \
+	message_queue_sanity$(EXEEXT)
+check_PROGRAMS = message_queue_listener_data_and_closed$(EXEEXT) \
+	message_queue_listener_detached_because_of_move_assignment$(EXEEXT) \
+	message_queue_listener_detached_because_of_move_ctor$(EXEEXT) \
+	message_queue_poll_absolute_timeout$(EXEEXT) \
+	message_queue_poll_infinite_wait$(EXEEXT) \
+	message_queue_poll_initial_notifications$(EXEEXT) \
+	message_queue_poll_listener$(EXEEXT) \
+	message_queue_poll_relative_timeout$(EXEEXT) \
+	message_queue_poll_sanity$(EXEEXT) message_queue_pool$(EXEEXT) \
+	message_queue_sanity$(EXEEXT)
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_code_coverage.m4 \
@@ -656,13 +654,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 check_LTLIBRARIES = libmqmx_mocks.la
-libmqmx_mocks_la_SOURCES = \
-	fixtures/message_queue_poll.h	\
-	fixtures/message_queue_poll.cpp
-
+libmqmx_mocks_la_SOURCES = fixtures/message_queue_poll.cpp \
+	fixtures/message_queue_poll.h
 libmqmx_mocks_la_LIBADD = $(top_builddir)/mqmx/libmqmx.la
 libmqmx_mocks_la_LDFLAGS = -avoid-version -no-undefined -rpath /nowhere
 LDADD = $(top_builddir)/mqmx/libmqmx.la libmqmx_mocks.la
@@ -1023,23 +1018,9 @@ recheck: all $(check_LTLIBRARIES) $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-message_queue_sanity.log: message_queue_sanity$(EXEEXT)
-	@p='message_queue_sanity$(EXEEXT)'; \
-	b='message_queue_sanity'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 message_queue_listener_data_and_closed.log: message_queue_listener_data_and_closed$(EXEEXT)
 	@p='message_queue_listener_data_and_closed$(EXEEXT)'; \
 	b='message_queue_listener_data_and_closed'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-message_queue_listener_detached_because_of_move_ctor.log: message_queue_listener_detached_because_of_move_ctor$(EXEEXT)
-	@p='message_queue_listener_detached_because_of_move_ctor$(EXEEXT)'; \
-	b='message_queue_listener_detached_because_of_move_ctor'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1051,30 +1032,9 @@ message_queue_listener_detached_because_of_move_assignment.log: message_queue_li
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-message_queue_poll_listener.log: message_queue_poll_listener$(EXEEXT)
-	@p='message_queue_poll_listener$(EXEEXT)'; \
-	b='message_queue_poll_listener'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-message_queue_poll_sanity.log: message_queue_poll_sanity$(EXEEXT)
-	@p='message_queue_poll_sanity$(EXEEXT)'; \
-	b='message_queue_poll_sanity'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-message_queue_poll_initial_notifications.log: message_queue_poll_initial_notifications$(EXEEXT)
-	@p='message_queue_poll_initial_notifications$(EXEEXT)'; \
-	b='message_queue_poll_initial_notifications'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-message_queue_poll_infinite_wait.log: message_queue_poll_infinite_wait$(EXEEXT)
-	@p='message_queue_poll_infinite_wait$(EXEEXT)'; \
-	b='message_queue_poll_infinite_wait'; \
+message_queue_listener_detached_because_of_move_ctor.log: message_queue_listener_detached_because_of_move_ctor$(EXEEXT)
+	@p='message_queue_listener_detached_because_of_move_ctor$(EXEEXT)'; \
+	b='message_queue_listener_detached_because_of_move_ctor'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1086,6 +1046,27 @@ message_queue_poll_absolute_timeout.log: message_queue_poll_absolute_timeout$(EX
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_poll_infinite_wait.log: message_queue_poll_infinite_wait$(EXEEXT)
+	@p='message_queue_poll_infinite_wait$(EXEEXT)'; \
+	b='message_queue_poll_infinite_wait'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_poll_initial_notifications.log: message_queue_poll_initial_notifications$(EXEEXT)
+	@p='message_queue_poll_initial_notifications$(EXEEXT)'; \
+	b='message_queue_poll_initial_notifications'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_poll_listener.log: message_queue_poll_listener$(EXEEXT)
+	@p='message_queue_poll_listener$(EXEEXT)'; \
+	b='message_queue_poll_listener'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 message_queue_poll_relative_timeout.log: message_queue_poll_relative_timeout$(EXEEXT)
 	@p='message_queue_poll_relative_timeout$(EXEEXT)'; \
 	b='message_queue_poll_relative_timeout'; \
@@ -1093,9 +1074,23 @@ message_queue_poll_relative_timeout.log: message_queue_poll_relative_timeout$(EX
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_poll_sanity.log: message_queue_poll_sanity$(EXEEXT)
+	@p='message_queue_poll_sanity$(EXEEXT)'; \
+	b='message_queue_poll_sanity'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 message_queue_pool.log: message_queue_pool$(EXEEXT)
 	@p='message_queue_pool$(EXEEXT)'; \
 	b='message_queue_pool'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+message_queue_sanity.log: message_queue_sanity$(EXEEXT)
+	@p='message_queue_sanity$(EXEEXT)'; \
+	b='message_queue_sanity'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
