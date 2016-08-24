@@ -12,12 +12,14 @@ pkginclude_HEADERS += message_queue_poll.h
 pkginclude_HEADERS += message_queue_pool.h
 pkginclude_HEADERS += types.h
 pkginclude_HEADERS += wait_time_provider.h
+pkginclude_HEADERS += work_queue.h
 
 libmqmx_la_SOURCES =
 libmqmx_la_SOURCES += message_queue.cpp
 libmqmx_la_SOURCES += message_queue_poll.cpp
 libmqmx_la_SOURCES += message_queue_pool.cpp
 libmqmx_la_SOURCES += wait_time_provider.cpp
+libmqmx_la_SOURCES += work_queue.cpp
 
 @CODE_COVERAGE_RULES@
 
