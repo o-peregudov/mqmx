@@ -29,6 +29,7 @@ TESTS += message_queue_poll_relative_timeout
 TESTS += message_queue_poll_sanity
 TESTS += message_queue_pool
 TESTS += message_queue_sanity
+TESTS += work_queue_sanity
 
 check_PROGRAMS =
 check_PROGRAMS += message_queue_listener_data_and_closed
@@ -42,6 +43,7 @@ check_PROGRAMS += message_queue_poll_relative_timeout
 check_PROGRAMS += message_queue_poll_sanity
 check_PROGRAMS += message_queue_pool
 check_PROGRAMS += message_queue_sanity
+check_PROGRAMS += work_queue_sanity
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
