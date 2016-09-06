@@ -1,6 +1,8 @@
 ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
   fixtures/message_queue_poll.cpp
   fixtures/message_queue_poll.h
+  helpers/work_queue_for_tests.cpp
+  helpers/work_queue_for_tests.h
 )
 
 TARGET_LINK_LIBRARIES (${PROJECT_NAME}_mocks
