@@ -13,7 +13,7 @@ int main ()
     const mqmx::message_id_type defMID = 10;
 
     std::thread thr ([&] {
-            std::this_thread::sleep_for (std::chrono::milliseconds (50));
+            std::this_thread::yield ();
             fixture.mq[idx]->enqueue<mqmx::message> (defMID);
         });
 
