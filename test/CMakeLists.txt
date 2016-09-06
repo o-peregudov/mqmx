@@ -31,6 +31,7 @@ SET (TESTS
   message_queue_pool
   message_queue_sanity
   work_queue_cancel_work
+  work_queue_for_tests_schedule_work
   work_queue_sanity
   work_queue_schedule_work
   work_queue_schedule_work_periodic
@@ -50,6 +51,7 @@ SET (check_PROGRAMS
   message_queue_pool
   message_queue_sanity
   work_queue_cancel_work
+  work_queue_for_tests_schedule_work
   work_queue_sanity
   work_queue_schedule_work
   work_queue_schedule_work_periodic
