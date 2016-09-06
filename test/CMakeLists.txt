@@ -29,6 +29,7 @@ SET (TESTS
   message_queue_pool
   message_queue_sanity
   work_queue_sanity
+  work_queue_schedule_work
 )
 
 SET (check_PROGRAMS
@@ -44,6 +45,7 @@ SET (check_PROGRAMS
   message_queue_pool
   message_queue_sanity
   work_queue_sanity
+  work_queue_schedule_work
 )
 
 SET (AM_DEFAULT_SOURCE_EXT ".cpp")
