@@ -225,9 +225,8 @@ namespace mqmx
         auto rescheduled_work_time_point = get_empty_time_point ();
         try
         {
-            rec.first.work (rec.second);
-
-            const bool rescheduling_needed = (0 < rec.first.period.count ());
+            const bool rescheduling_needed =
+                rec.first.work (rec.second) && (0 < rec.first.period.count ());
             if (rescheduling_needed)
                 rescheduled_work_time_point = rec.first.time_point + rec.first.period;
         }

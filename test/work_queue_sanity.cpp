@@ -11,7 +11,9 @@ int main ()
     assert (sut.is_idle ());
     assert (sut.get_nearest_time_point ().time_since_epoch ().count () == 0);
 
-    auto dummy_work = [](const work_queue::work_id_type){};
+    auto dummy_work = [](const work_queue::work_id_type){
+        return true;
+    };
 
     status_code ec = ExitStatus::Success;
     work_queue::work_id_type work_id = work_queue::INVALID_WORK_ID;

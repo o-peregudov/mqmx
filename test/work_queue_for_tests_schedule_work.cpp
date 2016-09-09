@@ -7,7 +7,7 @@
 
 struct work_interface
 {
-    virtual void do_something (const mqmx::work_queue::work_id_type) = 0;
+    virtual bool do_something (const mqmx::work_queue::work_id_type) = 0;
     virtual ~work_interface () { }
 };
 
@@ -18,7 +18,7 @@ int main ()
     using mock_type = Mock<work_interface>;
 
     mock_type mock;
-    Fake (Method (mock, do_something));
+    When (Method (mock, do_something)).AlwaysReturn (true);
     {
         helpers::work_queue_for_tests sut;
 

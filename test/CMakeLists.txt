@@ -33,6 +33,7 @@ SET (TESTS
   work_queue_cancel_work
   work_queue_for_tests_cancel_client_works
   work_queue_for_tests_cancel_work
+  work_queue_for_tests_rescheduling_control
   work_queue_for_tests_schedule_work
   work_queue_for_tests_schedule_work_periodic
   work_queue_for_tests_update_work
@@ -57,6 +58,7 @@ SET (check_PROGRAMS
   work_queue_cancel_work
   work_queue_for_tests_cancel_client_works
   work_queue_for_tests_cancel_work
+  work_queue_for_tests_rescheduling_control
   work_queue_for_tests_schedule_work
   work_queue_for_tests_schedule_work_periodic
   work_queue_for_tests_update_work

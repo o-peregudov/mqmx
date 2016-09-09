@@ -43,7 +43,7 @@ namespace mqmx
         using upointer_type     = std::unique_ptr<work_queue>;
         using client_id_type    = unsigned long;
         using work_id_type      = unsigned long;
-        using work_pointer_type = std::function<void (const work_id_type)>;
+        using work_pointer_type = std::function<bool (const work_id_type)>;
 
         static const client_id_type INVALID_CLIENT_ID;
         static const work_id_type   INVALID_WORK_ID;

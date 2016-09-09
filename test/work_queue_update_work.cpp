@@ -7,7 +7,7 @@
 
 struct work_interface
 {
-    virtual void do_something (const mqmx::work_queue::work_id_type) = 0;
+    virtual bool do_something (const mqmx::work_queue::work_id_type) = 0;
     virtual ~work_interface () { }
 };
 
@@ -20,11 +20,12 @@ int main ()
     mock_type mock;
     mock_type mock2;
     crs::semaphore sem;
-    Fake (Method (mock, do_something));
+    When (Method (mock, do_something)).AlwaysReturn (true);
     When (Method (mock2, do_something)).Do(
         [&sem](const mqmx::work_queue::work_id_type)
         {
             sem.post ();
+            return true;
         });
     {
         mqmx::work_queue sut;

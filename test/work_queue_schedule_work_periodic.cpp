@@ -7,7 +7,7 @@
 
 struct work_interface
 {
-    virtual void do_something (const mqmx::work_queue::work_id_type) = 0;
+    virtual bool do_something (const mqmx::work_queue::work_id_type) = 0;
     virtual ~work_interface () { }
 };
 
@@ -28,8 +28,9 @@ int main ()
             if (--ninvocations == 0)
             {
                 sem.post ();
-                throw int (0);
+                return false;
             }
+            return true;
         });
     {
         work_queue sut;

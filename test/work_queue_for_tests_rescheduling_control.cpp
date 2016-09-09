@@ -30,9 +30,15 @@ int main ()
     using work_mock_type = Mock<work_interface>;
     using sync_mock_type = Mock<sync_interface>;
 
+    const size_t nrepetitions = 5;
+    size_t ninvocations = 0;
+
     work_mock_type work_mock;
     sync_mock_type sync_mock;
-    When (Method (work_mock, do_something)).AlwaysReturn (true);
+    When (Method (work_mock, do_something)).AlwaysDo (
+        [&ninvocations, nrepetitions](const work_queue::work_id_type){
+            return (++ninvocations < nrepetitions);
+        });
     Fake (Method (sync_mock, do_something));
     {
         helpers::work_queue_for_tests sut (
@@ -57,8 +63,7 @@ int main ()
         assert (ec == ExitStatus::Success);
         assert (work_id != work_queue::INVALID_WORK_ID);
 
-        const size_t nrepetitions = 5;
-        sut.forward_time (nrepetitions * execution_period);
+        sut.forward_time ((nrepetitions + 2) * execution_period);
 
         Verify (Method (work_mock, do_something).Using (work_id) +
                 Method (sync_mock, do_something).Using (work_id, _))
