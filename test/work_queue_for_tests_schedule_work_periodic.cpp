@@ -35,7 +35,7 @@ int main ()
     When (Method (work_mock, do_something)).AlwaysReturn (true);
     Fake (Method (sync_mock, do_something));
     {
-        helpers::work_queue_for_tests sut (
+        testing::work_queue_for_tests sut (
             std::bind (&sync_interface::do_something,
                        &(sync_mock.get ()),
                        std::placeholders::_1,

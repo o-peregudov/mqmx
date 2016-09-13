@@ -1,6 +1,8 @@
 #include "test/helpers/work_queue_for_tests.h"
 
-namespace helpers
+namespace mqmx
+{
+namespace testing
 {
     work_queue_for_tests::work_queue_for_tests (const sync_function_type & sync_func)
         : mqmx::work_queue ()
@@ -120,4 +122,5 @@ namespace helpers
         }
         return result;
     }
-} /* namespace helpers */
+} /* namespace testing */
+} /* namespace mqmx */

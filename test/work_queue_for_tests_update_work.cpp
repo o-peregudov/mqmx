@@ -24,7 +24,7 @@ int main ()
     When (Method (mock, do_something)).AlwaysReturn (true);
     When (Method (mock2, do_something)).AlwaysReturn (true);
     {
-        helpers::work_queue_for_tests sut;
+        testing::work_queue_for_tests sut;
 
         status_code ec = ExitStatus::Success;
         work_queue::work_id_type work_id = work_queue::INVALID_WORK_ID;

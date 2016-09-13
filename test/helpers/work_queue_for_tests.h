@@ -3,7 +3,9 @@
 #include <mqmx/libexport.h>
 #include <mqmx/work_queue.h>
 
-namespace helpers
+namespace mqmx
+{
+namespace testing
 {
     class MQMX_EXPORT work_queue_for_tests : public mqmx::work_queue
     {
@@ -48,4 +50,5 @@ namespace helpers
         forward_time (const mqmx::work_queue::duration_type &,
 		      const bool wait_for_completion = true);
     };
-} /* namespace helpers */
+} /* namespace testing */
+} /* namespace mqmx */
