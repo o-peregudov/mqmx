@@ -225,14 +225,6 @@ namespace mqmx
          */
         virtual time_point_type get_current_time_point () const;
 
-        /**
-         * \brief Checks, whether time point is empty (set to epoch).
-         *
-         * \retval true if time point is set to epoch (empty)
-         * \retval false otherwise
-         */
-        bool is_time_point_empty (const time_point_type &) const;
-
     protected:
         /**
          * \brief Cleares internal container change flag.

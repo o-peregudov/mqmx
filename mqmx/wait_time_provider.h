@@ -11,6 +11,18 @@ namespace mqmx
     struct MQMX_EXPORT infinite_wait_time {};
 
     /**
+     * \brief Checks, whether time point is empty (set to epoch).
+     *
+     * \retval true if time point is set to epoch (empty)
+     * \retval false otherwise
+     */
+    template <typename Clock, typename Duration = typename Clock::duration>
+    bool is_time_point_empty (const std::chrono::time_point<Clock, Duration> & tp)
+    {
+        return (0 == tp.time_since_epoch ().count ());
+    }
+
+    /**
      * \brief Auxiliary class for handling wait time intervals.
      *
      * Class has a couple of converting constructors and therefore it could be
@@ -109,20 +121,19 @@ namespace mqmx
          * This version of getter uses custom reference time provider for getting
          * current-time. So in general it provides the way for modifications of
          * time point for waiting in case it is specified as a relative time (duration).
-	 *
-	 * This extra functionality could be used, for example, in tests, where
-	 * precies control of timeouts is required.
+         *
+         * This extra functionality could be used, for example, in tests, where
+         * precies control of timeouts is required.
          */
         template <class reference_clock_provider>
         time_point_type get_time_point (const reference_clock_provider & rcp) const
         {
-            if ((_abs_time.time_since_epoch ().count () == 0) &&
-                (_rel_time.count () == 0))
+            if (is_time_point_empty (_abs_time) && (_rel_time.count () == 0))
             {
                 return time_point_type ();
             }
 
-            return ((_abs_time.time_since_epoch ().count () == 0)
+            return (is_time_point_empty (_abs_time)
                     ? (rcp.get_current_time_point () + _rel_time)
                     : _abs_time);
         }

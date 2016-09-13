@@ -65,7 +65,7 @@ namespace helpers
         const mqmx::work_queue::time_point_type nearest_time_point =
             get_nearest_time_point ();
 
-        if (is_time_point_empty (nearest_time_point))
+        if (mqmx::is_time_point_empty (nearest_time_point))
             forward_time (get_current_time_point (), wait_for_completion);
         else
             forward_time (nearest_time_point, wait_for_completion);

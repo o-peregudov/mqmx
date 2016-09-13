@@ -9,7 +9,7 @@ int main ()
 
     work_queue sut;
     assert (sut.is_idle ());
-    assert (sut.get_nearest_time_point ().time_since_epoch ().count () == 0);
+    assert (is_time_point_empty (sut.get_nearest_time_point ()));
 
     auto dummy_work = [](const work_queue::work_id_type){
         return true;

@@ -241,11 +241,6 @@ namespace mqmx
         return time_point_type ();
     }
 
-    bool work_queue::is_time_point_empty (const work_queue::time_point_type & tp) const
-    {
-        return (0 == tp.time_since_epoch ().count ());
-    }
-
     void work_queue::worker ()
     {
         lock_type guard (_mutex);
