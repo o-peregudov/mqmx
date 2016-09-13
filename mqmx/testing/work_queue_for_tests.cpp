@@ -1,4 +1,4 @@
-#include "test/helpers/work_queue_for_tests.h"
+#include <mqmx/testing/work_queue_for_tests.h>
 
 namespace mqmx
 {

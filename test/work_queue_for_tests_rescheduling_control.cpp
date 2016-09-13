@@ -1,6 +1,5 @@
-#include "mqmx/work_queue.h"
+#include "mqmx/testing/work_queue_for_tests.h"
 #include "test/FakeIt/single_header/standalone/fakeit.hpp"
-#include "test/helpers/work_queue_for_tests.h"
 
 #undef NDEBUG
 #include <cassert>
