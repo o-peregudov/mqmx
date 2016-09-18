@@ -227,7 +227,12 @@ namespace mqmx
     work_queue::time_point_type work_queue::get_nearest_time_point () const
     {
         lock_type guard (_mutex);
+        return get_nearest_time_point (guard);
+    }
 
+    work_queue::time_point_type work_queue::get_nearest_time_point (
+        lock_type & guard) const
+    {
         if (is_container_empty (guard))
             return get_empty_time_point ();
 

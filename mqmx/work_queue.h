@@ -321,7 +321,7 @@ namespace mqmx
          * \brief Terminates worker thread immediately, but gently.
          *
          * All works, which were present in queue, but were not processed
-	 * will be discarded.
+         * will be discarded.
          *
          * \note New works cannot be put into queue after this call.
          *
@@ -330,12 +330,33 @@ namespace mqmx
          */
         status_code kill_worker ();
 
+        /**
+         * \brief Get nearest time point.
+         *
+         * Protected version of the same call could be called when main
+         * mutex acquired.
+         *
+         * \returns time point of nearest work item to be executed or empty time
+         *          point (set to epoch) if there are no events scheduled
+         */
+        time_point_type get_nearest_time_point (lock_type & guard) const;
+
+        /**
+         * \brief Wakes up worker waiting for new work or for time point.
+         *
+         * Any change of internal container should be processed correctly,
+         * so worker has to be restarted every time some change in intarnal
+         * container happened.
+         *
+         * \attention Method is called with main mutex acquired.
+         */
+        void signal_container_change (lock_type & guard);
+
     private:
         std::pair<status_code, work_id_type> post_work (lock_type &, wq_item);
         time_point_type get_empty_time_point () const;
 
         bool wait_for_some_work (lock_type &);
-        void signal_container_change (lock_type &);
         void make_heap_and_notify_worker (lock_type &);
         bool wq_item_find_and_replace (
             lock_type &, const work_id_type, const wq_item & new_item);

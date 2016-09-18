@@ -2,6 +2,7 @@
 
 #include <mqmx/libexport.h>
 #include <mqmx/work_queue.h>
+#include <crs/semaphore.h>
 
 namespace mqmx
 {
@@ -11,15 +12,15 @@ namespace testing
     {
     public:
         typedef std::function<void (
-	    const work_queue::work_id_type,
-	    const work_queue::time_point_type)> sync_function_type;
+            const work_queue::work_id_type,
+            const work_queue::time_point_type)> sync_function_type;
 
     private:
         work_queue::time_point_type _current_time_point;
-        bool _time_point_changed;
 
-        work_queue::condvar_type _time_forwarding_condition;
-        bool _time_forwarding_completed;
+        bool _time_forwarding_flag;
+        crs::semaphore _time_forwarding_completed;
+        work_queue::client_id_type _time_forwarding_client_id;
 
         sync_function_type _sync_function;
 
@@ -28,11 +29,14 @@ namespace testing
 
         virtual bool
         wait_for_time_point (work_queue::lock_type &,
-			     const work_queue::time_point_type &) override;
+                             const work_queue::time_point_type &) override;
 
         virtual work_queue::time_point_type
         execute_work (work_queue::lock_type &,
-		      const work_queue::record_type &) override;
+                      const work_queue::record_type &) override;
+
+        bool wait_for_time_forwarding_completion (
+            const work_queue::time_point_type final_time_point);
 
     public:
         work_queue_for_tests (const sync_function_type & = sync_function_type ());
@@ -40,15 +44,13 @@ namespace testing
 
         virtual work_queue::time_point_type get_current_time_point () const override;
 
-        void forward_time (const bool wait_for_completion = true);
+        bool forward_time (const bool wait_for_completion = true);
 
-        work_queue::time_point_type
-        forward_time (const work_queue::time_point_type &,
-		      const bool wait_for_completion = true);
+        bool forward_time (const work_queue::time_point_type &,
+                           const bool wait_for_completion = true);
 
-        work_queue::time_point_type
-        forward_time (const work_queue::duration_type &,
-		      const bool wait_for_completion = true);
+        bool forward_time (const work_queue::duration_type &,
+                           const bool wait_for_completion = true);
     };
 } /* namespace testing */
 } /* namespace mqmx */

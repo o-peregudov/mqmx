@@ -7,12 +7,13 @@ namespace testing
     work_queue_for_tests::work_queue_for_tests (const sync_function_type & sync_func)
         : work_queue (work_queue::dont_start_worker ())
         , _current_time_point (work_queue::clock_type::now ())
-        , _time_point_changed (false)
-        , _time_forwarding_condition ()
-        , _time_forwarding_completed (false)
+        , _time_forwarding_flag (false)
+        , _time_forwarding_completed ()
+        , _time_forwarding_client_id (work_queue::INVALID_CLIENT_ID)
         , _sync_function (sync_func)
     {
-	start_worker ();
+        _time_forwarding_client_id = get_client_id ();
+        start_worker ();
     }
 
     work_queue_for_tests::~work_queue_for_tests ()
@@ -20,57 +21,67 @@ namespace testing
         kill_worker ();
     }
 
-    work_queue::time_point_type work_queue_for_tests::forward_time (
+    bool work_queue_for_tests::wait_for_time_forwarding_completion (
+        const work_queue::time_point_type final_time_point)
+    {
+        status_code ec = ExitStatus::Success;
+        work_queue::work_id_type fwork_id = work_queue::INVALID_WORK_ID;
+        std::tie (ec, fwork_id) = schedule_work (
+            _time_forwarding_client_id,
+            [this](const work_queue::work_id_type) {
+                _time_forwarding_flag = true;
+                return false;
+            },
+            final_time_point);
+
+        if (ec == ExitStatus::Success)
+        {
+            _time_forwarding_completed.wait ();
+            return true;
+        }
+        return false;
+    }
+
+    bool work_queue_for_tests::forward_time (
         const work_queue::time_point_type & tp, const bool wait_for_completion)
     {
         work_queue::lock_type guard (_mutex);
-        const work_queue::time_point_type old_time_point = _current_time_point;
-
-        _current_time_point = tp;
-
-        _time_point_changed = true;
-        _container_change_condition.notify_one ();
+        work_queue::time_point_type dst_time_point = (_current_time_point = tp);
 
         if (wait_for_completion)
         {
-            _time_forwarding_completed = false;
-            _time_forwarding_condition.wait (guard, [&]{
-                    return (_time_forwarding_completed || is_container_empty (guard));
-                });
+            guard.unlock ();
+            return wait_for_time_forwarding_completion (dst_time_point);
         }
-        return old_time_point;
+
+        signal_container_change (guard);
+        return true;
     }
 
-    work_queue::time_point_type work_queue_for_tests::forward_time (
+    bool work_queue_for_tests::forward_time (
         const work_queue::duration_type & rt, const bool wait_for_completion)
     {
         work_queue::lock_type guard (_mutex);
-        const work_queue::time_point_type old_time_point = _current_time_point;
-
-        _current_time_point += rt;
-
-        _time_point_changed = true;
-        _container_change_condition.notify_one ();
+        work_queue::time_point_type dst_time_point = (_current_time_point += rt);
 
         if (wait_for_completion)
         {
-            _time_forwarding_completed = false;
-            _time_forwarding_condition.wait (guard, [&]{
-                    return (_time_forwarding_completed || is_container_empty (guard));
-                });
+            guard.unlock ();
+            return wait_for_time_forwarding_completion (dst_time_point);
         }
-        return old_time_point;
+
+        signal_container_change (guard);
+        return true;
     }
 
-    void work_queue_for_tests::forward_time (const bool wait_for_completion)
+    bool work_queue_for_tests::forward_time (const bool wait_for_completion)
     {
         const work_queue::time_point_type nearest_time_point =
             get_nearest_time_point ();
-
-        if (is_time_point_empty (nearest_time_point))
-            forward_time (get_current_time_point (), wait_for_completion);
-        else
-            forward_time (nearest_time_point, wait_for_completion);
+        return forward_time (is_time_point_empty (nearest_time_point)
+                             ? get_current_time_point ()
+                             : nearest_time_point,
+                             wait_for_completion);
     }
 
     work_queue::time_point_type work_queue_for_tests::get_current_time_point () const
@@ -81,8 +92,6 @@ namespace testing
 
     void work_queue_for_tests::signal_going_to_idle (work_queue::lock_type &)
     {
-        _time_forwarding_completed = true;
-        _time_forwarding_condition.notify_one ();
     }
 
     bool work_queue_for_tests::wait_for_time_point (
@@ -91,14 +100,10 @@ namespace testing
         if (timepoint <= _current_time_point)
             return true;
 
-        signal_going_to_idle (guard);
-
         _container_change_condition.wait (guard, [&]{
-                return (_time_point_changed || get_container_change_flag (guard));
+                return get_container_change_flag (guard);
             });
-
         reset_container_change_flag (guard);
-        _time_point_changed = false;
         return false;
     }
 
@@ -106,7 +111,16 @@ namespace testing
         work_queue::lock_type & guard, const work_queue::record_type & rec)
     {
         const auto result = work_queue::execute_work (guard, rec);
-        if (_sync_function)
+        if (_time_forwarding_flag)
+        {
+            _time_forwarding_flag = false;
+            const auto next_tp = get_nearest_time_point (guard);
+            if (is_time_point_empty (next_tp) || (_current_time_point < next_tp))
+                _time_forwarding_completed.post ();
+            else
+                return _current_time_point;
+        }
+        else if (_sync_function)
         {
             guard.unlock ();
             try
