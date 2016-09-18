@@ -37,8 +37,7 @@ namespace mqmx
         , _container_change_flag (false)
         , _worker_stopped_flag (false)
         , _worker ([this]{ this->worker (); })
-    {
-    }
+    { }
 
     work_queue::~work_queue ()
     {
@@ -214,7 +213,9 @@ namespace mqmx
         if (is_container_empty (guard))
             signal_going_to_idle (guard);
 
-        _container_change_condition.wait (guard, [&]{ return !is_container_empty (guard); });
+        _container_change_condition.wait (guard, [&]{
+                return !is_container_empty (guard);
+            });
         return static_cast<bool> (_wq_item_container.front ().first.work);
     }
 
