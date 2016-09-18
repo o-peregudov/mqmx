@@ -106,7 +106,7 @@ namespace mqmx
         _container_change_flag = false;
     }
 
-    void work_queue::signal_container_change (work_queue::lock_type &)
+    void work_queue::signal_container_change (work_queue::lock_type & /*guard*/)
     {
         _container_change_flag = true;
         _container_change_condition.notify_one ();
@@ -204,7 +204,7 @@ namespace mqmx
         return _wq_item_container.front ().first.time_point;
     }
 
-    void work_queue::signal_going_to_idle (work_queue::lock_type &)
+    void work_queue::signal_going_to_idle (work_queue::lock_type & /*guard*/)
     {
         /* derived class can use this */
     }
@@ -218,7 +218,7 @@ namespace mqmx
         return static_cast<bool> (_wq_item_container.front ().first.work);
     }
 
-    bool work_queue::get_container_change_flag (work_queue::lock_type &/*guard*/) const
+    bool work_queue::get_container_change_flag (work_queue::lock_type & /*guard*/) const
     {
         return _container_change_flag;
     }
@@ -237,7 +237,7 @@ namespace mqmx
     }
 
     work_queue::time_point_type work_queue::execute_work (
-        lock_type &, const work_queue::record_type & rec)
+        lock_type & /*guard*/, const work_queue::record_type & rec)
     {
         auto rescheduled_work_time_point = get_empty_time_point ();
         try
@@ -344,7 +344,7 @@ namespace mqmx
         return clock_type::now ();
     }
 
-    bool work_queue::is_container_empty (work_queue::lock_type &) const
+    bool work_queue::is_container_empty (work_queue::lock_type & /*guard*/) const
     {
         return _wq_item_container.empty ();
     }
