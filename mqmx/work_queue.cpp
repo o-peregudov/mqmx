@@ -126,6 +126,20 @@ namespace mqmx
         signal_container_change (guard);
     }
 
+    bool work_queue::wq_item_find_and_replace (
+        lock_type & /*guard*/, const work_id_type work_id, const wq_item & new_item)
+    {
+        for (auto & elem : _wq_item_container)
+        {
+            if (elem.second == work_id)
+            {
+                elem.first = new_item;
+                return true;
+            }
+        }
+        return false;
+    }
+
     status_code work_queue::update_work (
         const work_id_type work_id,
         const client_id_type client_id,
@@ -141,17 +155,28 @@ namespace mqmx
         if (_worker_stopped_flag)
             return ExitStatus::NotAllowed;
 
+        if (wq_item_find_and_replace (
+                guard, work_id, {start_time, client_id, work, repeat_period}))
+        {
+            make_heap_and_notify_worker (guard);
+            return ExitStatus::Success;
+        }
+        return ExitStatus::NotFound;
+    }
+
+    bool work_queue::wq_item_find_and_remove (
+        lock_type & /*guard*/, const work_id_type work_id)
+    {
         for (auto & elem : _wq_item_container)
         {
             if (elem.second == work_id)
             {
-                elem.first = {start_time, client_id, work, repeat_period};
-                make_heap_and_notify_worker (guard);
-                return ExitStatus::Success;
+                std::swap (elem, _wq_item_container.back ());
+                _wq_item_container.pop_back ();
+                return true;
             }
         }
-
-        return ExitStatus::NotFound;
+        return false;
     }
 
     status_code work_queue::cancel_work (const work_queue::work_id_type work_id)
@@ -161,18 +186,11 @@ namespace mqmx
         if (_worker_stopped_flag)
             return ExitStatus::NotAllowed;
 
-        for (auto & elem : _wq_item_container)
+        if (wq_item_find_and_remove (guard, work_id))
         {
-            if (elem.second == work_id)
-            {
-                std::swap (elem, _wq_item_container.back ());
-                _wq_item_container.pop_back ();
-
-                make_heap_and_notify_worker (guard);
-                return ExitStatus::Success;
-            }
+            make_heap_and_notify_worker (guard);
+            return ExitStatus::Success;
         }
-
         return ExitStatus::NotFound;
     }
 
@@ -208,10 +226,9 @@ namespace mqmx
     bool work_queue::wait_for_time_point (
         work_queue::lock_type & guard, const work_queue::time_point_type & timepoint)
     {
-        if (_container_change_condition.wait_until (guard, timepoint,
-                                   [&]{
-                                       return get_container_change_flag (guard);
-                                   }))
+        if (_container_change_condition.wait_until (guard, timepoint, [&]{
+		    return get_container_change_flag (guard);
+		}))
         {
             reset_container_change_flag (guard);
             return false;
@@ -277,13 +294,9 @@ namespace mqmx
         }
     }
 
-    status_code work_queue::cancel_client_works (const work_queue::client_id_type client_id)
+    bool work_queue::wq_item_find_and_remove_all (
+        lock_type & /*guard*/, const client_id_type client_id)
     {
-        lock_type guard (_mutex);
-
-        if (_worker_stopped_flag)
-            return ExitStatus::NotAllowed;
-
         auto is_client_predicate = [client_id](const record_type & r){
             return (r.first.client_id == client_id);
         };
@@ -292,12 +305,28 @@ namespace mqmx
             std::remove_if (std::begin (_wq_item_container),
                             std::end (_wq_item_container),
                             is_client_predicate);
-        if (new_end == std::end (_wq_item_container))
-            return ExitStatus::NotFound;
 
-        _wq_item_container.erase (new_end, _wq_item_container.end ());
-        make_heap_and_notify_worker (guard);
-        return ExitStatus::Success;
+        if (new_end != std::end (_wq_item_container))
+        {
+            _wq_item_container.erase (new_end, _wq_item_container.end ());
+            return true;
+        }
+        return false;
+    }
+
+    status_code work_queue::cancel_client_works (const work_queue::client_id_type client_id)
+    {
+        lock_type guard (_mutex);
+
+        if (_worker_stopped_flag)
+            return ExitStatus::NotAllowed;
+
+        if (wq_item_find_and_remove_all (guard, client_id))
+        {
+            make_heap_and_notify_worker (guard);
+            return ExitStatus::Success;
+        }
+        return ExitStatus::NotFound;
     }
 
     work_queue::client_id_type work_queue::get_client_id ()

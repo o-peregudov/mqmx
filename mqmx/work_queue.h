@@ -310,6 +310,10 @@ namespace mqmx
         bool wait_for_some_work (lock_type &);
         void signal_container_change (lock_type &);
         void make_heap_and_notify_worker (lock_type &);
+        bool wq_item_find_and_replace (
+            lock_type &, const work_id_type, const wq_item & new_item);
+        bool wq_item_find_and_remove (lock_type &, const work_id_type);
+        bool wq_item_find_and_remove_all (lock_type &, const client_id_type);
         bool signal_worker_to_stop ();
         void worker ();
 
