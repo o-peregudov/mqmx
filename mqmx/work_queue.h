@@ -90,6 +90,20 @@ namespace mqmx
             }
         };
 
+        /**
+         * \brief Data structure needed to call protected constructor.
+         */
+        struct dont_start_worker {};
+
+        /**
+         * \brief Protected constructor.
+         *
+         * Initializes all internal data members but don't start internal
+         * worker thread. This variant might be needed for derived classes
+         * to avoid possible data race in accessing vtable.
+         */
+        work_queue (const dont_start_worker);
+
     public:
         /**
          * \brief Default constructor.
@@ -114,19 +128,6 @@ namespace mqmx
          * scheduled (i.e. internal queue is empty) or not.
          */
         bool is_idle () const;
-
-        /**
-         * \brief Terminates worker thread immediately, but gently.
-         *
-         * All works, which were present in queue, but were not processed will
-         * be discarded.
-         *
-         * \note
-         *  - you cannot put new works into queue after this call;
-         *  - this is kind of final call, because there are no possibility to
-         *    restart (recreate) internal worker thread after this call.
-         */
-        void kill_worker ();
 
         /**
          * \brief Schedule new work for asynchronous execution.
@@ -302,6 +303,32 @@ namespace mqmx
          */
         virtual time_point_type execute_work (
             lock_type & guard, const record_type & record);
+
+        /**
+         * \brief Start worker thread.
+         *
+         * Should be called from constructor of derived class at the very end
+         * of all initializations.
+         *
+         * \note New works cannot be put into queue before this call.
+         *
+         * \retval ExitStatus::NotAllowed if worker is already running
+         * \retval ExitStatus::Success if worker has been started successfully
+         */
+        status_code start_worker ();
+
+        /**
+         * \brief Terminates worker thread immediately, but gently.
+         *
+         * All works, which were present in queue, but were not processed
+	 * will be discarded.
+         *
+         * \note New works cannot be put into queue after this call.
+         *
+         * \retval ExitStatus::NotAllowed if worker is already stopped
+         * \retval ExitStatus::Success if worker has been stopped successfully
+         */
+        status_code kill_worker ();
 
     private:
         std::pair<status_code, work_id_type> post_work (lock_type &, wq_item);

@@ -53,23 +53,5 @@ int main ()
     ec = sut.cancel_client_works (client_id);
     assert (ec == ExitStatus::NotFound);
 
-    sut.kill_worker ();
-
-    std::tie (ec, work_id) = sut.schedule_work (client_id, dummy_work);
-    assert (ec == ExitStatus::NotAllowed);
-
-    ec = sut.update_work (work_queue::INVALID_WORK_ID,
-                          client_id,
-                          dummy_work,
-                          std::chrono::steady_clock::now (),
-                          std::chrono::seconds (0));
-    assert (ec == ExitStatus::NotAllowed);
-
-    ec = sut.cancel_work (work_queue::INVALID_WORK_ID);
-    assert (ec == ExitStatus::NotAllowed);
-
-    ec = sut.cancel_client_works (client_id);
-    assert (ec == ExitStatus::NotAllowed);
-
     return 0;
 }

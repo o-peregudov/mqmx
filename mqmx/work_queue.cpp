@@ -29,14 +29,20 @@ namespace mqmx
     { }
 
     work_queue::work_queue ()
+        : work_queue (dont_start_worker ())
+    {
+        start_worker ();
+    }
+
+    work_queue::work_queue (const dont_start_worker)
         : _next_work_id (INVALID_WORK_ID)
         , _next_client_id (INVALID_CLIENT_ID)
         , _mutex ()
         , _container_change_condition ()
         , _wq_item_container ()
         , _container_change_flag (false)
-        , _worker_stopped_flag (false)
-        , _worker ([this]{ this->worker (); })
+        , _worker_stopped_flag (true)
+        , _worker ()
     { }
 
     work_queue::~work_queue ()
@@ -95,9 +101,16 @@ namespace mqmx
             return false;
 
         _wq_item_container.clear ();
-        post_work (guard, wq_item ());
-        _worker_stopped_flag = true;
-        return true;
+
+        status_code sc = ExitStatus::Success;
+        work_id_type work_id = INVALID_WORK_ID;
+        std::tie (sc, work_id) = post_work (guard, wq_item ());
+        if (sc == ExitStatus::Success)
+        {
+            _worker_stopped_flag = true;
+            return true;
+        }
+        return false;
     }
 
     void work_queue::reset_container_change_flag (work_queue::lock_type & /*guard*/)
@@ -111,10 +124,28 @@ namespace mqmx
         _container_change_condition.notify_one ();
     }
 
-    void work_queue::kill_worker ()
+    status_code work_queue::start_worker ()
+    {
+        lock_type guard (_mutex);
+
+        if (!_worker_stopped_flag)
+            return ExitStatus::NotAllowed;
+
+        std::thread wrk ([this]{ worker (); });
+        std::swap (wrk, _worker);
+
+        _worker_stopped_flag = false;
+        return ExitStatus::Success;
+    }
+
+    status_code work_queue::kill_worker ()
     {
         if (signal_worker_to_stop () && _worker.joinable ())
+        {
             _worker.join ();
+            return ExitStatus::Success;
+        }
+        return ExitStatus::NotAllowed;
     }
 
     void work_queue::make_heap_and_notify_worker (work_queue::lock_type & guard)
@@ -228,8 +259,8 @@ namespace mqmx
         work_queue::lock_type & guard, const work_queue::time_point_type & timepoint)
     {
         if (_container_change_condition.wait_until (guard, timepoint, [&]{
-		    return get_container_change_flag (guard);
-		}))
+                    return get_container_change_flag (guard);
+                }))
         {
             reset_container_change_flag (guard);
             return false;
