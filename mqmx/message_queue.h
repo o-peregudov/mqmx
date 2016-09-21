@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mqmx/libexport.h>
 #include <mqmx/message.h>
 
 #include <crs/mutex.h>
@@ -22,7 +23,7 @@ namespace mqmx
      * \note All notifications are used for the purpose of internal implementation,
      *       but you may find them usefull for some other purposes.
      */
-    class message_queue
+    class MQMX_EXPORT message_queue
     {
         message_queue (const message_queue &) = delete;
         message_queue & operator = (const message_queue &) = delete;

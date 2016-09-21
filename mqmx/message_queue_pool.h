@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mqmx/libexport.h>
 #include <mqmx/message_queue_poll.h>
 
 #include <crs/mutex.h>
@@ -12,7 +13,7 @@
 
 namespace mqmx
 {
-    class message_queue_pool
+    class MQMX_EXPORT message_queue_pool
     {
     public:
         struct mq_deleter
@@ -49,17 +50,17 @@ namespace mqmx
         typedef std::vector<message_handler_func_type>                handlers_map_type;
         typedef std::thread                                           thread_type;
 
-        struct add_queue_message;
+        struct MQMX_PRIVATE add_queue_message;
         friend struct add_queue_message;
 
-        struct remove_queue_message;
+        struct MQMX_PRIVATE remove_queue_message;
         friend struct remove_queue_message;
 
-        static const queue_id_type   CONTROL_MESSAGE_QUEUE_ID;
-        static const message_id_type TERMINATE_MESSAGE_ID;
-        static const message_id_type POLL_PAUSE_MESSAGE_ID;
-        static const message_id_type ADD_QUEUE_MESSAGE_ID;
-        static const message_id_type REMOVE_QUEUE_MESSAGE_ID;
+        static MQMX_PRIVATE const queue_id_type   CONTROL_MESSAGE_QUEUE_ID;
+        static MQMX_PRIVATE const message_id_type TERMINATE_MESSAGE_ID;
+        static MQMX_PRIVATE const message_id_type POLL_PAUSE_MESSAGE_ID;
+        static MQMX_PRIVATE const message_id_type ADD_QUEUE_MESSAGE_ID;
+        static MQMX_PRIVATE const message_id_type REMOVE_QUEUE_MESSAGE_ID;
 
         message_queue                _mq_control;
         handlers_map_type            _handler;
@@ -69,9 +70,10 @@ namespace mqmx
         thread_type                  _worker;
 
         status_code remove_queue (const message_queue * const);
-        status_code control_queue_handler (message::upointer_type &&);
-        status_code handle_notifications (const message_queue_poll_listener::notification_rec_type &);
-        void thread_loop ();
+        MQMX_PRIVATE status_code control_queue_handler (message::upointer_type &&);
+        MQMX_PRIVATE status_code handle_notifications (
+            const message_queue_poll_listener::notification_rec_type &);
+        MQMX_PRIVATE void thread_loop ();
 
     public:
         explicit message_queue_pool (const size_t capacity = 15);

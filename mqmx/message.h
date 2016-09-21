@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mqmx/libexport.h>
 #include <mqmx/types.h>
 #include <memory>
 
@@ -13,7 +14,7 @@ namespace mqmx
      * of this there is no possibility to put message from one queue to the queue with
      * different ID. Second - provides the information for proper message deserialization.
      */
-    class message
+    class MQMX_EXPORT message
     {
         const queue_id_type _qid;
         const message_id_type _mid;

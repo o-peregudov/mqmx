@@ -1,0 +1,16 @@
+#pragma once
+#define MQMX_HAVE_VISIBILITY @HAVE_VISIBILITY@
+#if MQMX_HAVE_VISIBILITY
+#  define MQMX_EXPORT  __attribute__((__visibility__("default")))
+#  define MQMX_PRIVATE __attribute__((__visibility__("hidden")))
+#elif defined _MSC_VER
+#  if defined DLL_EXPORT
+#    define MQMX_EXPORT __declspec(dllexport)
+#  else
+#    define MQMX_EXPORT __declspec(dllimport)
+#  endif
+#  define MQMX_PRIVATE
+#else
+#  define MQMX_EXPORT
+#  define MQMX_PRIVATE
+#endif

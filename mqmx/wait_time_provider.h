@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mqmx/libexport.h>
 #include <chrono>
 
 namespace mqmx
@@ -7,7 +8,7 @@ namespace mqmx
     /**
      * \brief Class for specifying infinite time intervals.
      */
-    struct infinite_wait_time {};
+    struct MQMX_EXPORT infinite_wait_time {};
 
     /**
      * \brief Auxiliary class for handling wait time intervals.
@@ -18,7 +19,7 @@ namespace mqmx
      *
      * This clas also supports a special infinite wait interval.
      */
-    class wait_time_provider final
+    class MQMX_EXPORT wait_time_provider final
     {
     public:
         typedef std::chrono::steady_clock clock_type;

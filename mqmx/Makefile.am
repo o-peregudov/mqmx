@@ -5,6 +5,7 @@ lib_LTLIBRARIES = libmqmx.la
 libmqmx_la_LDFLAGS = -no-undefined -version-info $(MQMX_LT_VERSION)
 
 pkginclude_HEADERS =
+pkginclude_HEADERS += libexport.h
 pkginclude_HEADERS += message.h
 pkginclude_HEADERS += message_queue.h
 pkginclude_HEADERS += message_queue_poll.h

@@ -1,3 +1,9 @@
+CONFIGURE_FILE (
+  ${PROJECT_SOURCE_DIR}/mqmx/libexport.h.in
+  ${PROJECT_BINARY_DIR}/mqmx/libexport.h
+  @ONLY
+  )
+
 SET (MQMX_SOURCES
   message_queue.cpp
   message_queue_poll.cpp
@@ -12,9 +18,10 @@ SET (MQMX_HEADERS
   message_queue_pool.h
   types.h
   wait_time_provider.h
+  ${PROJECT_BINARY_DIR}/mqmx/libexport.h
 )
 
-ADD_LIBRARY (${PROJECT_NAME} STATIC
+ADD_LIBRARY (${PROJECT_NAME} SHARED
   ${MQMX_COMMON_HEADERS_NODIST}
   ${MQMX_SOURCES}
   ${MQMX_HEADERS}
@@ -32,10 +39,5 @@ INSTALL (
 
 INSTALL (
   FILES ${MQMX_HEADERS}
-  DESTINATION mqmx
-)
-
-INSTALL (
-  FILES ${MQMX_SOURCES}
-  DESTINATION mqmx
+  DESTINATION include/mqmx
 )

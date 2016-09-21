@@ -646,6 +646,8 @@ PTHREAD_CC
 ax_pthread_config
 HAVE_CXX11
 HAVE_CXX14
+HAVE_VISIBILITY
+CFLAG_VISIBILITY
 CODE_COVERAGE_RULES
 CODE_COVERAGE_LDFLAGS
 CODE_COVERAGE_CFLAGS
@@ -17306,6 +17308,97 @@ if test $CODE_COVERAGE_ENABLED = yes; then
   LIBS="$CODE_COVERAGE_LDFLAGS"
 fi
 
+
+
+  CFLAG_VISIBILITY=
+  HAVE_VISIBILITY=0
+  if test -n "$GCC"; then
+                { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the -Werror option is usable" >&5
+$as_echo_n "checking whether the -Werror option is usable... " >&6; }
+    if ${gl_cv_cc_vis_werror+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      gl_save_CFLAGS="$CFLAGS"
+      CFLAGS="$CFLAGS -Werror"
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_cc_vis_werror=yes
+else
+  gl_cv_cc_vis_werror=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+      CFLAGS="$gl_save_CFLAGS"
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_cc_vis_werror" >&5
+$as_echo "$gl_cv_cc_vis_werror" >&6; }
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for simple visibility declarations" >&5
+$as_echo_n "checking for simple visibility declarations... " >&6; }
+    if ${gl_cv_cc_visibility+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      gl_save_CFLAGS="$CFLAGS"
+      CFLAGS="$CFLAGS -fvisibility=hidden"
+                                    if test $gl_cv_cc_vis_werror = yes; then
+        CFLAGS="$CFLAGS -Werror"
+      fi
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+extern __attribute__((__visibility__("hidden"))) int hiddenvar;
+             extern __attribute__((__visibility__("default"))) int exportedvar;
+             extern __attribute__((__visibility__("hidden"))) int hiddenfunc (void);
+             extern __attribute__((__visibility__("default"))) int exportedfunc (void);
+             void dummyfunc (void) {}
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gl_cv_cc_visibility=yes
+else
+  gl_cv_cc_visibility=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+      CFLAGS="$gl_save_CFLAGS"
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_cc_visibility" >&5
+$as_echo "$gl_cv_cc_visibility" >&6; }
+    if test $gl_cv_cc_visibility = yes; then
+      CFLAG_VISIBILITY="-fvisibility=hidden"
+      HAVE_VISIBILITY=1
+    fi
+  fi
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_VISIBILITY $HAVE_VISIBILITY
+_ACEOF
+
+
+if test $HAVE_VISIBILITY -eq 1; then
+  CFLAGS="$CFLAG_VISIBILITY $CFLAGS"
+  CXXFLAGS="$CFLAG_VISIBILITY $CXXFLAGS"
+fi
+
 HAVE_CXX11=0
 HAVE_CXX14=0
       ax_cxx_compile_cxx14_required=false
@@ -19675,7 +19768,7 @@ as_fn_error $? "Can't find suitable version of libcrs installed. Please install 
 See \`config.log' for more details" "$LINENO" 5; }
 fi
 
-ac_config_files="$ac_config_files Makefile mqmx/Makefile test/Makefile doc/Makefile doc/Doxyfile"
+ac_config_files="$ac_config_files Makefile mqmx/Makefile mqmx/libexport.h test/Makefile doc/Makefile doc/Doxyfile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -20804,6 +20897,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "mqmx/Makefile") CONFIG_FILES="$CONFIG_FILES mqmx/Makefile" ;;
+    "mqmx/libexport.h") CONFIG_FILES="$CONFIG_FILES mqmx/libexport.h" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "doc/Doxyfile") CONFIG_FILES="$CONFIG_FILES doc/Doxyfile" ;;

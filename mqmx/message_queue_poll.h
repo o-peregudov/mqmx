@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mqmx/libexport.h>
 #include <mqmx/message_queue.h>
 #include <mqmx/wait_time_provider.h>
 
@@ -28,7 +29,7 @@ namespace mqmx
      *
      * Class also provides the way for waiting for notifications for some time.
      */
-    class message_queue_poll_listener : public message_queue::listener
+    class MQMX_EXPORT message_queue_poll_listener : public message_queue::listener
     {
         message_queue_poll_listener (const message_queue_poll_listener &) = delete;
         message_queue_poll_listener & operator = (const message_queue_poll_listener &) = delete;
@@ -38,9 +39,9 @@ namespace mqmx
         typedef crs::lock_type    lock_type;
         typedef crs::condvar_type condvar_type;
 
-        class notification_rec_type : std::tuple<queue_id_type,
-                                                 message_queue *,
-                                                 message_queue::notification_flags_type>
+        class MQMX_EXPORT notification_rec_type : std::tuple<queue_id_type,
+							     message_queue *,
+							     message_queue::notification_flags_type>
         {
             typedef std::tuple<queue_id_type,
                                message_queue *,
@@ -166,7 +167,7 @@ namespace mqmx
      * objects of class \link mqmx::message_queue \endlink.
      */
     template <typename ForwardIt>
-    class set_listener_for_each_queue
+    class MQMX_PRIVATE set_listener_for_each_queue
     {
         ForwardIt _first;
         ForwardIt _last;
@@ -224,7 +225,7 @@ namespace mqmx
      */
     template <typename ForwardIt,
               typename reference_clock_provider = wait_time_provider>
-    message_queue_poll_listener::notifications_list_type
+    MQMX_EXPORT message_queue_poll_listener::notifications_list_type
     poll (const ForwardIt first,
           const ForwardIt last,
           const wait_time_provider & wtp = wait_time_provider (),

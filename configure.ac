@@ -57,6 +57,15 @@ if test $CODE_COVERAGE_ENABLED = yes; then
 fi
 
 dnl
+dnl DSO visibility options
+dnl
+gl_VISIBILITY
+if test $HAVE_VISIBILITY -eq 1; then
+  CFLAGS="$CFLAG_VISIBILITY $CFLAGS"
+  CXXFLAGS="$CFLAG_VISIBILITY $CXXFLAGS"
+fi
+
+dnl
 dnl Check for supported C++ standard
 dnl
 HAVE_CXX11=0
@@ -149,6 +158,7 @@ fi
 AC_CONFIG_FILES([
   Makefile
   mqmx/Makefile
+  mqmx/libexport.h
   test/Makefile
   doc/Makefile
   doc/Doxyfile

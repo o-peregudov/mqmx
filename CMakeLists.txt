@@ -31,6 +31,15 @@ SET (CMAKE_MODULE_PATH
 ADD_DEFINITIONS (-DHAVE_CONFIG_H)
 
 #
+# check if compilers supports -fvisibility=hidden
+#
+CHECK_C_COMPILER_FLAG (-fvisibility=hidden HAVE_VISIBILITY)
+IF (HAVE_VISIBILITY EQUAL 1)
+  SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
+  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+ENDIF ()
+
+#
 # check if compilers supports -std=c++14 or -std=c++11
 #
 CHECK_CXX_COMPILER_FLAG (-std=c++14 STDCXX14_SUPPORTED)
