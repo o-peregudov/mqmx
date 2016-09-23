@@ -151,7 +151,7 @@ namespace mqmx
 
     public:
         /**
-         * \Brief Sets new listener for this message queue.
+         * \brief Sets new listener for this message queue.
          *
          * By design only one listener can be set.
          *
