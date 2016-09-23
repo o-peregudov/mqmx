@@ -75,7 +75,7 @@ namespace mqmx
         const client_id_type client_id,
         const work_pointer_type & work,
         const time_point_type & start_time,
-        const duration_type & repeat_timeout)
+        const duration_type & repeat_period)
     {
         if ((client_id == INVALID_CLIENT_ID) || !work)
             return std::make_pair (ExitStatus::InvalidArgument, INVALID_WORK_ID);
@@ -85,7 +85,7 @@ namespace mqmx
 
         lock_type guard (_mutex);
 
-        return post_work (guard, {stime, client_id, work, repeat_timeout});
+        return post_work (guard, {stime, client_id, work, repeat_period});
     }
 
     bool work_queue::signal_worker_to_stop ()
@@ -101,7 +101,7 @@ namespace mqmx
         return true;
     }
 
-    void work_queue::reset_container_change_flag (work_queue::lock_type &)
+    void work_queue::reset_container_change_flag (work_queue::lock_type & /*guard*/)
     {
         _container_change_flag = false;
     }
@@ -131,7 +131,7 @@ namespace mqmx
         const client_id_type client_id,
         const work_pointer_type & work,
         const time_point_type & start_time,
-        const duration_type & repeat_timeout)
+        const duration_type & repeat_period)
     {
         if ((client_id == INVALID_CLIENT_ID) || !work)
             return ExitStatus::InvalidArgument;
@@ -145,7 +145,7 @@ namespace mqmx
         {
             if (elem.second == work_id)
             {
-                elem.first = {start_time, client_id, work, repeat_timeout};
+                elem.first = {start_time, client_id, work, repeat_period};
                 make_heap_and_notify_worker (guard);
                 return ExitStatus::Success;
             }
@@ -200,7 +200,7 @@ namespace mqmx
         return static_cast<bool> (_wq_item_container.front ().first.work);
     }
 
-    bool work_queue::get_container_change_flag (work_queue::lock_type &) const
+    bool work_queue::get_container_change_flag (work_queue::lock_type &/*guard*/) const
     {
         return _container_change_flag;
     }
