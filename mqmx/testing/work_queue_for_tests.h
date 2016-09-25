@@ -24,9 +24,6 @@ namespace testing
 
         sync_function_type _sync_function;
 
-        virtual void
-        signal_going_to_idle (work_queue::lock_type &) override;
-
         virtual bool
         wait_for_time_point (work_queue::lock_type &,
                              const work_queue::time_point_type &) override;

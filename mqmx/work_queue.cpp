@@ -239,16 +239,8 @@ namespace mqmx
         return _wq_item_container.front ().first.time_point;
     }
 
-    void work_queue::signal_going_to_idle (work_queue::lock_type & /*guard*/)
-    {
-        /* derived class can use this */
-    }
-
     bool work_queue::wait_for_some_work (work_queue::lock_type & guard)
     {
-        if (is_container_empty (guard))
-            signal_going_to_idle (guard);
-
         _container_change_condition.wait (guard, [&]{
                 return !is_container_empty (guard);
             });

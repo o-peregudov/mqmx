@@ -249,19 +249,6 @@ namespace mqmx
         bool is_container_empty (lock_type & guard) const;
 
         /**
-         * \brief Signals entering waiting state without timeout.
-         *
-         * In current implementation worker has the only wait state without
-         * timeout and it is waiting for some work to be scheduled (internal
-         * container is empty). Derived class can override this method, but
-         * it should also call this method before entering any wait state
-         * without timeout.
-         *
-         * \attention Method is called with main mutex acquired.
-         */
-        virtual void signal_going_to_idle (lock_type & guard);
-
-        /**
          * \brief Waits for the next time point.
          *
          * Function causes the worker thread to block until the main conditional

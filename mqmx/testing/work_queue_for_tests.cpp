@@ -90,10 +90,6 @@ namespace testing
         return _current_time_point;
     }
 
-    void work_queue_for_tests::signal_going_to_idle (work_queue::lock_type &)
-    {
-    }
-
     bool work_queue_for_tests::wait_for_time_point (
         work_queue::lock_type & guard, const work_queue::time_point_type & timepoint)
     {
