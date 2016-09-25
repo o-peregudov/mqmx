@@ -32,6 +32,7 @@ TESTS += message_queue_sanity
 TESTS += work_queue_cancel_work
 TESTS += work_queue_sanity
 TESTS += work_queue_schedule_work
+TESTS += work_queue_schedule_work_periodic
 TESTS += work_queue_update_work
 
 check_PROGRAMS =
@@ -49,6 +50,7 @@ check_PROGRAMS += message_queue_sanity
 check_PROGRAMS += work_queue_cancel_work
 check_PROGRAMS += work_queue_sanity
 check_PROGRAMS += work_queue_schedule_work
+check_PROGRAMS += work_queue_schedule_work_periodic
 check_PROGRAMS += work_queue_update_work
 
 AM_DEFAULT_SOURCE_EXT = .cpp
