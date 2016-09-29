@@ -1,4 +1,4 @@
-ADD_LIBRARY (${PROJECT_NAME}_mocks STATIC
+ADD_LIBRARY (${PROJECT_NAME}_mocks
   fixtures/message_queue_poll.cpp
   fixtures/message_queue_poll.h
 )
@@ -62,3 +62,8 @@ FOREACH (TEST_EXECUTABLE ${TESTS})
     COMMAND "${TEST_EXECUTABLE}"
   )
 ENDFOREACH ()
+
+ADD_CUSTOM_TARGET (check
+  COMMAND ${CMAKE_CTEST_COMMAND}
+  DEPENDS ${check_PROGRAMS}
+  )
