@@ -5,13 +5,15 @@ namespace mqmx
 namespace testing
 {
     work_queue_for_tests::work_queue_for_tests (const sync_function_type & sync_func)
-        : work_queue ()
+        : work_queue (work_queue::dont_start_worker ())
         , _current_time_point (work_queue::clock_type::now ())
         , _time_point_changed (false)
         , _time_forwarding_condition ()
         , _time_forwarding_completed (false)
         , _sync_function (sync_func)
-    { }
+    {
+	start_worker ();
+    }
 
     work_queue_for_tests::~work_queue_for_tests ()
     {
