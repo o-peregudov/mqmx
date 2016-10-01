@@ -34,6 +34,7 @@ namespace mqmx
             {
                 if (_pool)
                     _pool->remove_queue (mq);
+                delete mq;
             }
         };
 
