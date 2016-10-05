@@ -1,5 +1,6 @@
 #include "mqmx/message_queue_pool.h"
 #include <algorithm>
+#include <cassert>
 
 namespace mqmx
 {
