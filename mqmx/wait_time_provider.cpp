@@ -2,5 +2,5 @@
 
 namespace mqmx
 {
-    const infinite_wait_time wait_time_provider::WAIT_INFINITELY;
+    const infinite_wait_time wait_time_provider::WAIT_INFINITELY = infinite_wait_time ();
 } /* namespace mqmx */

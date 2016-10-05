@@ -38,7 +38,7 @@ namespace mqmx
             }
         };
 
-        friend class mq_deleter;
+        friend struct mq_deleter;
 
         typedef std::function<status_code(message::upointer_type &&)> message_handler_func_type;
         typedef crs::mutex_type                                       mutex_type;

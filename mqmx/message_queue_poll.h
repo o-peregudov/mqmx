@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <cassert>
 #include <vector>
 #include <tuple>
 
@@ -194,8 +193,7 @@ namespace mqmx
             std::for_each (_first, _last,
                            [&listener](typename std::iterator_traits<ForwardIt>::reference mq)
                            {
-                               const status_code ret_code = mq->set_listener (listener);
-                               assert (ret_code == ExitStatus::Success), ret_code;
+                               mq->set_listener (listener);
                            });
         }
 
