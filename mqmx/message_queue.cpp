@@ -103,7 +103,7 @@ namespace mqmx
             msg = std::move (_queue.front ());
             _queue.pop_front ();
         }
-        return std::move (msg);
+        return msg;
     }
 
     status_code message_queue::set_listener (listener & l)
