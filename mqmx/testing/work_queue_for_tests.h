@@ -25,7 +25,7 @@ namespace testing
      * In addition, user callback function can be called
      * (if provided) every time some work has been executed.
      */
-    class MQMX_EXPORT work_queue_for_tests : public work_queue
+    class MQMX_EXPORT work_queue_for_tests final : public work_queue
     {
     public:
         /**
@@ -49,11 +49,11 @@ namespace testing
 
         virtual bool
         wait_for_time_point (work_queue::lock_type &,
-                             const work_queue::time_point_type &) override;
+                             const work_queue::time_point_type &) final;
 
         virtual work_queue::time_point_type
         execute_work (work_queue::lock_type &,
-                      const work_queue::record_type &) override;
+                      const work_queue::record_type &) final;
 
         bool wait_for_time_forwarding_completion (
             const work_queue::time_point_type final_time_point);
