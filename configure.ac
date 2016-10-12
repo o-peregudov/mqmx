@@ -127,16 +127,6 @@ if test x$ac_pthread_lib_found = xyes; then
 fi
 
 dnl
-dnl check for OpenMP
-dnl
-AX_OPENMP([ac_openmp_supported=yes],
-          [ac_openmp_supported=no])
-if test x$ac_openmp_supported = xyes; then
-  CFLAGS="$CFLAGS $OPENMP_CFLAGS"
-  CXXFLAGS="$CXXFLAGS $OPENMP_CFLAGS"
-fi
-
-dnl
 dnl check for libcrs
 dnl
 PKG_CHECK_MODULES([LIBCRS], [crs >= 2.0],

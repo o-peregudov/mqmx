@@ -87,15 +87,6 @@ IF (WERROR_SUPPORTED EQUAL 1)
 ENDIF ()
 
 #
-# utilize OpenMP if found
-#
-INCLUDE (FindOpenMP)
-IF (OPENMP_FOUND)
-  SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-ENDIF ()
-
-#
 # check for libcrs
 #
 PKG_CHECK_MODULES (LIBCRS REQUIRED crs>=2.0)
